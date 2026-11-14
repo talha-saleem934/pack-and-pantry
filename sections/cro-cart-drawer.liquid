@@ -83,7 +83,7 @@
       {%- if s.show_shipping and ship_cents > 0 and cart.item_count > 0 -%}<div class="cro-cd__ship">{%- if s.show_shipping and ship_cents > 0 and cart.item_count > 0 -%}
   <div class="cro-ship" data-cro-ship data-pct="{{ ship_pct }}">
     <p class="cro-ship__msg" role="status">
-      {%- if ship_left > 0 -%}{%- assign ship_money = ship_left | money -%}{{ s.ship_progress | escape | replace: '{amount}', ship_money }}{%- else -%}{{ s.ship_done | escape }}{%- endif -%}
+      {%- if ship_left > 0 -%}{%- assign ship_money = ship_left | money -%}{% echo s.ship_progress | escape | replace: '{amount}', ship_money %}{%- else -%}{{ s.ship_done | escape }}{%- endif -%}
     </p>
     <span class="cro-ship__bar" aria-hidden="true"><span class="cro-ship__fill"></span></span>
   </div>
@@ -170,7 +170,7 @@
               </div>
             {%- endif -%}
             <div class="cart-drawer__total"><span>{{ s.subtotal_label | escape }}</span><strong>{{ cart.total_price | money_with_currency }}</strong></div>
-            {%- if s.show_savings and cart_savings > 0 -%}<p class="cro-cd__save-line">{%- assign save_money = cart_savings | money -%}{{ s.savings_label | escape | replace: '{amount}', save_money }}</p>{%- endif -%}
+            {%- if s.show_savings and cart_savings > 0 -%}<p class="cro-cd__save-line">{%- assign save_money = cart_savings | money -%}{% echo s.savings_label | escape | replace: '{amount}', save_money %}</p>{%- endif -%}
             {%- if s.tax_note != blank -%}<p class="muted">{{ s.tax_note | escape }}</p>{%- endif -%}
             <div class="cart-drawer__actions">
               <a class="button button--secondary" href="{{ routes.cart_url }}">{{ s.view_cart_label | escape }}</a>

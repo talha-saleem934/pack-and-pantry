@@ -42,7 +42,7 @@
   {%- if cp_on_sale -%}
     {%- if regular_label != blank -%}<span class="cro-vh">{{ regular_label | escape }}</span>{%- endif -%}
     <s class="cro-price__was">{{ cp_compare | money }}</s>
-    {%- if cp_savings != 'none' -%}<span class="cro-price__save">{{ cp_save_label | replace: '{value}', cp_value | escape }}</span>{%- endif -%}
+    {%- if cp_savings != 'none' -%}<span class="cro-price__save">{% echo cp_save_label | replace: '{value}', cp_value | escape %}</span>{%- endif -%}
   {%- endif -%}
   {%- if tax_note != blank -%}<span class="cro-price__note">{{ tax_note | escape }}</span>{%- endif -%}
 </div>

@@ -158,7 +158,7 @@
       {%- if section.blocks.size > 1 -%}
         <div class="cro-hero__ctrl">
           {%- if s.show_arrows -%}<button class="cro-hero__arrow" type="button" data-cro-hero-prev aria-label="{{ s.prev_label | escape }}">{% render 'cro-icon', icon: 'chevron-left', size: 20 %}</button>{%- endif -%}
-          {%- if s.show_dots -%}{%- for block in section.blocks -%}<button class="cro-hero__dot" type="button" data-cro-hero-dot aria-label="{{ s.dot_label | replace: '{n}', forloop.index | escape }}" aria-current="{% if forloop.first %}true{% else %}false{% endif %}"></button>{%- endfor -%}{%- endif -%}
+          {%- if s.show_dots -%}{%- for block in section.blocks -%}<button class="cro-hero__dot" type="button" data-cro-hero-dot aria-label="{% echo s.dot_label | replace: '{n}', forloop.index | escape %}" aria-current="{% if forloop.first %}true{% else %}false{% endif %}"></button>{%- endfor -%}{%- endif -%}
           {%- if s.show_arrows -%}<button class="cro-hero__arrow" type="button" data-cro-hero-next aria-label="{{ s.next_label | escape }}">{% render 'cro-icon', icon: 'chevron-right', size: 20 %}</button>{%- endif -%}
           <button class="cro-hero__pause" type="button" data-cro-hero-pause aria-label="{{ s.pause_label | escape }}" hidden>❚❚</button>
         </div>

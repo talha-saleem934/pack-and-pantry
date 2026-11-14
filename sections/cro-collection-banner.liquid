@@ -110,7 +110,7 @@
         {%- if s.badge != blank -%}<span class="cro-badge">{{ s.badge | escape }}</span>{%- endif -%}
         <h2 class="cro-h" id="CroHeading-{{ sid }}">{{ title | escape }}</h2>
         {%- if s.text != blank -%}<p class="cro-sub">{{ s.text | escape }}</p>{%- elsif s.show_description and collection.description != blank -%}<div class="cro-sub">{{ collection.description | strip_html | truncatewords: 40 }}</div>{%- endif -%}
-        {%- if s.show_count and collection.products_count > 0 -%}<p class="cro-cb__count">{{ s.count_label | replace: '{count}', collection.products_count | escape }}</p>{%- endif -%}
+        {%- if s.show_count and collection.products_count > 0 -%}<p class="cro-cb__count">{% echo s.count_label | replace: '{count}', collection.products_count | escape %}</p>{%- endif -%}
         {%- if s.countdown_mode != 'none' -%}
           <div class="cro-cb__cd">{% render 'cro-countdown', id: sid, mode: s.countdown_mode, end: s.countdown_end, prefix: s.countdown_prefix, style: s.countdown_style, show_days: true, separator: ':', label_d: s.label_days, label_h: s.label_hours, label_m: s.label_minutes, label_s: s.label_seconds, urgent: 60, expire_action: 'hide', fallback: s.countdown_fallback %}</div>
         {%- endif -%}

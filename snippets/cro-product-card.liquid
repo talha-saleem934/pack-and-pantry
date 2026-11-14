@@ -85,7 +85,7 @@
     <h3 class="cro-pc__title"><a href="{{ pc.url }}">{{ pc.title | escape }}</a></h3>
     {% render 'cro-price', product: pc, size: 'sm', savings: 'none', show_from: true %}
     {%- if pc_low -%}
-      <p class="cro-pc__low">{{ low_stock_label | default: 'Only {count} left' | replace: '{count}', pc_variant.inventory_quantity | escape }}</p>
+      <p class="cro-pc__low">{% echo low_stock_label | default: 'Only {count} left' | replace: '{count}', pc_variant.inventory_quantity | escape %}</p>
     {%- endif -%}
     {%- if show_quick_add != false and pc.available -%}
       {%- if pc.has_only_default_variant -%}

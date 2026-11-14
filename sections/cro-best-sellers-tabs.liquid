@@ -107,7 +107,7 @@
                 {% render 'cro-product-card', card_product: product, add_label: s.add_label, choose_label: s.choose_label, sold_out_label: s.sold_out_label, low_stock_label: s.low_stock_label, show_rating: s.show_rating, show_low_stock: s.show_low_stock %}
               {%- endfor -%}
             </div>
-            {%- if s.view_all_label != blank -%}<div class="cro-tabs__more"><a class="cro-btn cro-btn--ghost" href="{{ c.url }}">{{ s.view_all_label | replace: '{collection}', c.title | escape }}</a></div>{%- endif -%}
+            {%- if s.view_all_label != blank -%}<div class="cro-tabs__more"><a class="cro-btn cro-btn--ghost" href="{{ c.url }}">{% echo s.view_all_label | replace: '{collection}', c.title | escape %}</a></div>{%- endif -%}
           {%- elsif request.design_mode -%}<p>{{ s.editor_note | escape }}</p>{%- endif -%}
         </div>
       {%- endfor -%}
@@ -281,13 +281,20 @@
       "default": 3
     },
     {
-      "type": "range",
+      "type": "select",
       "id": "columns_mobile",
       "label": "Columns (mobile)",
-      "min": 1,
-      "max": 2,
-      "step": 1,
-      "default": 2
+      "options": [
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        }
+      ],
+      "default": "2"
     },
     {
       "type": "color",

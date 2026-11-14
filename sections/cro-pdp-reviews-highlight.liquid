@@ -115,8 +115,8 @@
       <div class="cro-rh__summary">
         <span class="cro-rh__score">{{ rt }}</span>
         <span class="cro-stars" style="--cro-stars:{{ rt_pct }}%" aria-hidden="true"></span>
-        <span class="cro-vh">{{ s.sr_label | replace: '{rating}', rt | replace: '{max}', rt_max | escape }}</span>
-        {%- if rt_count > 0 -%}<span>{{ s.count_label | replace: '{count}', rt_count | escape }}</span>{%- endif -%}
+        <span class="cro-vh">{% echo s.sr_label | replace: '{rating}', rt | replace: '{max}', rt_max | escape %}</span>
+        {%- if rt_count > 0 -%}<span>{% echo s.count_label | replace: '{count}', rt_count | escape %}</span>{%- endif -%}
         {%- if s.anchor != blank -%}<a class="cro-btn cro-btn--ghost" href="{{ s.anchor | escape }}">{{ s.see_all_label | escape }}</a>{%- endif -%}
       </div>
     {%- endif -%}

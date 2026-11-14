@@ -240,7 +240,7 @@
         {%- if media_count > 1 and s.show_thumbs -%}
           <div class="cro-gallery__thumbs">
             {%- for media in product.media -%}
-              <button class="cro-gallery__thumb{% if forloop.index0 == start_index %} is-active{% endif %}" type="button" data-cro-thumb aria-label="{{ s.thumb_label | replace: '{n}', forloop.index | escape }}">
+              <button class="cro-gallery__thumb{% if forloop.index0 == start_index %} is-active{% endif %}" type="button" data-cro-thumb aria-label="{% echo s.thumb_label | replace: '{n}', forloop.index | escape %}">
                 {{ media.preview_image | image_url: width: 160, height: 160, crop: 'center' | image_tag: loading: 'lazy', alt: '', width: 80, height: 80 }}
               </button>
             {%- endfor -%}
@@ -317,7 +317,7 @@
                   <div class="cro-badges">
                     {%- if show_sale_badge -%}
                       {%- assign bd_pct = current.compare_at_price | minus: current.price | times: 100.0 | divided_by: current.compare_at_price | round -%}
-                      <span class="cro-badge">{{ b.sale_label | replace: '{value}', bd_pct | escape }}</span>
+                      <span class="cro-badge">{% echo b.sale_label | replace: '{value}', bd_pct | escape %}</span>
                     {%- endif -%}
                     {%- if show_custom -%}<span class="cro-badge cro-badge--custom">{{ b.custom_text | escape }}</span>{%- endif -%}
                     {%- if show_best -%}<span class="cro-badge cro-badge--best">{{ b.best_label | escape }}</span>{%- endif -%}
@@ -340,7 +340,7 @@
                 -%}
                 {%- if rt != blank -%}
                   {%- assign rt_pct = rt | times: 100.0 | divided_by: rt_max -%}
-                  {%- capture rt_inner -%}<span class="cro-stars" style="--cro-stars:{{ rt_pct }}%" aria-hidden="true"></span><strong>{{ rt }}</strong>{%- if rt_count > 0 -%}<span>{{ b.count_label | replace: '{count}', rt_count | escape }}</span>{%- endif -%}<span class="cro-vh">{{ b.sr_label | replace: '{rating}', rt | replace: '{max}', rt_max | escape }}</span>{%- endcapture -%}
+                  {%- capture rt_inner -%}<span class="cro-stars" style="--cro-stars:{{ rt_pct }}%" aria-hidden="true"></span><strong>{{ rt }}</strong>{%- if rt_count > 0 -%}<span>{% echo b.count_label | replace: '{count}', rt_count | escape %}</span>{%- endif -%}<span class="cro-vh">{% echo b.sr_label | replace: '{rating}', rt | replace: '{max}', rt_max | escape %}</span>{%- endcapture -%}
                   {%- if b.anchor != blank -%}<a class="cro-rating" href="{{ b.anchor | escape }}">{{ rt_inner }}</a>{%- else -%}<div class="cro-rating">{{ rt_inner }}</div>{%- endif -%}
                 {%- endif -%}
 
@@ -394,7 +394,7 @@
                 {%- if current.available and current.inventory_management == 'shopify' and current.inventory_policy == 'deny' and sc_qty > 0 and sc_qty <= sc_threshold -%}
                   {%- assign sc_pct = sc_qty | times: 100 | divided_by: sc_threshold -%}
                   <div class="cro-scarcity" role="status">
-                    <span>{{ b.text | replace: '{count}', sc_qty | escape }}</span>
+                    <span>{% echo b.text | replace: '{count}', sc_qty | escape %}</span>
                     {%- if b.show_bar -%}<span class="cro-scarcity__bar" aria-hidden="true"><span class="cro-scarcity__fill" style="inline-size:{{ sc_pct }}%"></span></span>{%- endif -%}
                   </div>
                 {%- endif -%}
@@ -402,7 +402,7 @@
               {%- when 'cro_sold' -%}
                 {%- assign sold = product.metafields.custom.sold_count.value -%}
                 {%- if sold != blank and sold > 0 -%}
-                  <p class="cro-inline">{% render 'cro-icon', icon: b.icon, image: b.icon_image, text: b.icon_text, size: 18 %}{{ b.text | replace: '{count}', sold | escape }}</p>
+                  <p class="cro-inline">{% render 'cro-icon', icon: b.icon, image: b.icon_image, text: b.icon_text, size: 18 %}{% echo b.text | replace: '{count}', sold | escape %}</p>
                 {%- endif -%}
 
               {%- when 'cro_delivery' -%}
@@ -414,7 +414,7 @@
                   assign dv_cities = b.cities | newline_to_br | split: '<br />'
                 -%}
                 <div class="cro-delivery cro-box" data-cro-delivery data-min="{{ dv_min }}" data-max="{{ dv_max }}" data-cutoff="{{ dv_cut }}" data-tz="{{ settings.cro_timezone | default: 'Asia/Karachi' | escape }}" data-skip="{{ settings.cro_excluded_weekdays | escape }}" data-holidays="{{ dv_hol | escape }}" data-template="{{ b.date_template | escape }}">
-                  <p class="cro-inline">{% render 'cro-icon', icon: b.icon, image: b.icon_image, text: b.icon_text, size: 20 %}<span>{{ b.label | escape }} <span class="cro-delivery__dates" data-cro-delivery-js data-cro-delivery-dates></span><span data-cro-delivery-nojs>{{ b.fallback | replace: '{min}', dv_min | replace: '{max}', dv_max | escape }}</span></span></p>
+                  <p class="cro-inline">{% render 'cro-icon', icon: b.icon, image: b.icon_image, text: b.icon_text, size: 20 %}<span>{{ b.label | escape }} <span class="cro-delivery__dates" data-cro-delivery-js data-cro-delivery-dates></span><span data-cro-delivery-nojs>{% echo b.fallback | replace: '{min}', dv_min | replace: '{max}', dv_max | escape %}</span></span></p>
                   {%- if b.cities != blank -%}
                     <label class="cro-vh" for="CroCity-{{ block.id }}">{{ b.city_label | escape }}</label>
                     <select id="CroCity-{{ block.id }}" data-cro-delivery-city data-cro-delivery-js>
@@ -472,7 +472,7 @@
                         {%- if pct > 0 -%}
                           {%- assign q_disc = q_total | times: pct | divided_by: 100 -%}
                           {%- assign q_final = q_total | minus: q_disc -%}
-                          <span><span class="cro-qb__save">{{ b.save_label | replace: '{value}', pct | escape }}</span> · {{ q_final | money }}</span>
+                          <span><span class="cro-qb__save">{% echo b.save_label | replace: '{value}', pct | escape %}</span> · {{ q_final | money }}</span>
                         {%- else -%}
                           <span>{{ q_total | money }}</span>
                         {%- endif -%}
@@ -555,7 +555,7 @@
                         assign wa_msg = wa_msg | replace: '{variant}', current.title
                       endif
                     -%}
-                    <a class="cro-buy__wa" href="https://wa.me/{{ wa_number }}?text={{ wa_msg | replace: '{qty}', '1' | url_encode }}" target="_blank" rel="noopener" data-cro-wa-order data-number="{{ wa_number }}" data-message="{{ wa_msg | escape }}">{% render 'cro-icon', icon: 'whatsapp', size: 22 %}{{ b.whatsapp_label | escape }}</a>
+                    <a class="cro-buy__wa" href="https://wa.me/{{ wa_number }}?text={% echo wa_msg | replace: '{qty}', '1' | url_encode %}" target="_blank" rel="noopener" data-cro-wa-order data-number="{{ wa_number }}" data-message="{{ wa_msg | escape }}">{% render 'cro-icon', icon: 'whatsapp', size: 22 %}{{ b.whatsapp_label | escape }}</a>
                   {%- endif -%}
                 </div>
 
@@ -589,7 +589,7 @@
                       <a class="cro-share__btn" href="https://wa.me/{{ wa_number }}?text={{ ask_msg | url_encode }}" target="_blank" rel="noopener" data-cro-wa-order data-number="{{ wa_number }}" data-message="{{ ask_msg | escape }}">{% render 'cro-icon', icon: 'whatsapp', size: 16 %}{{ b.whatsapp_label | escape }}</a>
                     {%- endif -%}
                     {%- if ask_email != blank and b.show_email -%}
-                      <a class="cro-share__btn" href="mailto:{{ ask_email }}?subject={{ b.email_subject | replace: '{product}', product.title | url_encode }}">{% render 'cro-icon', icon: 'mail', size: 16 %}{{ b.email_label | escape }}</a>
+                      <a class="cro-share__btn" href="mailto:{{ ask_email }}?subject={% echo b.email_subject | replace: '{product}', product.title | url_encode %}">{% render 'cro-icon', icon: 'mail', size: 16 %}{{ b.email_label | escape }}</a>
                     {%- endif -%}
                     {%- if b.contact_link != blank -%}<a class="cro-share__btn" href="{{ b.contact_link }}">{{ b.contact_label | escape }}</a>{%- endif -%}
                   </div>
