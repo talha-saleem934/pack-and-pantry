@@ -1,0 +1,518 @@
+{%- liquid
+  assign s = section.settings
+  assign sid = section.id
+-%}
+{{ 'cro-components.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'cro-core.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'cro-commerce.js' | asset_url }}" defer="defer"></script>
+{%- liquid
+  case s.align
+    when 'start'
+      assign cro_justify = 'flex-start'
+    when 'end'
+      assign cro_justify = 'flex-end'
+    else
+      assign cro_justify = 'center'
+  endcase
+  assign cro_radius = s.radius | default: 16
+  assign cro_btn_radius = s.button_radius | default: 10
+-%}
+{% style %}
+#cro-{{ sid }} {
+  --cro-bg: {{ s.bg_color | default: '#F7F1E7' }};
+  --cro-heading: {{ s.heading_color | default: '#18231F' }};
+  --cro-text: {{ s.text_color | default: '#3F4A45' }};
+  --cro-accent: {{ s.accent_color | default: '#D4623D' }};
+  --cro-btn-bg: {{ s.button_bg | default: '#173F35' }};
+  --cro-btn-text: {{ s.button_text | default: '#FFFDF8' }};
+  --cro-btn-hover-bg: {{ s.button_hover_bg | default: '#0F2F27' }};
+  --cro-btn-hover-text: {{ s.button_hover_text | default: '#FFFFFF' }};
+  --cro-link-hover: {{ s.link_hover_color | default: '#D4623D' }};
+  --cro-border: {{ s.border_color | default: '#D7CEC1' }};
+  --cro-card-bg: {{ s.card_bg | default: '#FFFDF8' }};
+  --cro-icon: {{ s.icon_color | default: '#173F35' }};
+  --cro-badge-bg: {{ s.badge_bg | default: '#C64F32' }};
+  --cro-badge-text: {{ s.badge_text | default: '#FFFFFF' }};
+  --cro-radius: {{ cro_radius }}px;
+  --cro-justify: {{ cro_justify }};
+  background: var(--cro-bg);
+  color: var(--cro-text);
+  padding-block: {{ s.padding_top_mobile | default: 40 }}px {{ s.padding_bottom_mobile | default: 40 }}px;
+}
+#cro-{{ sid }}[hidden] { display: none; }
+#cro-{{ sid }} .cro-wrap { box-sizing: border-box; max-inline-size: {% if s.full_width %}none{% else %}{{ s.container_width | default: 1300 }}px{% endif %}; margin-inline: auto; padding-inline: var(--gutter, 16px); }
+#cro-{{ sid }} .cro-head { display: flex; flex-direction: column; align-items: {{ cro_justify }}; gap: 8px; margin-block-end: 28px; text-align: {{ s.align | default: 'center' }}; }
+#cro-{{ sid }} .cro-head--row { flex-direction: row; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; text-align: start; }
+#cro-{{ sid }} .cro-eyebrow { margin: 0; color: var(--cro-accent); font-weight: 700; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; }
+#cro-{{ sid }} .cro-h { margin: 0; color: var(--cro-heading); font-family: var(--font-heading); font-weight: var(--font-heading-weight, 700); font-size: {{ s.heading_size_mobile | default: 28 }}px; line-height: 1.15; }
+#cro-{{ sid }} .cro-sub { margin: 0; max-inline-size: 680px; font-size: {{ s.text_size_mobile | default: 15 }}px; line-height: 1.55; }
+#cro-{{ sid }} .cro-body { font-size: {{ s.text_size_mobile | default: 15 }}px; line-height: 1.55; }
+#cro-{{ sid }} .cro-body > :first-child { margin-block-start: 0; }
+#cro-{{ sid }} .cro-body > :last-child { margin-block-end: 0; }
+#cro-{{ sid }} .cro-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-sizing: border-box;
+  min-block-size: 48px; padding: 0 24px; border: 0; border-radius: {{ cro_btn_radius }}px;
+  background: var(--cro-btn-bg); color: var(--cro-btn-text); font: inherit; font-weight: 700; line-height: 1.2;
+  text-decoration: none; cursor: pointer; transition: background-color .2s ease, color .2s ease, transform .2s ease;
+}
+#cro-{{ sid }} .cro-btn:hover { background: var(--cro-btn-hover-bg); color: var(--cro-btn-hover-text); }
+#cro-{{ sid }} .cro-btn[disabled] { opacity: .55; cursor: not-allowed; }
+#cro-{{ sid }} .cro-btn--ghost { background: transparent; color: var(--cro-heading); box-shadow: inset 0 0 0 2px currentColor; }
+#cro-{{ sid }} .cro-btn--ghost:hover { background: var(--cro-btn-bg); color: var(--cro-btn-text); box-shadow: none; }
+#cro-{{ sid }} .cro-link { color: var(--cro-heading); text-decoration: underline; text-underline-offset: 4px; }
+#cro-{{ sid }} .cro-link:hover { color: var(--cro-link-hover); }
+#cro-{{ sid }} .cro-card { background: var(--cro-card-bg); border: 1px solid var(--cro-border); border-radius: var(--cro-radius); }
+#cro-{{ sid }} .cro-ico { display: inline-flex; flex: none; align-items: center; justify-content: center; color: var(--cro-icon); }
+#cro-{{ sid }} .cro-badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 999px; background: var(--cro-badge-bg); color: var(--cro-badge-text); font-size: 12px; font-weight: 700; letter-spacing: .03em; }
+#cro-{{ sid }} a:focus-visible, #cro-{{ sid }} button:focus-visible, #cro-{{ sid }} summary:focus-visible, #cro-{{ sid }} input:focus-visible, #cro-{{ sid }} select:focus-visible { outline: 2px solid var(--cro-accent); outline-offset: 2px; }
+@media (min-width: 750px) {
+  #cro-{{ sid }} { padding-block: {{ s.padding_top_desktop | default: 64 }}px {{ s.padding_bottom_desktop | default: 64 }}px; }
+  #cro-{{ sid }} .cro-h { font-size: {{ s.heading_size_desktop | default: 38 }}px; }
+  #cro-{{ sid }} .cro-sub, #cro-{{ sid }} .cro-body { font-size: {{ s.text_size_desktop | default: 17 }}px; }
+}
+
+
+
+#cro-{{ sid }} { --cro-star-color: {{ s.star_color }}; }
+#cro-{{ sid }} .cro-ts { position: relative; }
+#cro-{{ sid }} .cro-ts__track { display: grid; grid-auto-flow: column; grid-auto-columns: 86%; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding-block-end: 4px; }
+#cro-{{ sid }} .cro-ts__track::-webkit-scrollbar { display: none; }
+#cro-{{ sid }} .cro-ts__card { display: flex; flex-direction: column; gap: 12px; padding: 22px; scroll-snap-align: start; }
+#cro-{{ sid }} .cro-ts__card .cro-stars { --cro-star-size: 18px; }
+#cro-{{ sid }} .cro-ts__who { display: flex; align-items: center; gap: 10px; margin-block-start: auto; font-size: 14px; }
+#cro-{{ sid }} .cro-ts__photo { inline-size: 48px; block-size: 48px; border-radius: 50%; object-fit: cover; }
+#cro-{{ sid }} .cro-ts__name { display: block; color: var(--cro-heading); font-weight: 700; }
+#cro-{{ sid }} .cro-ts__verified { color: {{ s.verified_color }}; font-weight: 700; font-size: 13px; display: inline-flex; gap: 4px; align-items: center; }
+#cro-{{ sid }} .cro-ts__product { font-size: 13px; color: var(--cro-text); }
+#cro-{{ sid }} .cro-ts__nav { display: flex; justify-content: center; gap: 10px; margin-block-start: 18px; }
+#cro-{{ sid }} .cro-ts__nav button { inline-size: 44px; block-size: 44px; border: 1px solid var(--cro-border); border-radius: 50%; background: var(--cro-card-bg); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+#cro-{{ sid }} .cro-ts__nav button[disabled] { opacity: .4; }
+@media (min-width: 750px) { #cro-{{ sid }} .cro-ts__track { grid-auto-columns: calc((100% - 32px) / 3); } }
+
+{% endstyle %}
+
+{%- if section.blocks.size > 0 -%}
+<section id="cro-{{ sid }}" class="cro-testimonials" aria-labelledby="CroHeading-{{ sid }}">
+  <div class="cro-wrap">
+    {%- if s.eyebrow != blank or s.heading != blank or s.subheading != blank -%}
+      <div class="cro-head">
+        {%- if s.eyebrow != blank -%}<p class="cro-eyebrow">{{ s.eyebrow | escape }}</p>{%- endif -%}
+        {%- if s.heading != blank -%}<h2 class="cro-h" id="CroHeading-{{ sid }}">{{ s.heading | escape }}</h2>{%- endif -%}
+        {%- if s.subheading != blank -%}<p class="cro-sub">{{ s.subheading | escape }}</p>{%- endif -%}
+      </div>
+    {%- endif -%}
+    <div class="cro-ts" data-cro-carousel data-autoplay="{% if s.autoplay %}{{ s.speed }}{% else %}0{% endif %}">
+      <div class="cro-ts__track" data-cro-carousel-track>
+        {%- for block in section.blocks -%}
+          {%- assign b = block.settings -%}
+          <figure class="cro-ts__card cro-card" {{ block.shopify_attributes }}>
+            {%- assign b_pct = b.rating | times: 20 -%}
+            <span class="cro-stars" style="--cro-stars:{{ b_pct }}%" aria-hidden="true"></span><span class="cro-vh">{{ b.rating }} / 5</span>
+            <blockquote class="cro-body" style="margin:0">{{ b.text }}</blockquote>
+            <figcaption class="cro-ts__who">
+              {%- if b.photo != blank -%}{{ b.photo | image_url: width: 120, height: 120, crop: 'center' | image_tag: class: 'cro-ts__photo', loading: 'lazy', alt: '', width: 48, height: 48 }}{%- endif -%}
+              <span>
+                <span class="cro-ts__name">{{ b.name | escape }}{% if b.city != blank %}, {{ b.city | escape }}{% endif %}</span>
+                {%- if b.verified -%}<span class="cro-ts__verified">{% render 'cro-icon', icon: 'check', size: 14 %}{{ s.verified_label | escape }}</span>{%- endif -%}
+                {%- if b.product != blank -%}<a class="cro-ts__product cro-link" href="{{ b.product.url }}">{{ b.product.title | escape }}</a>{%- endif -%}
+                {%- if b.date != blank -%}<span class="cro-ts__product">{{ b.date | escape }}</span>{%- endif -%}
+              </span>
+            </figcaption>
+          </figure>
+        {%- endfor -%}
+      </div>
+      <div class="cro-ts__nav">
+        <button type="button" data-cro-carousel-prev aria-label="{{ s.prev_label | escape }}">{% render 'cro-icon', icon: 'chevron-left', size: 18 %}</button>
+        <button type="button" data-cro-carousel-next aria-label="{{ s.next_label | escape }}">{% render 'cro-icon', icon: 'chevron-right', size: 18 %}</button>
+      </div>
+    </div>
+  </div>
+</section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "CRO testimonials",
+  "tag": "div",
+  "class": "cro-section",
+  "max_blocks": 12,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Customer love"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Loved in kitchens across the country"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading"
+    },
+    {
+      "type": "text",
+      "id": "verified_label",
+      "label": "Verified label",
+      "default": "Verified buyer"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Auto-scroll",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Auto-scroll delay",
+      "min": 3,
+      "max": 12,
+      "step": 1,
+      "default": 6,
+      "unit": "s"
+    },
+    {
+      "type": "text",
+      "id": "prev_label",
+      "label": "Previous label",
+      "default": "Previous reviews"
+    },
+    {
+      "type": "text",
+      "id": "next_label",
+      "label": "Next label",
+      "default": "Next reviews"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "Full width",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "container_width",
+      "label": "Container width",
+      "min": 800,
+      "max": 1800,
+      "step": 50,
+      "default": 1300,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "align",
+      "label": "Heading alignment",
+      "options": [
+        {
+          "value": "start",
+          "label": "Start"
+        },
+        {
+          "value": "center",
+          "label": "Centre"
+        },
+        {
+          "value": "end",
+          "label": "End"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "radius",
+      "label": "Card corner radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "button_radius",
+      "label": "Button corner radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "default": 10,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "heading_size_desktop",
+      "label": "Heading size (desktop)",
+      "min": 16,
+      "max": 72,
+      "step": 2,
+      "default": 38,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "label": "Heading size (mobile)",
+      "min": 16,
+      "max": 56,
+      "step": 2,
+      "default": 28,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "text_size_desktop",
+      "label": "Body text size (desktop)",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "default": 17,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "text_size_mobile",
+      "label": "Body text size (mobile)",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "default": 15,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "label": "Padding top (desktop)",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 64,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "label": "Padding bottom (desktop)",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 64,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Padding top (mobile)",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Padding bottom (mobile)",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Colours",
+      "info": "Keep text at a 4.5:1 contrast ratio or better against its background (WCAG AA)."
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#F7F1E7"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "default": "#18231F"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#3F4A45"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent (eyebrow, focus ring)",
+      "default": "#D4623D"
+    },
+    {
+      "type": "color",
+      "id": "button_bg",
+      "label": "Button background",
+      "default": "#173F35"
+    },
+    {
+      "type": "color",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "#FFFDF8"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_bg",
+      "label": "Button hover background",
+      "default": "#0F2F27"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_text",
+      "label": "Button hover text",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "link_hover_color",
+      "label": "Link hover",
+      "default": "#D4623D"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border",
+      "default": "#D7CEC1"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card background",
+      "default": "#FFFDF8"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon",
+      "default": "#173F35"
+    },
+    {
+      "type": "color",
+      "id": "badge_bg",
+      "label": "Badge background",
+      "default": "#C64F32"
+    },
+    {
+      "type": "color",
+      "id": "badge_text",
+      "label": "Badge text",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "star_color",
+      "label": "Stars",
+      "default": "#E8B44A"
+    },
+    {
+      "type": "color",
+      "id": "verified_color",
+      "label": "Verified label",
+      "default": "#2F6F4E"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Review",
+      "settings": [
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Customer name",
+          "default": "Customer name"
+        },
+        {
+          "type": "text",
+          "id": "city",
+          "label": "City"
+        },
+        {
+          "type": "range",
+          "id": "rating",
+          "label": "Rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "default": 5
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Review",
+          "default": "<p>Paste a real customer review here.</p>",
+          "info": "Only publish genuine reviews, exactly as written."
+        },
+        {
+          "type": "image_picker",
+          "id": "photo",
+          "label": "Photo"
+        },
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product reviewed"
+        },
+        {
+          "type": "checkbox",
+          "id": "verified",
+          "label": "Verified purchase",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "date",
+          "label": "Date text"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "CRO testimonials",
+      "blocks": [
+        {
+          "type": "review"
+        },
+        {
+          "type": "review"
+        },
+        {
+          "type": "review"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

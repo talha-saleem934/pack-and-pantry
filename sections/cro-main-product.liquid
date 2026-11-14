@@ -1,0 +1,3569 @@
+{%- liquid
+  assign s = section.settings
+  assign sid = section.id
+  assign current = product.selected_or_first_available_variant
+  assign media_count = product.media.size
+  assign start_index = 0
+  if current.featured_media
+    for m in product.media
+      if m.id == current.featured_media.id
+        assign start_index = forloop.index0
+      endif
+    endfor
+  endif
+  assign info_width = 100 | minus: s.media_width
+  assign wa_number = settings.cro_whatsapp_number | remove: '+' | remove: ' ' | remove: '-' | remove: '(' | remove: ')'
+  assign on_sale = false
+  if current.compare_at_price > current.price
+    assign on_sale = true
+  endif
+  assign first_ratio = product.featured_media.aspect_ratio | default: 1
+  if s.gallery_ratio == 'square'
+    assign first_ratio = 1
+  elsif s.gallery_ratio == 'portrait'
+    assign first_ratio = 0.8
+  endif
+-%}
+{{ 'cro-components.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'cro-core.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'cro-product.js' | asset_url }}" defer="defer"></script>
+{% style %}
+  #cro-{{ sid }} {
+    --cro-accent: {{ s.accent_color }};
+    --cro-heading: {{ s.heading_color }};
+    --cro-text: {{ s.text_color }};
+    --cro-border: {{ s.border_color }};
+    --cro-card-bg: {{ s.box_bg }};
+    --cro-icon: {{ s.icon_color }};
+    --cro-link-hover: {{ s.accent_color }};
+    --cro-urgent: {{ s.urgency_color }};
+    --cro-badge-bg: {{ s.badge_bg }};
+    --cro-badge-text: {{ s.badge_text }};
+    --cro-price-color: {{ s.heading_color }};
+    --cro-price-sale: {{ s.sale_price_color }};
+    --cro-save-bg: {{ s.badge_bg }};
+    --cro-save-text: {{ s.badge_text }};
+    --cro-star-color: {{ s.star_color }};
+    --cro-cd-box-bg: {{ s.cd_box_bg }};
+    --cro-cd-digit: {{ s.cd_digit }};
+    --cro-cd-label: {{ s.cd_label }};
+    --cro-cd-sep: {{ s.cd_digit }};
+    --cro-cd-urgent: {{ s.urgency_color }};
+    --cro-cd-radius: 10px;
+    padding-block: {{ s.padding_top_mobile }}px {{ s.padding_bottom_mobile }}px;
+  }
+  #cro-{{ sid }} .product__info > div + div { margin-block-start: {{ s.block_gap }}px; }
+  #cro-{{ sid }} .product__title { margin: 0; color: var(--cro-heading); font-size: {{ s.title_size_mobile }}px; line-height: 1.15; }
+
+  /* Gallery */
+  #cro-{{ sid }} .cro-gallery { display: grid; gap: 12px; min-inline-size: 0; }
+  #cro-{{ sid }} .cro-gallery__main { position: relative; min-inline-size: 0; }
+  #cro-{{ sid }} .cro-gallery__track { position: relative; display: flex; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scrollbar-width: none; border-radius: var(--radius, 16px); background: {{ s.media_bg }}; }
+  #cro-{{ sid }} .cro-gallery__track::-webkit-scrollbar { display: none; }
+  #cro-{{ sid }} .cro-gallery__slide { position: relative; flex: 0 0 100%; aspect-ratio: {{ first_ratio }}; overflow: hidden; scroll-snap-align: center; }
+  #cro-{{ sid }} .cro-gallery__slide img, #cro-{{ sid }} .cro-gallery__slide video, #cro-{{ sid }} .cro-gallery__slide iframe, #cro-{{ sid }} .cro-gallery__slide model-viewer { display: block; inline-size: 100%; block-size: 100%; object-fit: {{ s.gallery_fit }}; }
+  #cro-{{ sid }} .cro-gallery__zoom { display: block; inline-size: 100%; block-size: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; overflow: hidden; }
+  #cro-{{ sid }} .cro-gallery__zoom img { transition: transform .25s ease; }
+  #cro-{{ sid }} .cro-gallery__zoom.is-zoomed img { transform: scale(2); }
+  #cro-{{ sid }} .cro-gallery__nav { position: absolute; inset-block-start: 50%; display: inline-flex; align-items: center; justify-content: center; inline-size: 44px; block-size: 44px; margin-block-start: -22px; padding: 0; border: 0; border-radius: 50%; background: rgba(255, 253, 248, .92); color: #18231F; box-shadow: 0 4px 14px rgba(15, 47, 39, .15); cursor: pointer; }
+  #cro-{{ sid }} .cro-gallery__nav[disabled] { opacity: 0; pointer-events: none; }
+  #cro-{{ sid }} .cro-gallery__nav--prev { inset-inline-start: 10px; }
+  #cro-{{ sid }} .cro-gallery__nav--next { inset-inline-end: 10px; }
+  #cro-{{ sid }} .cro-gallery__counter { position: absolute; inset-block-end: 10px; inset-inline-end: 10px; padding: 4px 10px; border-radius: 999px; background: rgba(24, 35, 31, .72); color: #fff; font-size: 12px; font-weight: 700; pointer-events: none; }
+  #cro-{{ sid }} .cro-gallery__thumbs { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: thin; position: relative; padding-block-end: 2px; }
+  #cro-{{ sid }} .cro-gallery__thumb { flex: 0 0 auto; inline-size: 68px; block-size: 68px; padding: 0; border: 2px solid transparent; border-radius: 10px; background: {{ s.media_bg }}; overflow: hidden; cursor: pointer; }
+  #cro-{{ sid }} .cro-gallery__thumb img { display: block; inline-size: 100%; block-size: 100%; object-fit: cover; }
+  #cro-{{ sid }} .cro-gallery__thumb.is-active { border-color: var(--cro-accent); }
+  #cro-{{ sid }} .cro-gallery__thumb-icon { position: absolute; }
+  @media (prefers-reduced-motion: reduce) { #cro-{{ sid }} .cro-gallery__zoom img { transition: none; } }
+
+  /* New info blocks */
+  #cro-{{ sid }} .cro-badges { display: flex; flex-wrap: wrap; gap: 6px; }
+  #cro-{{ sid }} .cro-badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 999px; background: var(--cro-badge-bg); color: var(--cro-badge-text); font-size: 12px; font-weight: 700; letter-spacing: .03em; }
+  #cro-{{ sid }} .cro-badge--new { background: {{ s.new_badge_bg }}; color: {{ s.new_badge_text }}; }
+  #cro-{{ sid }} .cro-badge--best { background: {{ s.best_badge_bg }}; color: {{ s.best_badge_text }}; }
+  #cro-{{ sid }} .cro-badge--custom { background: {{ s.custom_badge_bg }}; color: {{ s.custom_badge_text }}; }
+  #cro-{{ sid }} .cro-rating { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px; color: var(--cro-text); font-size: 14px; text-decoration: none; }
+  #cro-{{ sid }} a.cro-rating:hover { color: var(--cro-link-hover); }
+  #cro-{{ sid }} .cro-rating .cro-stars { --cro-star-size: 18px; }
+  #cro-{{ sid }} .cro-cdbox { display: grid; gap: 8px; padding: 12px 14px; border-radius: 12px; background: {{ s.cd_panel_bg }}; color: {{ s.cd_panel_text }}; font-size: 15px; }
+  #cro-{{ sid }} .cro-cdbox__label { margin: 0; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+  #cro-{{ sid }} .cro-cdbox .cro-cd { font-size: 16px; }
+  #cro-{{ sid }} .cro-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+  #cro-{{ sid }} .cro-list li { display: flex; align-items: flex-start; gap: 10px; color: var(--cro-text); }
+  #cro-{{ sid }} .cro-list .cro-icon, #cro-{{ sid }} .cro-list .cro-icon-text { color: var(--cro-icon); margin-block-start: 2px; }
+  #cro-{{ sid }} .cro-scarcity { display: grid; gap: 6px; color: var(--cro-urgent); font-size: 14px; font-weight: 700; }
+  #cro-{{ sid }} .cro-scarcity__bar { block-size: 6px; border-radius: 999px; background: {{ s.scarcity_track }}; overflow: hidden; }
+  #cro-{{ sid }} .cro-scarcity__fill { block-size: 100%; border-radius: inherit; background: var(--cro-urgent); }
+  #cro-{{ sid }} .cro-inline { display: flex; align-items: center; gap: 8px; margin: 0; color: var(--cro-text); font-size: 14px; }
+  #cro-{{ sid }} .cro-inline .cro-icon { color: var(--cro-icon); }
+  #cro-{{ sid }} .cro-box { padding: 14px 16px; border: 1px solid var(--cro-border); border-radius: 14px; background: var(--cro-card-bg); }
+  #cro-{{ sid }} .cro-box__title { margin: 0 0 10px; color: var(--cro-heading); font-size: 15px; font-weight: 700; }
+  #cro-{{ sid }} .cro-delivery { display: grid; gap: 8px; }
+  #cro-{{ sid }} .cro-delivery__dates { font-weight: 700; color: var(--cro-heading); }
+  #cro-{{ sid }} .cro-delivery:not(.is-ready) [data-cro-delivery-js] { display: none; }
+  #cro-{{ sid }} .cro-delivery.is-ready [data-cro-delivery-nojs] { display: none; }
+  #cro-{{ sid }} .cro-delivery select, #cro-{{ sid }} .cro-vp__select { min-block-size: 44px; padding: 0 12px; border: 1px solid var(--cro-border); border-radius: 8px; background: #fff; font: inherit; color: var(--cro-heading); }
+  #cro-{{ sid }} .cro-qb { display: grid; gap: 8px; }
+  #cro-{{ sid }} .cro-qb__tile { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 10px; min-block-size: 52px; padding: 10px 14px; border: 2px solid var(--cro-border); border-radius: 12px; background: #fff; color: var(--cro-heading); font: inherit; text-align: start; cursor: pointer; }
+  #cro-{{ sid }} .cro-qb__tile[aria-pressed="true"] { border-color: var(--cro-accent); background: {{ s.box_bg }}; }
+  #cro-{{ sid }} .cro-qb__badge { position: absolute; inset-block-start: -10px; inset-inline-end: 12px; padding: 2px 8px; border-radius: 999px; background: var(--cro-badge-bg); color: var(--cro-badge-text); font-size: 11px; font-weight: 700; }
+  #cro-{{ sid }} .cro-qb__save { color: var(--cro-price-sale); font-weight: 700; font-size: 14px; }
+  #cro-{{ sid }} .cro-vp__options { gap: 8px; }
+  #cro-{{ sid }} .cro-vp__opt label { display: inline-flex; align-items: center; gap: 8px; min-block-size: 44px; min-inline-size: 48px; justify-content: center; box-sizing: border-box; }
+  #cro-{{ sid }} .cro-vp__opt input:checked + label { border-color: {{ s.option_active_border }}; background: {{ s.option_active_bg }}; color: {{ s.option_active_text }}; }
+  #cro-{{ sid }} .cro-vp__opt input:focus-visible + label { outline: 2px solid var(--cro-accent); outline-offset: 2px; }
+  #cro-{{ sid }} .cro-vp__opt.is-unavailable label { color: #8A918C; text-decoration: line-through; }
+  #cro-{{ sid }} .cro-vp__swatch { inline-size: 28px; block-size: 28px; border-radius: 6px; object-fit: cover; }
+  #cro-{{ sid }} .cro-vp__selected { font-weight: 400; color: var(--cro-text); }
+  #cro-{{ sid }} .cro-vp__guide { display: inline-flex; align-items: center; min-block-size: 44px; padding: 0; border: 0; background: none; color: var(--cro-heading); font: inherit; text-decoration: underline; cursor: pointer; }
+  #cro-{{ sid }} .cro-dialog { inline-size: min(92vw, 720px); max-block-size: 85vh; padding: 24px; border: 0; border-radius: 16px; }
+  #cro-{{ sid }} .cro-dialog::backdrop { background: rgba(8, 27, 22, .7); }
+  #cro-{{ sid }} .cro-dialog__close { float: inline-end; display: inline-flex; align-items: center; justify-content: center; inline-size: 44px; block-size: 44px; border: 0; border-radius: 50%; background: #F7F1E7; cursor: pointer; }
+  #cro-{{ sid }} .cro-buy { display: grid; gap: 10px; }
+  #cro-{{ sid }} .cro-buy__atc { display: inline-flex; align-items: center; justify-content: center; gap: 10px; inline-size: 100%; min-block-size: 54px; padding: 0 20px; border: 0; border-radius: {{ s.button_radius }}px; background: {{ s.atc_bg }}; color: {{ s.atc_text }}; font: inherit; font-size: 17px; font-weight: 700; cursor: pointer; transition: background-color .2s ease, transform .2s ease; }
+  #cro-{{ sid }} .cro-buy__atc:hover { background: {{ s.atc_hover_bg }}; color: {{ s.atc_hover_text }}; }
+  #cro-{{ sid }} .cro-buy__atc[disabled] { opacity: .55; cursor: not-allowed; }
+  #cro-{{ sid }} .cro-buy__wa { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-block-size: 50px; padding: 0 20px; border-radius: {{ s.button_radius }}px; background: {{ s.wa_bg }}; color: {{ s.wa_text }}; font-weight: 700; text-decoration: none; }
+  #cro-{{ sid }} .cro-buy__wa:hover { background: {{ s.wa_hover_bg }}; }
+  #cro-{{ sid }} .cro-buy .shopify-payment-button__button { min-block-size: 50px; border-radius: {{ s.button_radius }}px; }
+  #cro-{{ sid }} .cro-share { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  #cro-{{ sid }} .cro-share__btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-block-size: 44px; padding: 0 14px; border: 1px solid var(--cro-border); border-radius: 999px; background: #fff; color: var(--cro-heading); font: inherit; font-size: 14px; text-decoration: none; cursor: pointer; }
+  #cro-{{ sid }} .cro-share__btn:hover { border-color: var(--cro-accent); color: var(--cro-accent); }
+  #cro-{{ sid }} .cro-acc { border-block-start: 1px solid var(--cro-border); }
+  #cro-{{ sid }} .cro-acc:last-child { border-block-end: 1px solid var(--cro-border); }
+  #cro-{{ sid }} .cro-acc summary { display: flex; align-items: center; justify-content: space-between; min-block-size: 52px; color: var(--cro-heading); font-weight: 700; cursor: pointer; list-style: none; }
+  #cro-{{ sid }} .cro-acc summary::-webkit-details-marker { display: none; }
+  #cro-{{ sid }} .cro-acc summary::after { content: "+"; font-size: 20px; }
+  #cro-{{ sid }} .cro-acc[open] summary::after { content: "−"; }
+  #cro-{{ sid }} .cro-acc__body { padding-block-end: 16px; }
+  #cro-{{ sid }} .cro-ask__actions { display: flex; flex-wrap: wrap; gap: 8px; margin-block-start: 10px; }
+
+  /* Sticky add to cart */
+  #cro-{{ sid }} .cro-satc { position: fixed; inset-inline: 0; inset-block-end: 0; z-index: 45; padding: 10px var(--gutter, 16px) calc(10px + env(safe-area-inset-bottom, 0px)); background: {{ s.satc_bg }}; color: {{ s.satc_text }}; box-shadow: 0 -8px 24px rgba(15, 47, 39, .14); transform: translateY(110%); transition: transform .3s ease; }
+  #cro-{{ sid }} .cro-satc.is-visible { transform: none; }
+  #cro-{{ sid }} .cro-satc__inner { display: flex; align-items: center; gap: 12px; max-inline-size: var(--page-width, 1300px); margin-inline: auto; }
+  #cro-{{ sid }} .cro-satc__img { inline-size: 48px; block-size: 48px; border-radius: 8px; object-fit: cover; flex: none; }
+  #cro-{{ sid }} .cro-satc__info { display: none; min-inline-size: 0; flex: 1; }
+  #cro-{{ sid }} .cro-satc__title { display: block; overflow: hidden; font-weight: 700; white-space: nowrap; text-overflow: ellipsis; }
+  #cro-{{ sid }} .cro-satc__variant { display: block; font-size: 13px; opacity: .8; }
+  #cro-{{ sid }} .cro-satc__price { font-weight: 700; white-space: nowrap; }
+  #cro-{{ sid }} .cro-satc__qty { display: none; align-items: center; border: 1px solid {{ s.satc_border }}; border-radius: 8px; }
+  #cro-{{ sid }} .cro-satc__qty button { inline-size: 40px; block-size: 44px; border: 0; background: none; color: inherit; cursor: pointer; }
+  #cro-{{ sid }} .cro-satc__qty input { inline-size: 44px; border: 0; background: none; color: inherit; text-align: center; font: inherit; -moz-appearance: textfield; }
+  #cro-{{ sid }} .cro-satc__btn { flex: 1; min-block-size: 48px; padding: 0 18px; border: 0; border-radius: {{ s.button_radius }}px; background: {{ s.satc_btn_bg }}; color: {{ s.satc_btn_text }}; font: inherit; font-weight: 700; cursor: pointer; }
+  #cro-{{ sid }} .cro-satc__btn:hover { background: {{ s.satc_btn_hover_bg }}; }
+  #cro-{{ sid }} .cro-satc__btn[disabled] { opacity: .55; }
+  @media (prefers-reduced-motion: reduce) { #cro-{{ sid }} .cro-satc { transition: none; } }
+  @media (min-width: 750px) {
+    #cro-{{ sid }} { padding-block: {{ s.padding_top_desktop }}px {{ s.padding_bottom_desktop }}px; }
+    #cro-{{ sid }} .product__title { font-size: {{ s.title_size_desktop }}px; }
+    #cro-{{ sid }} .cro-satc__info { display: block; }
+    #cro-{{ sid }} .cro-satc__qty { display: inline-flex; }
+    #cro-{{ sid }} .cro-satc__btn { flex: 0 0 auto; min-inline-size: 220px; }
+  }
+  @media (min-width: 990px) {
+    #cro-{{ sid }} .product { grid-template-columns: minmax(0, {{ s.media_width }}fr) minmax(0, {{ info_width }}fr); gap: {{ s.column_gap }}px; }
+    #cro-{{ sid }} .product__info { position: {% if s.sticky_info %}sticky{% else %}static{% endif %}; top: {{ s.sticky_offset }}px; max-inline-size: {{ s.info_max_width }}px; }
+    {%- if s.thumbs_position == 'start' %}
+    #cro-{{ sid }} .cro-gallery { grid-template-columns: 76px minmax(0, 1fr); align-items: start; }
+    #cro-{{ sid }} .cro-gallery__thumbs { order: -1; flex-direction: column; max-block-size: 640px; overflow-y: auto; overflow-x: hidden; }
+    {%- endif %}
+    {%- unless s.satc_desktop %}
+    #cro-{{ sid }} .cro-satc { display: none; }
+    {%- endunless %}
+  }
+  {%- unless s.satc_mobile %}
+  @media (max-width: 749px) { #cro-{{ sid }} .cro-satc { display: none; } }
+  {%- endunless %}
+{% endstyle %}
+{% render 'breadcrumbs' %}
+<section id="cro-{{ sid }}" class="section section--compact page-width" data-main-product data-section-id="{{ section.id }}">
+  <div class="product">
+    {%- if s.gallery_style == 'grid' -%}
+      <div class="product__media-grid" aria-label="{{ s.gallery_label | escape }}">
+        {%- if media_count > 0 -%}
+          {%- for media in product.media -%}
+            {%- liquid
+              assign media_loading = 'lazy'
+              if forloop.first
+                assign media_loading = 'eager'
+              endif
+            -%}
+            <div class="product__media-item" data-media-id="{{ media.id }}">
+              {%- case media.media_type -%}
+                {%- when 'image' -%}<button class="product__media-button" type="button" data-media-open data-src="{{ media | image_url: width: 2400 }}" data-alt="{{ media.alt | default: product.title | escape }}" aria-label="{{ s.enlarge_label | escape }} {{ media.alt | default: product.title | escape }}">{{ media | image_url: width: 1600 | image_tag: widths: '480, 720, 960, 1200, 1600', sizes: '(min-width: 990px) 55vw, 90vw', loading: media_loading, alt: media.alt | default: product.title }}</button>
+                {%- when 'video' -%}{{ media | video_tag: controls: true, preload: 'metadata' }}
+                {%- when 'external_video' -%}{{ media | external_video_tag }}
+                {%- when 'model' -%}{{ media | model_viewer_tag: reveal: 'interaction', toggleable: true }}
+              {%- endcase -%}
+            </div>
+          {%- endfor -%}
+        {%- else -%}<div class="product__media-item placeholder-media">{{ 'product-1' | placeholder_svg_tag }}</div>{%- endif -%}
+      </div>
+    {%- else -%}
+      <div class="cro-gallery" data-cro-gallery data-start="{{ start_index }}" data-zoom="{{ s.enable_zoom }}">
+        <div class="cro-gallery__main">
+          <div class="cro-gallery__track" data-cro-gallery-track tabindex="0" role="region" aria-label="{{ s.gallery_label | escape }}">
+            {%- if media_count > 0 -%}
+              {%- for media in product.media -%}
+                {%- liquid
+                  assign media_loading = 'lazy'
+                  assign media_priority = 'auto'
+                  if forloop.index0 == start_index
+                    assign media_loading = 'eager'
+                    assign media_priority = 'high'
+                  endif
+                -%}
+                <div class="cro-gallery__slide" data-cro-gallery-slide data-media-id="{{ media.id }}">
+                  {%- case media.media_type -%}
+                    {%- when 'image' -%}
+                      <button class="cro-gallery__zoom" type="button" data-cro-zoom data-media-open data-src="{{ media | image_url: width: 2400 }}" data-alt="{{ media.alt | default: product.title | escape }}" aria-label="{{ s.enlarge_label | escape }} {{ media.alt | default: product.title | escape }}">
+                        {{ media | image_url: width: 1600 | image_tag: widths: '480, 720, 960, 1200, 1600', sizes: '(min-width: 990px) 55vw, 100vw', loading: media_loading, fetchpriority: media_priority, alt: media.alt | default: product.title }}
+                      </button>
+                    {%- when 'video' -%}{{ media | video_tag: controls: true, preload: 'metadata', playsinline: true }}
+                    {%- when 'external_video' -%}{{ media | external_video_tag }}
+                    {%- when 'model' -%}{{ media | model_viewer_tag: reveal: 'interaction', toggleable: true }}
+                  {%- endcase -%}
+                </div>
+              {%- endfor -%}
+            {%- else -%}
+              <div class="cro-gallery__slide placeholder-media" data-cro-gallery-slide>{{ 'product-1' | placeholder_svg_tag }}</div>
+            {%- endif -%}
+          </div>
+          {%- if media_count > 1 -%}
+            <button class="cro-gallery__nav cro-gallery__nav--prev" type="button" data-cro-gallery-prev aria-label="{{ s.prev_label | escape }}">{% render 'cro-icon', icon: 'chevron-left', size: 20 %}</button>
+            <button class="cro-gallery__nav cro-gallery__nav--next" type="button" data-cro-gallery-next aria-label="{{ s.next_label | escape }}">{% render 'cro-icon', icon: 'chevron-right', size: 20 %}</button>
+            {%- if s.show_counter -%}<span class="cro-gallery__counter" aria-hidden="true"><span data-cro-gallery-current>{{ start_index | plus: 1 }}</span> / {{ media_count }}</span>{%- endif -%}
+          {%- endif -%}
+        </div>
+        {%- if media_count > 1 and s.show_thumbs -%}
+          <div class="cro-gallery__thumbs">
+            {%- for media in product.media -%}
+              <button class="cro-gallery__thumb{% if forloop.index0 == start_index %} is-active{% endif %}" type="button" data-cro-thumb aria-label="{{ s.thumb_label | replace: '{n}', forloop.index | escape }}">
+                {{ media.preview_image | image_url: width: 160, height: 160, crop: 'center' | image_tag: loading: 'lazy', alt: '', width: 80, height: 80 }}
+              </button>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="product__info">
+      {%- form 'product', product, class: 'product__form', data-product-form: '' -%}
+        <input type="hidden" name="id" value="{{ current.id }}">
+        {%- for block in section.blocks -%}
+          {%- assign b = block.settings -%}
+          <div {{ block.shopify_attributes }}>
+            {%- case block.type -%}
+              {%- when '@app' -%}{% render block %}
+              {%- when 'vendor' -%}{%- if product.vendor != blank -%}<p class="eyebrow">{{ product.vendor }}</p>{%- endif -%}
+              {%- when 'title' -%}<h1 class="product__title">{{ product.title }}</h1>
+              {%- when 'price' -%}<div class="price" aria-live="polite"><span class="price__current" data-product-price>{{ current.price | money }}</span>{%- if current.compare_at_price > current.price -%}<s class="price__compare">{{ current.compare_at_price | money }}</s>{%- endif -%}</div>
+              {%- when 'sku' -%}
+                {%- liquid
+                  assign show_sku_line = false
+                  if b.show_sku and current.sku != blank
+                    assign show_sku_line = true
+                  endif
+                  if b.show_barcode and current.barcode != blank
+                    assign show_sku_line = true
+                  endif
+                -%}
+                {%- if show_sku_line -%}
+                  <div class="product__meta">{%- if b.show_sku and current.sku != blank -%}<span>{{ 'products.product.sku' | t }}: <span data-sku>{{ current.sku }}</span></span>{%- endif -%}{%- if b.show_barcode and current.barcode != blank -%}<span>Barcode: {{ current.barcode }}</span>{%- endif -%}</div>
+                {%- endif -%}
+              {%- when 'variant_picker' -%}
+                {%- unless product.has_only_default_variant -%}{%- for option in product.options_with_values -%}<fieldset class="variant-group" data-option-group><legend>{{ option.name }}</legend><div class="variant-options">{%- for value in option.values -%}<div class="variant-option"><input type="radio" id="Option-{{ section.id }}-{{ option.position }}-{{ forloop.index }}" name="option-{{ option.position }}" value="{{ value | escape }}"{% if option.selected_value == value %} checked{% endif %}><label for="Option-{{ section.id }}-{{ option.position }}-{{ forloop.index }}">{{ value }}</label></div>{%- endfor -%}</div></fieldset>{%- endfor -%}{%- endunless -%}
+              {%- when 'quantity' -%}<label for="Quantity-{{ section.id }}">{{ 'products.product.quantity' | t }}</label><div class="quantity" data-quantity><button type="button" data-quantity-button="minus" aria-label="{{ s.qty_minus_label | escape }}">{% render 'icon', icon: 'minus' %}</button><input id="Quantity-{{ section.id }}" type="number" name="quantity" min="1" value="1"><button type="button" data-quantity-button="plus" aria-label="{{ s.qty_plus_label | escape }}">{% render 'icon', icon: 'plus' %}</button></div>
+              {%- when 'buy_buttons' -%}<div class="product__buttons"><button class="button button--full" type="submit" name="add" data-cro-main-atc data-add="{{ 'products.product.add_to_cart' | t }}" data-sold="{{ 'products.product.sold_out' | t }}" data-unavailable="{{ 'products.product.unavailable' | t }}"{% unless current.available %} disabled{% endunless %}>{% if current.available %}{{ 'products.product.add_to_cart' | t }}{% else %}{{ 'products.product.sold_out' | t }}{% endif %}</button>{%- if b.dynamic_checkout -%}{{ form | payment_button }}{%- endif -%}</div>
+              {%- when 'description' -%}{%- if product.description != blank -%}<div class="rte">{{ product.description }}</div>{%- endif -%}
+              {%- when 'trust' -%}{%- if b.text != blank -%}<div class="feature"><strong>{{ b.heading }}</strong><p class="muted">{{ b.text }}</p></div>{%- endif -%}
+              {%- when 'accordion' -%}{%- if b.page != blank or b.content != blank -%}<div class="product__accordions"><details class="product__accordion"><summary>{{ b.heading }}</summary><div class="product__accordion-content rte">{%- if b.page != blank -%}{{ b.page.content }}{%- else -%}{{ b.content }}{%- endif -%}</div></details></div>{%- endif -%}
+              {%- when 'bulk' -%}{%- if b.text != blank or b.link != blank -%}<div class="bulk-callout" style="grid-template-columns:1fr;padding:1.5rem"><div><h3>{{ b.heading }}</h3>{%- if b.text != blank -%}<p>{{ b.text }}</p>{%- endif -%}</div>{%- if b.label != blank and b.link != blank -%}<a class="button button--accent" href="{{ b.link }}">{{ b.label }}</a>{%- endif -%}</div>{%- endif -%}
+              {%- when 'custom_liquid' -%}{{ b.custom_liquid }}
+              {%- when 'curlear_showcase_snippet' -%}
+                {% render 'curlear-showcase-snippet', heading: b.heading, visible_desktop: b.visible_desktop, auto_slide_speed: b.auto_slide_speed, item_height_desktop: b.item_height_desktop, item_height_mobile: b.item_height_mobile, wider_desktop: b.wider_desktop, media_1_image: b.media_1_image, media_1_video: b.media_1_video, media_2_image: b.media_2_image, media_2_video: b.media_2_video, media_3_image: b.media_3_image, media_3_video: b.media_3_video, media_4_image: b.media_4_image, media_4_video: b.media_4_video, media_5_image: b.media_5_image, media_5_video: b.media_5_video, media_6_image: b.media_6_image, media_6_video: b.media_6_video, media_7_image: b.media_7_image, media_7_video: b.media_7_video, media_8_image: b.media_8_image, media_8_video: b.media_8_video %}
+
+              {%- when 'cro_badges' -%}
+                {%- liquid
+                  assign show_best = false
+                  if b.show_best
+                    if product.metafields.custom.best_seller.value == true or product.tags contains 'best-seller' or product.tags contains 'Best Seller'
+                      assign show_best = true
+                    endif
+                  endif
+                  assign show_custom = false
+                  if b.custom_text != blank
+                    assign show_custom = true
+                    if b.custom_only_on_sale and on_sale == false
+                      assign show_custom = false
+                    endif
+                  endif
+                  assign show_sale_badge = false
+                  if b.show_sale and on_sale
+                    assign show_sale_badge = true
+                  endif
+                  assign show_new = false
+                  if b.show_new and product.metafields.custom.new_arrival.value == true
+                    assign show_new = true
+                  endif
+                  assign any_badge = false
+                  if show_sale_badge or show_best or show_custom or show_new
+                    assign any_badge = true
+                  endif
+                -%}
+                {%- if any_badge -%}
+                  <div class="cro-badges">
+                    {%- if show_sale_badge -%}
+                      {%- assign bd_pct = current.compare_at_price | minus: current.price | times: 100.0 | divided_by: current.compare_at_price | round -%}
+                      <span class="cro-badge">{{ b.sale_label | replace: '{value}', bd_pct | escape }}</span>
+                    {%- endif -%}
+                    {%- if show_custom -%}<span class="cro-badge cro-badge--custom">{{ b.custom_text | escape }}</span>{%- endif -%}
+                    {%- if show_best -%}<span class="cro-badge cro-badge--best">{{ b.best_label | escape }}</span>{%- endif -%}
+                    {%- if show_new -%}<span class="cro-badge cro-badge--new">{{ b.new_label | escape }}</span>{%- endif -%}
+                  </div>
+                {%- endif -%}
+
+              {%- when 'cro_rating' -%}
+                {%- liquid
+                  assign rt = blank
+                  if product.metafields.reviews.rating.value != blank
+                    assign rt = product.metafields.reviews.rating.value.rating | round: 1
+                    assign rt_max = product.metafields.reviews.rating.value.scale_max | default: 5
+                    assign rt_count = product.metafields.reviews.rating_count.value | default: 0
+                  elsif product.metafields.custom.rating.value != blank
+                    assign rt = product.metafields.custom.rating.value | round: 1
+                    assign rt_max = 5
+                    assign rt_count = product.metafields.custom.review_count.value | default: 0
+                  endif
+                -%}
+                {%- if rt != blank -%}
+                  {%- assign rt_pct = rt | times: 100.0 | divided_by: rt_max -%}
+                  {%- capture rt_inner -%}<span class="cro-stars" style="--cro-stars:{{ rt_pct }}%" aria-hidden="true"></span><strong>{{ rt }}</strong>{%- if rt_count > 0 -%}<span>{{ b.count_label | replace: '{count}', rt_count | escape }}</span>{%- endif -%}<span class="cro-vh">{{ b.sr_label | replace: '{rating}', rt | replace: '{max}', rt_max | escape }}</span>{%- endcapture -%}
+                  {%- if b.anchor != blank -%}<a class="cro-rating" href="{{ b.anchor | escape }}">{{ rt_inner }}</a>{%- else -%}<div class="cro-rating">{{ rt_inner }}</div>{%- endif -%}
+                {%- endif -%}
+
+              {%- when 'cro_price' -%}
+                {% render 'cro-price', product: product, pdp: true, size: 'lg', savings: b.savings, save_label: b.save_label, tax_note: b.tax_note, sale_label: b.sale_label_sr, regular_label: b.regular_label_sr %}
+
+              {%- when 'cro_countdown' -%}
+                {%- unless b.only_on_sale and on_sale == false -%}
+                  <div class="cro-cdbox"{% if b.expire_action == 'hide' %} data-cro-expire-scope="hide"{% endif %}>
+                    {%- if b.heading != blank -%}<p class="cro-cdbox__label">{% render 'cro-icon', icon: b.icon, image: b.icon_image, text: b.icon_text, size: 20 %}{{ b.heading | escape }}</p>{%- endif -%}
+                    {% render 'cro-countdown', id: block.id, mode: b.mode, end: b.end, hours: b.evergreen_hours, prefix: b.prefix, suffix: b.suffix, suffix_later: b.suffix_later, expire_action: b.expire_action, expired_message: b.expired_message, style: b.style, show_days: b.show_days, pad: true, separator: b.separator, label_d: b.label_days, label_h: b.label_hours, label_m: b.label_minutes, label_s: b.label_seconds, urgent: b.urgent, fallback: b.fallback %}
+                  </div>
+                {%- endunless -%}
+
+              {%- when 'cro_benefits' -%}
+                {%- liquid
+                  assign bl_lines = ''
+                  assign bl_mf = product.metafields.custom.key_benefits
+                  if bl_mf != blank
+                    if bl_mf.type contains 'list.'
+                      assign bl_lines = bl_mf.value | join: '|~|'
+                    else
+                      assign bl_lines = bl_mf.value | newline_to_br | replace: '<br />', '|~|' | strip_newlines
+                    endif
+                  else
+                    assign bl_lines = b.line_1 | append: '|~|' | append: b.line_2 | append: '|~|' | append: b.line_3 | append: '|~|' | append: b.line_4 | append: '|~|' | append: b.line_5 | append: '|~|' | append: b.line_6
+                  endif
+                  assign bl_arr = bl_lines | split: '|~|'
+                  assign bl_has = false
+                  for l in bl_arr
+                    assign lt = l | strip
+                    if lt != blank
+                      assign bl_has = true
+                    endif
+                  endfor
+                -%}
+                {%- if bl_has -%}
+                  <ul class="cro-list" role="list">
+                    {%- for l in bl_arr -%}{%- assign lt = l | strip -%}{%- if lt != blank -%}<li>{% render 'cro-icon', icon: b.icon, image: b.icon_image, text: b.icon_text, size: 18 %}<span>{{ lt | escape }}</span></li>{%- endif -%}{%- endfor -%}
+                  </ul>
+                {%- endif -%}
+
+              {%- when 'cro_scarcity' -%}
+                {%- liquid
+                  assign sc_threshold = b.threshold
+                  if sc_threshold == 0
+                    assign sc_threshold = settings.cro_low_stock_threshold | default: 5
+                  endif
+                  assign sc_qty = current.inventory_quantity
+                -%}
+                {%- if current.available and current.inventory_management == 'shopify' and current.inventory_policy == 'deny' and sc_qty > 0 and sc_qty <= sc_threshold -%}
+                  {%- assign sc_pct = sc_qty | times: 100 | divided_by: sc_threshold -%}
+                  <div class="cro-scarcity" role="status">
+                    <span>{{ b.text | replace: '{count}', sc_qty | escape }}</span>
+                    {%- if b.show_bar -%}<span class="cro-scarcity__bar" aria-hidden="true"><span class="cro-scarcity__fill" style="inline-size:{{ sc_pct }}%"></span></span>{%- endif -%}
+                  </div>
+                {%- endif -%}
+
+              {%- when 'cro_sold' -%}
+                {%- assign sold = product.metafields.custom.sold_count.value -%}
+                {%- if sold != blank and sold > 0 -%}
+                  <p class="cro-inline">{% render 'cro-icon', icon: b.icon, image: b.icon_image, text: b.icon_text, size: 18 %}{{ b.text | replace: '{count}', sold | escape }}</p>
+                {%- endif -%}
+
+              {%- when 'cro_delivery' -%}
+                {%- liquid
+                  assign dv_min = b.min_days | default: settings.cro_delivery_min_days | default: 2
+                  assign dv_max = b.max_days | default: settings.cro_delivery_max_days | default: 5
+                  assign dv_cut = settings.cro_dispatch_cutoff_hour | default: 14
+                  assign dv_hol = settings.cro_holidays | newline_to_br | replace: '<br />', ',' | strip_newlines
+                  assign dv_cities = b.cities | newline_to_br | split: '<br />'
+                -%}
+                <div class="cro-delivery cro-box" data-cro-delivery data-min="{{ dv_min }}" data-max="{{ dv_max }}" data-cutoff="{{ dv_cut }}" data-tz="{{ settings.cro_timezone | default: 'Asia/Karachi' | escape }}" data-skip="{{ settings.cro_excluded_weekdays | escape }}" data-holidays="{{ dv_hol | escape }}" data-template="{{ b.date_template | escape }}">
+                  <p class="cro-inline">{% render 'cro-icon', icon: b.icon, image: b.icon_image, text: b.icon_text, size: 20 %}<span>{{ b.label | escape }} <span class="cro-delivery__dates" data-cro-delivery-js data-cro-delivery-dates></span><span data-cro-delivery-nojs>{{ b.fallback | replace: '{min}', dv_min | replace: '{max}', dv_max | escape }}</span></span></p>
+                  {%- if b.cities != blank -%}
+                    <label class="cro-vh" for="CroCity-{{ block.id }}">{{ b.city_label | escape }}</label>
+                    <select id="CroCity-{{ block.id }}" data-cro-delivery-city data-cro-delivery-js>
+                      <option value="">{{ b.city_label | escape }}</option>
+                      {%- for line in dv_cities -%}
+                        {%- assign city_parts = line | strip_newlines | split: '|' -%}
+                        {%- assign city = city_parts[0] | strip -%}
+                        {%- if city != blank -%}<option value="{{ city | escape }}" data-min="{{ city_parts[1] | strip }}" data-max="{{ city_parts[2] | strip }}" data-note="{{ city_parts[3] | strip | escape }}">{{ city | escape }}</option>{%- endif -%}
+                      {%- endfor -%}
+                    </select>
+                    <p class="cro-inline" data-cro-delivery-extra aria-live="polite"></p>
+                  {%- endif -%}
+                </div>
+
+              {%- when 'cro_trust_box' -%}
+                {%- capture tb_rows -%}
+                  {%- for n in (1..4) -%}
+                    {%- assign t_title = 'row_' | append: n | append: '_title' -%}
+                    {%- assign t_text = 'row_' | append: n | append: '_text' -%}
+                    {%- assign t_icon = 'row_' | append: n | append: '_icon' -%}
+                    {%- assign t_link = 'row_' | append: n | append: '_link' -%}
+                    {%- if b[t_title] != blank -%}
+                      <li>{% render 'cro-icon', icon: b[t_icon], size: 20 %}<span>{%- if b[t_link] != blank -%}<a class="cro-link" href="{{ b[t_link] }}"><strong>{{ b[t_title] | escape }}</strong></a>{%- else -%}<strong>{{ b[t_title] | escape }}</strong>{%- endif -%}{%- if b[t_text] != blank -%}<br>{{ b[t_text] | escape }}{%- endif -%}</span></li>
+                    {%- endif -%}
+                  {%- endfor -%}
+                {%- endcapture -%}
+                {%- if tb_rows != blank -%}
+                  <div class="cro-box">
+                    {%- if b.heading != blank -%}<p class="cro-box__title">{{ b.heading | escape }}</p>{%- endif -%}
+                    <ul class="cro-list" role="list">{{ tb_rows }}</ul>
+                  </div>
+                {%- endif -%}
+
+              {%- when 'cro_payment' -%}
+                <div class="cro-paybox">
+                  {%- if b.heading != blank -%}<p class="cro-inline">{% render 'cro-icon', icon: 'lock', size: 16 %}{{ b.heading | escape }}</p>{%- endif -%}
+                  {% render 'cro-payment-icons', aria_label: b.heading %}
+                </div>
+
+              {%- when 'cro_qty_breaks' -%}
+                <div class="cro-qb" data-cro-qty-breaks data-target="Quantity-{{ section.id }}" role="group" aria-label="{{ b.heading | escape }}">
+                  {%- if b.heading != blank -%}<p class="cro-box__title">{{ b.heading | escape }}</p>{%- endif -%}
+                  {%- for n in (1..3) -%}
+                    {%- assign q_key = 'tile_' | append: n | append: '_qty' -%}
+                    {%- assign l_key = 'tile_' | append: n | append: '_label' -%}
+                    {%- assign p_key = 'tile_' | append: n | append: '_percent' -%}
+                    {%- assign g_key = 'tile_' | append: n | append: '_badge' -%}
+                    {%- assign q = b[q_key] -%}
+                    {%- if q > 0 -%}
+                      {%- assign pct = b[p_key] -%}
+                      <button class="cro-qb__tile" type="button" data-qty="{{ q }}" data-default="{% if b.default_tile == n %}true{% else %}false{% endif %}" aria-pressed="false">
+                        {%- if b[g_key] != blank -%}<span class="cro-qb__badge">{{ b[g_key] | escape }}</span>{%- endif -%}
+                        <span><strong>{{ b[l_key] | default: q | escape }}</strong></span>
+                        {%- assign q_total = current.price | times: q -%}
+                        {%- if pct > 0 -%}
+                          {%- assign q_disc = q_total | times: pct | divided_by: 100 -%}
+                          {%- assign q_final = q_total | minus: q_disc -%}
+                          <span><span class="cro-qb__save">{{ b.save_label | replace: '{value}', pct | escape }}</span> · {{ q_final | money }}</span>
+                        {%- else -%}
+                          <span>{{ q_total | money }}</span>
+                        {%- endif -%}
+                      </button>
+                    {%- endif -%}
+                  {%- endfor -%}
+                </div>
+
+              {%- when 'cro_variant_picker' -%}
+                {%- unless product.has_only_default_variant -%}
+                  {%- for option in product.options_with_values -%}
+                    {%- liquid
+                      assign vp_style = b.style
+                      assign vp_swatch = false
+                      if vp_style == 'swatch'
+                        assign opt_name = option.name | downcase
+                        assign want = b.swatch_option | downcase
+                        if want == blank and option.position == 1
+                          assign vp_swatch = true
+                        elsif want != blank and opt_name == want
+                          assign vp_swatch = true
+                        endif
+                      endif
+                    -%}
+                    <fieldset class="variant-group cro-vp" data-option-group>
+                      <legend>{{ option.name }}{% if b.show_selected %}: <span class="cro-vp__selected">{{ option.selected_value }}</span>{% endif %}</legend>
+                      {%- if vp_style == 'dropdown' -%}
+                        <select class="cro-vp__select" data-cro-select-sync aria-label="{{ option.name | escape }}">
+                          {%- for value in option.values -%}
+                            <option value="{{ value | escape }}"{% if option.selected_value == value %} selected{% endif %}>{{ value }}{% if value.available == false %} — {{ b.unavailable_label }}{% endif %}</option>
+                          {%- endfor -%}
+                        </select>
+                        <div class="cro-vh" aria-hidden="true">
+                          {%- for value in option.values -%}<input type="radio" tabindex="-1" name="option-{{ option.position }}" value="{{ value | escape }}"{% if option.selected_value == value %} checked{% endif %}>{%- endfor -%}
+                        </div>
+                      {%- else -%}
+                        <div class="variant-options cro-vp__options">
+                          {%- for value in option.values -%}
+                            <div class="variant-option cro-vp__opt{% if value.available == false %} is-unavailable{% endif %}">
+                              <input type="radio" id="Option-{{ section.id }}-{{ option.position }}-{{ forloop.index }}" name="option-{{ option.position }}" value="{{ value | escape }}"{% if option.selected_value == value %} checked{% endif %}>
+                              <label for="Option-{{ section.id }}-{{ option.position }}-{{ forloop.index }}">
+                                {%- if vp_swatch and value.variant.featured_media -%}{{ value.variant.featured_media | image_url: width: 80, height: 80, crop: 'center' | image_tag: class: 'cro-vp__swatch', alt: '', loading: 'lazy', width: 28, height: 28 }}{%- endif -%}
+                                <span>{{ value }}</span>
+                                {%- if value.available == false -%}<span class="cro-vh">{{ b.unavailable_label | escape }}</span>{%- endif -%}
+                              </label>
+                            </div>
+                          {%- endfor -%}
+                        </div>
+                      {%- endif -%}
+                    </fieldset>
+                  {%- endfor -%}
+                {%- endunless -%}
+                {%- if b.size_guide != blank -%}
+                  <button class="cro-vp__guide" type="button" data-cro-dialog-open="CroGuide-{{ block.id }}">{{ b.size_guide_label | escape }}</button>
+                  <dialog class="cro-dialog" id="CroGuide-{{ block.id }}" data-cro-dialog aria-label="{{ b.size_guide.title | escape }}">
+                    <button class="cro-dialog__close" type="button" data-cro-dialog-close aria-label="{{ s.close_label | escape }}">{% render 'cro-icon', icon: 'close', size: 18 %}</button>
+                    <h2>{{ b.size_guide.title }}</h2>
+                    <div class="rte">{{ b.size_guide.content }}</div>
+                  </dialog>
+                {%- endif -%}
+
+              {%- when 'cro_buy_buttons' -%}
+                {%- liquid
+                  assign atc_label = b.atc_label
+                  if atc_label == blank
+                    assign atc_label = 'products.product.add_to_cart' | t
+                  endif
+                -%}
+                <div class="cro-buy">
+                  <button class="cro-buy__atc" type="submit" name="add" data-cro-main-atc data-add="{{ atc_label | escape }}" data-sold="{{ 'products.product.sold_out' | t }}" data-unavailable="{{ 'products.product.unavailable' | t }}"{% unless current.available %} disabled{% endunless %}>
+                    {%- if current.available -%}{{ atc_label | escape }}{%- else -%}{{ 'products.product.sold_out' | t }}{%- endif -%}
+                  </button>
+                  {%- if b.dynamic_checkout -%}{{ form | payment_button }}{%- endif -%}
+                  {%- if b.show_whatsapp and wa_number != blank -%}
+                    {%- liquid
+                      assign wa_msg = b.whatsapp_message | replace: '{product}', product.title | replace: '{url}', canonical_url
+                      if product.has_only_default_variant
+                        assign wa_msg = wa_msg | replace: '{variant}', ''
+                      else
+                        assign wa_msg = wa_msg | replace: '{variant}', current.title
+                      endif
+                    -%}
+                    <a class="cro-buy__wa" href="https://wa.me/{{ wa_number }}?text={{ wa_msg | replace: '{qty}', '1' | url_encode }}" target="_blank" rel="noopener" data-cro-wa-order data-number="{{ wa_number }}" data-message="{{ wa_msg | escape }}">{% render 'cro-icon', icon: 'whatsapp', size: 22 %}{{ b.whatsapp_label | escape }}</a>
+                  {%- endif -%}
+                </div>
+
+              {%- when 'cro_guarantee' -%}
+                {%- if b.heading != blank or b.text != blank -%}
+                  <div class="cro-box">
+                    <p class="cro-inline">{% render 'cro-icon', icon: b.icon, image: b.icon_image, text: b.icon_text, size: 22 %}<strong>{{ b.heading | escape }}</strong></p>
+                    {%- if b.text != blank -%}<div class="rte">{{ b.text }}</div>{%- endif -%}
+                    {%- if b.link != blank and b.link_label != blank -%}<a class="cro-link" href="{{ b.link }}">{{ b.link_label | escape }}</a>{%- endif -%}
+                  </div>
+                {%- endif -%}
+
+              {%- when 'cro_share' -%}
+                <div class="cro-share">
+                  {%- if b.label != blank -%}<span class="cro-inline"><strong>{{ b.label | escape }}</strong></span>{%- endif -%}
+                  <button class="cro-share__btn" type="button" data-cro-copy data-copy="{{ canonical_url | escape }}" data-copied="{{ b.copied_label | escape }}">{% render 'cro-icon', icon: 'tag', size: 16 %}<span data-cro-copy-label>{{ b.copy_label | escape }}</span></button>
+                  <span class="cro-vh" aria-live="polite" data-cro-copy-status></span>
+                  {%- if b.show_whatsapp -%}<a class="cro-share__btn" href="https://wa.me/?text={{ product.title | append: ' ' | append: canonical_url | url_encode }}" target="_blank" rel="noopener">{% render 'cro-icon', icon: 'whatsapp', size: 16 %}WhatsApp</a>{%- endif -%}
+                  {%- if b.show_facebook -%}<a class="cro-share__btn" href="https://www.facebook.com/sharer/sharer.php?u={{ canonical_url | url_encode }}" target="_blank" rel="noopener">Facebook</a>{%- endif -%}
+                  <button class="cro-share__btn" type="button" data-cro-native-share data-title="{{ product.title | escape }}" data-url="{{ canonical_url | escape }}" hidden>{{ b.more_label | escape }}</button>
+                </div>
+
+              {%- when 'cro_ask' -%}
+                {%- assign ask_email = b.email | default: shop.email -%}
+                <div class="cro-box">
+                  {%- if b.heading != blank -%}<p class="cro-box__title">{{ b.heading | escape }}</p>{%- endif -%}
+                  {%- if b.text != blank -%}<p class="cro-inline">{{ b.text | escape }}</p>{%- endif -%}
+                  <div class="cro-ask__actions">
+                    {%- if wa_number != blank and b.show_whatsapp -%}
+                      {%- assign ask_msg = b.whatsapp_message | replace: '{product}', product.title | replace: '{url}', canonical_url -%}
+                      <a class="cro-share__btn" href="https://wa.me/{{ wa_number }}?text={{ ask_msg | url_encode }}" target="_blank" rel="noopener" data-cro-wa-order data-number="{{ wa_number }}" data-message="{{ ask_msg | escape }}">{% render 'cro-icon', icon: 'whatsapp', size: 16 %}{{ b.whatsapp_label | escape }}</a>
+                    {%- endif -%}
+                    {%- if ask_email != blank and b.show_email -%}
+                      <a class="cro-share__btn" href="mailto:{{ ask_email }}?subject={{ b.email_subject | replace: '{product}', product.title | url_encode }}">{% render 'cro-icon', icon: 'mail', size: 16 %}{{ b.email_label | escape }}</a>
+                    {%- endif -%}
+                    {%- if b.contact_link != blank -%}<a class="cro-share__btn" href="{{ b.contact_link }}">{{ b.contact_label | escape }}</a>{%- endif -%}
+                  </div>
+                </div>
+
+              {%- when 'cro_policies' -%}
+                {%- liquid
+                  assign pol_ship = b.shipping_page | default: settings.cro_page_shipping
+                  assign pol_ret = b.returns_page | default: settings.cro_page_returns
+                -%}
+                <div class="cro-accs">
+                  {%- if b.description_tab and product.description != blank -%}
+                    <details class="cro-acc"{% if b.open_first %} open{% endif %}><summary>{{ b.description_label | escape }}</summary><div class="cro-acc__body rte">{{ product.description }}</div></details>
+                  {%- endif -%}
+                  {%- if pol_ship != blank and pol_ship.content != blank -%}
+                    <details class="cro-acc"><summary>{{ b.shipping_label | default: pol_ship.title | escape }}</summary><div class="cro-acc__body rte">{{ pol_ship.content }}</div></details>
+                  {%- endif -%}
+                  {%- if pol_ret != blank and pol_ret.content != blank -%}
+                    <details class="cro-acc"><summary>{{ b.returns_label | default: pol_ret.title | escape }}</summary><div class="cro-acc__body rte">{{ pol_ret.content }}</div></details>
+                  {%- endif -%}
+                  {%- if b.extra_page != blank and b.extra_page.content != blank -%}
+                    <details class="cro-acc"><summary>{{ b.extra_label | default: b.extra_page.title | escape }}</summary><div class="cro-acc__body rte">{{ b.extra_page.content }}</div></details>
+                  {%- endif -%}
+                </div>
+            {%- endcase -%}
+          </div>
+        {%- endfor -%}
+      {%- endform -%}
+      <script type="application/json" data-variants-json>[{%- for variant in product.variants -%}{"id":{{ variant.id | json }},"title":{{ variant.title | json }},"available":{{ variant.available | json }},"price":{{ variant.price | json }},"price_formatted":{{ variant.price | money | json }},"compare_at_price":{{ variant.compare_at_price | json }},"inventory_quantity":{{ variant.inventory_quantity | json }},"inventory_management":{{ variant.inventory_management | json }},"inventory_policy":{{ variant.inventory_policy | json }},"featured_media_id":{{ variant.featured_media.id | json }},"options":{{ variant.options | json }}}{% unless forloop.last %},{% endunless %}{%- endfor -%}]</script>
+      <script type="application/json" data-cro-rv-record>{"id":{{ product.id | json }},"title":{{ product.title | json }},"url":{{ product.url | json }},"image":{{ product.featured_image | image_url: width: 600 | json }},"price":{{ current.price | money | json }},"compare":{% if current.compare_at_price > current.price %}{{ current.compare_at_price | money | json }}{% else %}""{% endif %}}</script>
+    </div>
+  </div>
+
+  {%- if s.sticky_atc == 'original' -%}
+    <div class="sticky-atc"><span><strong>{{ product.title | truncate: 24 }}</strong><br>{{ current.price | money }}</span><button class="button" type="button" data-sticky-add{% unless current.available %} disabled{% endunless %}>{% if current.available %}{{ 'products.product.add_to_cart' | t }}{% else %}{{ 'products.product.sold_out' | t }}{% endif %}</button></div>
+  {%- elsif s.sticky_atc == 'cro' -%}
+    {%- liquid
+      assign satc_label = s.satc_label
+      if satc_label == blank
+        assign satc_label = 'products.product.add_to_cart' | t
+      endif
+    -%}
+    <div class="cro-satc" data-cro-satc aria-hidden="true">
+      <div class="cro-satc__inner">
+        {%- assign satc_img = current.featured_media | default: product.featured_media -%}
+        {%- if satc_img -%}{{ satc_img | image_url: width: 120, height: 120, crop: 'center' | image_tag: class: 'cro-satc__img', loading: 'lazy', alt: '', width: 48, height: 48 }}{%- endif -%}
+        <div class="cro-satc__info">
+          <span class="cro-satc__title">{{ product.title | escape }}</span>
+          {%- unless product.has_only_default_variant -%}<span class="cro-satc__variant">{{ current.title | escape }}</span>{%- endunless -%}
+        </div>
+        <span class="cro-satc__price">{{ current.price | money }}</span>
+        {%- if s.satc_qty -%}
+          <div class="cro-satc__qty">
+            <button type="button" data-cro-satc-step="-1" aria-label="{{ s.qty_minus_label | escape }}">−</button>
+            <input type="number" min="1" value="1" data-cro-satc-qty aria-label="{{ 'products.product.quantity' | t }}">
+            <button type="button" data-cro-satc-step="1" aria-label="{{ s.qty_plus_label | escape }}">+</button>
+          </div>
+        {%- endif -%}
+        <button class="cro-satc__btn" type="button" data-sticky-add{% unless current.available %} disabled{% endunless %}>{% if current.available %}{{ satc_label | escape }}{% else %}{{ 'products.product.sold_out' | t }}{% endif %}</button>
+      </div>
+    </div>
+  {%- endif -%}
+  {%- if product.featured_image != blank -%}<dialog class="media-dialog" data-media-dialog><button class="icon-button media-dialog__close" type="button" data-media-close aria-label="{{ 'accessibility.close' | t }}">{% render 'icon', icon: 'close' %}</button><img src="{{ product.featured_image | image_url: width: 1600 }}" width="{{ product.featured_image.width }}" height="{{ product.featured_image.height }}" alt="{{ product.featured_image.alt | default: product.title | escape }}" data-media-dialog-image></dialog>{%- endif -%}
+</section>
+
+{% schema %}
+{
+  "name": "Product information (CRO)",
+  "tag": "div",
+  "class": "cro-section cro-section--main-product",
+  "enabled_on": {
+    "templates": [
+      "product"
+    ]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout",
+      "info": "Desktop widths apply from 990px; below that the gallery and information stack."
+    },
+    {
+      "type": "range",
+      "id": "media_width",
+      "label": "Gallery column width",
+      "min": 35,
+      "max": 70,
+      "step": 1,
+      "default": 55,
+      "unit": "%",
+      "info": "The product information column takes the remaining width."
+    },
+    {
+      "type": "range",
+      "id": "column_gap",
+      "label": "Gap between columns",
+      "min": 16,
+      "max": 120,
+      "step": 4,
+      "default": 64,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "info_max_width",
+      "label": "Information column max width",
+      "min": 360,
+      "max": 900,
+      "step": 20,
+      "default": 640,
+      "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "sticky_info",
+      "label": "Keep product information visible while scrolling",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "sticky_offset",
+      "label": "Sticky offset from top",
+      "min": 60,
+      "max": 200,
+      "step": 4,
+      "default": 96,
+      "unit": "px",
+      "info": "Leave room for the sticky header."
+    },
+    {
+      "type": "range",
+      "id": "block_gap",
+      "label": "Space between information blocks",
+      "min": 4,
+      "max": 40,
+      "step": 2,
+      "default": 14,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "title_size_desktop",
+      "label": "Title size (desktop)",
+      "min": 20,
+      "max": 60,
+      "step": 2,
+      "default": 38,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "title_size_mobile",
+      "label": "Title size (mobile)",
+      "min": 18,
+      "max": 44,
+      "step": 2,
+      "default": 28,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "label": "Padding top (desktop)",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "label": "Padding bottom (desktop)",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "default": 48,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Padding top (mobile)",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "default": 8,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Padding bottom (mobile)",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "default": 32,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Gallery"
+    },
+    {
+      "type": "select",
+      "id": "gallery_style",
+      "label": "Gallery style",
+      "options": [
+        {
+          "value": "thumbnails",
+          "label": "Slider with thumbnails"
+        },
+        {
+          "value": "grid",
+          "label": "Original image grid"
+        }
+      ],
+      "default": "thumbnails"
+    },
+    {
+      "type": "select",
+      "id": "thumbs_position",
+      "label": "Thumbnails position (desktop)",
+      "options": [
+        {
+          "value": "bottom",
+          "label": "Below image"
+        },
+        {
+          "value": "start",
+          "label": "Beside image"
+        }
+      ],
+      "default": "bottom"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_thumbs",
+      "label": "Show thumbnails",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_counter",
+      "label": "Show image counter",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_zoom",
+      "label": "Zoom on hover (desktop)",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "gallery_ratio",
+      "label": "Image shape",
+      "options": [
+        {
+          "value": "adapt",
+          "label": "Match first image"
+        },
+        {
+          "value": "square",
+          "label": "Square"
+        },
+        {
+          "value": "portrait",
+          "label": "Portrait 4:5"
+        }
+      ],
+      "default": "adapt"
+    },
+    {
+      "type": "select",
+      "id": "gallery_fit",
+      "label": "Image fit",
+      "options": [
+        {
+          "value": "cover",
+          "label": "Fill (crop)"
+        },
+        {
+          "value": "contain",
+          "label": "Fit (no crop)"
+        }
+      ],
+      "default": "contain"
+    },
+    {
+      "type": "color",
+      "id": "media_bg",
+      "label": "Image background",
+      "default": "#F2EFE8"
+    },
+    {
+      "type": "header",
+      "content": "Sticky add to cart"
+    },
+    {
+      "type": "select",
+      "id": "sticky_atc",
+      "label": "Sticky add-to-cart bar",
+      "options": [
+        {
+          "value": "cro",
+          "label": "New bar (desktop and mobile)"
+        },
+        {
+          "value": "original",
+          "label": "Original mobile bar"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        }
+      ],
+      "default": "cro",
+      "info": "The new bar appears once the main Add to cart button scrolls out of view."
+    },
+    {
+      "type": "checkbox",
+      "id": "satc_desktop",
+      "label": "Show on desktop",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "satc_mobile",
+      "label": "Show on mobile",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "satc_qty",
+      "label": "Quantity selector (desktop)",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "satc_label",
+      "label": "Button label",
+      "info": "Leave empty to use 'Add to cart'."
+    },
+    {
+      "type": "color",
+      "id": "satc_bg",
+      "label": "Bar background",
+      "default": "#FFFDF8"
+    },
+    {
+      "type": "color",
+      "id": "satc_text",
+      "label": "Bar text",
+      "default": "#18231F"
+    },
+    {
+      "type": "color",
+      "id": "satc_border",
+      "label": "Quantity border",
+      "default": "#D7CEC1"
+    },
+    {
+      "type": "color",
+      "id": "satc_btn_bg",
+      "label": "Button background",
+      "default": "#173F35"
+    },
+    {
+      "type": "color",
+      "id": "satc_btn_text",
+      "label": "Button text",
+      "default": "#FFFDF8"
+    },
+    {
+      "type": "color",
+      "id": "satc_btn_hover_bg",
+      "label": "Button hover background",
+      "default": "#0F2F27"
+    },
+    {
+      "type": "header",
+      "content": "Buttons",
+      "info": "Keep text at a 4.5:1 contrast ratio or better against its background (WCAG AA)."
+    },
+    {
+      "type": "range",
+      "id": "button_radius",
+      "label": "Button corner radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "default": 10,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "atc_bg",
+      "label": "Add to cart background",
+      "default": "#173F35"
+    },
+    {
+      "type": "color",
+      "id": "atc_text",
+      "label": "Add to cart text",
+      "default": "#FFFDF8"
+    },
+    {
+      "type": "color",
+      "id": "atc_hover_bg",
+      "label": "Add to cart hover background",
+      "default": "#0F2F27"
+    },
+    {
+      "type": "color",
+      "id": "atc_hover_text",
+      "label": "Add to cart hover text",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "wa_bg",
+      "label": "WhatsApp button background",
+      "default": "#1A7F45"
+    },
+    {
+      "type": "color",
+      "id": "wa_text",
+      "label": "WhatsApp button text",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "wa_hover_bg",
+      "label": "WhatsApp button hover",
+      "default": "#146536"
+    },
+    {
+      "type": "color",
+      "id": "option_active_bg",
+      "label": "Selected option background",
+      "default": "#173F35"
+    },
+    {
+      "type": "color",
+      "id": "option_active_text",
+      "label": "Selected option text",
+      "default": "#FFFDF8"
+    },
+    {
+      "type": "color",
+      "id": "option_active_border",
+      "label": "Selected option border",
+      "default": "#173F35"
+    },
+    {
+      "type": "header",
+      "content": "Colours",
+      "info": "Keep text at a 4.5:1 contrast ratio or better against its background (WCAG AA)."
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Headings and prices",
+      "default": "#18231F"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#3F4A45"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent (active thumbnail, focus, links)",
+      "default": "#D4623D"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icons",
+      "default": "#173F35"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Borders",
+      "default": "#D7CEC1"
+    },
+    {
+      "type": "color",
+      "id": "box_bg",
+      "label": "Info box background",
+      "default": "#FFFDF8"
+    },
+    {
+      "type": "color",
+      "id": "sale_price_color",
+      "label": "Sale price",
+      "default": "#C64F32"
+    },
+    {
+      "type": "color",
+      "id": "urgency_color",
+      "label": "Urgency (low stock, timer end)",
+      "default": "#A72C2C"
+    },
+    {
+      "type": "color",
+      "id": "star_color",
+      "label": "Rating stars",
+      "default": "#E8B44A"
+    },
+    {
+      "type": "color",
+      "id": "badge_bg",
+      "label": "Discount badge background",
+      "default": "#C64F32"
+    },
+    {
+      "type": "color",
+      "id": "badge_text",
+      "label": "Discount badge text",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "new_badge_bg",
+      "label": "New badge background",
+      "default": "#173F35"
+    },
+    {
+      "type": "color",
+      "id": "new_badge_text",
+      "label": "New badge text",
+      "default": "#FFFDF8"
+    },
+    {
+      "type": "color",
+      "id": "best_badge_bg",
+      "label": "Best-seller badge background",
+      "default": "#E8B44A"
+    },
+    {
+      "type": "color",
+      "id": "best_badge_text",
+      "label": "Best-seller badge text",
+      "default": "#18231F"
+    },
+    {
+      "type": "color",
+      "id": "custom_badge_bg",
+      "label": "Custom badge background",
+      "default": "#18231F"
+    },
+    {
+      "type": "color",
+      "id": "custom_badge_text",
+      "label": "Custom badge text",
+      "default": "#E8B44A"
+    },
+    {
+      "type": "color",
+      "id": "cd_panel_bg",
+      "label": "Countdown panel background",
+      "default": "#173F35"
+    },
+    {
+      "type": "color",
+      "id": "cd_panel_text",
+      "label": "Countdown panel text",
+      "default": "#FFFDF8"
+    },
+    {
+      "type": "color",
+      "id": "cd_box_bg",
+      "label": "Countdown box background",
+      "default": "#0F2F27"
+    },
+    {
+      "type": "color",
+      "id": "cd_digit",
+      "label": "Countdown digits",
+      "default": "#FFFDF8"
+    },
+    {
+      "type": "color",
+      "id": "cd_label",
+      "label": "Countdown labels",
+      "default": "#E8B44A"
+    },
+    {
+      "type": "color",
+      "id": "scarcity_track",
+      "label": "Low-stock bar track",
+      "default": "#F3D9D2"
+    },
+    {
+      "type": "header",
+      "content": "Accessibility labels"
+    },
+    {
+      "type": "text",
+      "id": "gallery_label",
+      "label": "Gallery label",
+      "default": "Product images"
+    },
+    {
+      "type": "text",
+      "id": "enlarge_label",
+      "label": "Enlarge image label",
+      "default": "Enlarge"
+    },
+    {
+      "type": "text",
+      "id": "thumb_label",
+      "label": "Thumbnail label",
+      "default": "Show image {n}"
+    },
+    {
+      "type": "text",
+      "id": "prev_label",
+      "label": "Previous image label",
+      "default": "Previous image"
+    },
+    {
+      "type": "text",
+      "id": "next_label",
+      "label": "Next image label",
+      "default": "Next image"
+    },
+    {
+      "type": "text",
+      "id": "qty_minus_label",
+      "label": "Decrease quantity label",
+      "default": "Decrease quantity"
+    },
+    {
+      "type": "text",
+      "id": "qty_plus_label",
+      "label": "Increase quantity label",
+      "default": "Increase quantity"
+    },
+    {
+      "type": "text",
+      "id": "close_label",
+      "label": "Close label",
+      "default": "Close"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "@app"
+    },
+    {
+      "type": "vendor",
+      "name": "Vendor",
+      "limit": 1
+    },
+    {
+      "type": "title",
+      "name": "Title",
+      "limit": 1
+    },
+    {
+      "type": "price",
+      "name": "Price",
+      "limit": 1
+    },
+    {
+      "type": "sku",
+      "name": "SKU and barcode",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "show_sku",
+          "label": "Show SKU",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_barcode",
+          "label": "Show barcode",
+          "default": false
+        }
+      ]
+    },
+    {
+      "type": "variant_picker",
+      "name": "Variant picker",
+      "limit": 1
+    },
+    {
+      "type": "quantity",
+      "name": "Quantity",
+      "limit": 1
+    },
+    {
+      "type": "buy_buttons",
+      "name": "Buy buttons",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "dynamic_checkout",
+          "label": "Show dynamic checkout",
+          "default": true
+        }
+      ]
+    },
+    {
+      "type": "description",
+      "name": "Description",
+      "limit": 1
+    },
+    {
+      "type": "trust",
+      "name": "Trust information",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Clear product information"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Verified text"
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "name": "Information accordion",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Materials & care"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Verified content"
+        },
+        {
+          "type": "page",
+          "id": "page",
+          "label": "Optional page content"
+        }
+      ]
+    },
+    {
+      "type": "bulk",
+      "name": "Bulk order callout",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Need this in larger quantities?"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Verified text"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Button label",
+          "default": "Request Bulk Information"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Button link"
+        }
+      ]
+    },
+    {
+      "type": "custom_liquid",
+      "name": "Custom Liquid",
+      "settings": [
+        {
+          "type": "liquid",
+          "id": "custom_liquid",
+          "label": "Custom Liquid"
+        }
+      ]
+    },
+    {
+      "type": "curlear_showcase_snippet",
+      "name": "Curlear showcase snippet",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "See it in action"
+        },
+        {
+          "type": "range",
+          "id": "visible_desktop",
+          "min": 2,
+          "max": 4,
+          "step": 1,
+          "label": "Items visible on desktop",
+          "default": 4
+        },
+        {
+          "type": "range",
+          "id": "auto_slide_speed",
+          "min": 2,
+          "max": 8,
+          "step": 1,
+          "unit": "s",
+          "label": "Auto slide speed",
+          "default": 4
+        },
+        {
+          "type": "range",
+          "id": "item_height_desktop",
+          "min": 200,
+          "max": 620,
+          "step": 10,
+          "unit": "px",
+          "label": "Desktop media height",
+          "default": 300
+        },
+        {
+          "type": "range",
+          "id": "item_height_mobile",
+          "min": 220,
+          "max": 500,
+          "step": 10,
+          "unit": "px",
+          "label": "Mobile media height",
+          "default": 320
+        },
+        {
+          "type": "checkbox",
+          "id": "wider_desktop",
+          "label": "Slightly increase width on desktop",
+          "default": false
+        },
+        {
+          "type": "image_picker",
+          "id": "media_1_image",
+          "label": "Slide 1 image"
+        },
+        {
+          "type": "video",
+          "id": "media_1_video",
+          "label": "Slide 1 Shopify video"
+        },
+        {
+          "type": "image_picker",
+          "id": "media_2_image",
+          "label": "Slide 2 image"
+        },
+        {
+          "type": "video",
+          "id": "media_2_video",
+          "label": "Slide 2 Shopify video"
+        },
+        {
+          "type": "image_picker",
+          "id": "media_3_image",
+          "label": "Slide 3 image"
+        },
+        {
+          "type": "video",
+          "id": "media_3_video",
+          "label": "Slide 3 Shopify video"
+        },
+        {
+          "type": "image_picker",
+          "id": "media_4_image",
+          "label": "Slide 4 image"
+        },
+        {
+          "type": "video",
+          "id": "media_4_video",
+          "label": "Slide 4 Shopify video"
+        },
+        {
+          "type": "image_picker",
+          "id": "media_5_image",
+          "label": "Slide 5 image"
+        },
+        {
+          "type": "video",
+          "id": "media_5_video",
+          "label": "Slide 5 Shopify video"
+        },
+        {
+          "type": "image_picker",
+          "id": "media_6_image",
+          "label": "Slide 6 image"
+        },
+        {
+          "type": "video",
+          "id": "media_6_video",
+          "label": "Slide 6 Shopify video"
+        },
+        {
+          "type": "image_picker",
+          "id": "media_7_image",
+          "label": "Slide 7 image"
+        },
+        {
+          "type": "video",
+          "id": "media_7_video",
+          "label": "Slide 7 Shopify video"
+        },
+        {
+          "type": "image_picker",
+          "id": "media_8_image",
+          "label": "Slide 8 image"
+        },
+        {
+          "type": "video",
+          "id": "media_8_video",
+          "label": "Slide 8 Shopify video"
+        }
+      ]
+    },
+    {
+      "type": "cro_badges",
+      "name": "Badges",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "show_sale",
+          "label": "Discount badge (from compare-at price)",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "sale_label",
+          "label": "Discount badge text",
+          "default": "Save {value}%",
+          "info": "{value} is calculated from the real compare-at price."
+        },
+        {
+          "type": "checkbox",
+          "id": "show_new",
+          "label": "'New' badge (metafield custom.new_arrival)",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "new_label",
+          "label": "New badge text",
+          "default": "New"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_best",
+          "label": "'Best seller' badge (metafield custom.best_seller or tag best-seller)",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "best_label",
+          "label": "Best-seller badge text",
+          "default": "Best seller"
+        },
+        {
+          "type": "text",
+          "id": "custom_text",
+          "label": "Custom badge text"
+        },
+        {
+          "type": "checkbox",
+          "id": "custom_only_on_sale",
+          "label": "Show custom badge only on discounted products",
+          "default": true
+        }
+      ]
+    },
+    {
+      "type": "cro_rating",
+      "name": "Rating summary",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "header",
+          "content": "Notes",
+          "info": "Reads Judge.me / Shopify reviews.rating metafields, else custom.rating and custom.review_count. Hidden when there is no rating."
+        },
+        {
+          "type": "text",
+          "id": "count_label",
+          "label": "Review count text",
+          "default": "({count} reviews)"
+        },
+        {
+          "type": "text",
+          "id": "sr_label",
+          "label": "Screen-reader text",
+          "default": "Rated {rating} out of {max}"
+        },
+        {
+          "type": "text",
+          "id": "anchor",
+          "label": "Link to reviews",
+          "default": "#judgeme_product_reviews",
+          "info": "An anchor on this page, e.g. #judgeme_product_reviews."
+        }
+      ]
+    },
+    {
+      "type": "cro_price",
+      "name": "Price with savings",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "select",
+          "id": "savings",
+          "label": "Savings display",
+          "options": [
+            {
+              "value": "percent",
+              "label": "Percentage"
+            },
+            {
+              "value": "amount",
+              "label": "Amount"
+            },
+            {
+              "value": "none",
+              "label": "None"
+            }
+          ],
+          "default": "percent"
+        },
+        {
+          "type": "text",
+          "id": "save_label",
+          "label": "Savings text",
+          "default": "Save {value}"
+        },
+        {
+          "type": "text",
+          "id": "tax_note",
+          "label": "Note under price",
+          "info": "e.g. tax or delivery note. Replace with your verified policy."
+        },
+        {
+          "type": "text",
+          "id": "sale_label_sr",
+          "label": "Screen-reader label for sale price",
+          "default": "Sale price"
+        },
+        {
+          "type": "text",
+          "id": "regular_label_sr",
+          "label": "Screen-reader label for regular price",
+          "default": "Regular price"
+        }
+      ]
+    },
+    {
+      "type": "cro_countdown",
+      "name": "Sale countdown",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Sale ends in"
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "truck",
+              "label": "Truck"
+            },
+            {
+              "value": "shield",
+              "label": "Shield"
+            },
+            {
+              "value": "cash",
+              "label": "Cash"
+            },
+            {
+              "value": "refresh",
+              "label": "Refresh / returns"
+            },
+            {
+              "value": "lock",
+              "label": "Lock"
+            },
+            {
+              "value": "star",
+              "label": "Star"
+            },
+            {
+              "value": "whatsapp",
+              "label": "WhatsApp"
+            },
+            {
+              "value": "gift",
+              "label": "Gift"
+            },
+            {
+              "value": "clock",
+              "label": "Clock"
+            },
+            {
+              "value": "tag",
+              "label": "Tag"
+            },
+            {
+              "value": "heart",
+              "label": "Heart"
+            },
+            {
+              "value": "check",
+              "label": "Check"
+            },
+            {
+              "value": "phone",
+              "label": "Phone"
+            },
+            {
+              "value": "box",
+              "label": "Box"
+            },
+            {
+              "value": "leaf",
+              "label": "Leaf"
+            },
+            {
+              "value": "award",
+              "label": "Award"
+            },
+            {
+              "value": "sparkle",
+              "label": "Sparkle"
+            },
+            {
+              "value": "percent",
+              "label": "Percent"
+            },
+            {
+              "value": "mail",
+              "label": "Mail"
+            },
+            {
+              "value": "map-pin",
+              "label": "Map pin"
+            },
+            {
+              "value": "thumbs-up",
+              "label": "Thumbs up"
+            },
+            {
+              "value": "package",
+              "label": "Package"
+            },
+            {
+              "value": "camera",
+              "label": "Camera"
+            },
+            {
+              "value": "play",
+              "label": "Play"
+            },
+            {
+              "value": "flame",
+              "label": "Flame"
+            }
+          ],
+          "default": "clock"
+        },
+        {
+          "type": "text",
+          "id": "icon_text",
+          "label": "Icon emoji / text",
+          "info": "Overrides the built-in icon."
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "Icon image",
+          "info": "Overrides emoji and built-in icon."
+        },
+        {
+          "type": "select",
+          "id": "mode",
+          "label": "Countdown",
+          "options": [
+            {
+              "value": "fixed",
+              "label": "Offer ends at a date and time"
+            },
+            {
+              "value": "daily",
+              "label": "Daily dispatch cut-off"
+            },
+            {
+              "value": "evergreen",
+              "label": "Per-visitor timer"
+            }
+          ],
+          "default": "fixed",
+          "info": "Daily cut-off uses Theme settings → CRO & conversion."
+        },
+        {
+          "type": "text",
+          "id": "end",
+          "label": "End date and time",
+          "info": "Format YYYY-MM-DD HH:MM in the shop timezone. Set it to when the offer really ends.",
+          "placeholder": "2026-12-02 23:59"
+        },
+        {
+          "type": "range",
+          "id": "evergreen_hours",
+          "label": "Per-visitor timer length",
+          "min": 1,
+          "max": 72,
+          "step": 1,
+          "default": 24,
+          "unit": "h",
+          "info": "Only for an offer genuinely available to each visitor for this long."
+        },
+        {
+          "type": "text",
+          "id": "prefix",
+          "label": "Text before timer"
+        },
+        {
+          "type": "text",
+          "id": "suffix",
+          "label": "Text after timer",
+          "info": "Daily cut-off: shown when the cut-off is today. Replace with your verified policy."
+        },
+        {
+          "type": "text",
+          "id": "suffix_later",
+          "label": "Text after timer (cut-off on another day)",
+          "default": "for dispatch on {day}"
+        },
+        {
+          "type": "text",
+          "id": "fallback",
+          "label": "Text shown before the timer loads"
+        },
+        {
+          "type": "select",
+          "id": "style",
+          "label": "Style",
+          "options": [
+            {
+              "value": "boxes",
+              "label": "Boxes"
+            },
+            {
+              "value": "inline",
+              "label": "Inline"
+            },
+            {
+              "value": "minimal",
+              "label": "Minimal (00:00:00)"
+            },
+            {
+              "value": "circular",
+              "label": "Circular"
+            }
+          ],
+          "default": "boxes"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_days",
+          "label": "Show days",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "separator",
+          "label": "Separator",
+          "default": ":"
+        },
+        {
+          "type": "text",
+          "id": "label_days",
+          "label": "Days label",
+          "default": "Days"
+        },
+        {
+          "type": "text",
+          "id": "label_hours",
+          "label": "Hours label",
+          "default": "Hrs"
+        },
+        {
+          "type": "text",
+          "id": "label_minutes",
+          "label": "Minutes label",
+          "default": "Min"
+        },
+        {
+          "type": "text",
+          "id": "label_seconds",
+          "label": "Seconds label",
+          "default": "Sec"
+        },
+        {
+          "type": "range",
+          "id": "urgent",
+          "label": "Urgent colour when under",
+          "min": 0,
+          "max": 120,
+          "step": 5,
+          "default": 60,
+          "unit": "min"
+        },
+        {
+          "type": "checkbox",
+          "id": "only_on_sale",
+          "label": "Only show on products with a compare-at price",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "expire_action",
+          "label": "When it ends",
+          "options": [
+            {
+              "value": "hide",
+              "label": "Hide the countdown"
+            },
+            {
+              "value": "message",
+              "label": "Show the expired message"
+            },
+            {
+              "value": "restart",
+              "label": "Restart (per-visitor timer only)"
+            }
+          ],
+          "default": "hide"
+        },
+        {
+          "type": "text",
+          "id": "expired_message",
+          "label": "Expired message",
+          "default": "This offer has ended"
+        }
+      ]
+    },
+    {
+      "type": "cro_benefits",
+      "name": "Key benefits",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "header",
+          "content": "Notes",
+          "info": "Uses metafield custom.key_benefits when filled (list or one per line), otherwise the lines below. Hidden when empty."
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "truck",
+              "label": "Truck"
+            },
+            {
+              "value": "shield",
+              "label": "Shield"
+            },
+            {
+              "value": "cash",
+              "label": "Cash"
+            },
+            {
+              "value": "refresh",
+              "label": "Refresh / returns"
+            },
+            {
+              "value": "lock",
+              "label": "Lock"
+            },
+            {
+              "value": "star",
+              "label": "Star"
+            },
+            {
+              "value": "whatsapp",
+              "label": "WhatsApp"
+            },
+            {
+              "value": "gift",
+              "label": "Gift"
+            },
+            {
+              "value": "clock",
+              "label": "Clock"
+            },
+            {
+              "value": "tag",
+              "label": "Tag"
+            },
+            {
+              "value": "heart",
+              "label": "Heart"
+            },
+            {
+              "value": "check",
+              "label": "Check"
+            },
+            {
+              "value": "phone",
+              "label": "Phone"
+            },
+            {
+              "value": "box",
+              "label": "Box"
+            },
+            {
+              "value": "leaf",
+              "label": "Leaf"
+            },
+            {
+              "value": "award",
+              "label": "Award"
+            },
+            {
+              "value": "sparkle",
+              "label": "Sparkle"
+            },
+            {
+              "value": "percent",
+              "label": "Percent"
+            },
+            {
+              "value": "mail",
+              "label": "Mail"
+            },
+            {
+              "value": "map-pin",
+              "label": "Map pin"
+            },
+            {
+              "value": "thumbs-up",
+              "label": "Thumbs up"
+            },
+            {
+              "value": "package",
+              "label": "Package"
+            },
+            {
+              "value": "camera",
+              "label": "Camera"
+            },
+            {
+              "value": "play",
+              "label": "Play"
+            },
+            {
+              "value": "flame",
+              "label": "Flame"
+            }
+          ],
+          "default": "check"
+        },
+        {
+          "type": "text",
+          "id": "icon_text",
+          "label": "Icon emoji / text",
+          "info": "Overrides the built-in icon."
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "Icon image",
+          "info": "Overrides emoji and built-in icon."
+        },
+        {
+          "type": "text",
+          "id": "line_1",
+          "label": "Line 1"
+        },
+        {
+          "type": "text",
+          "id": "line_2",
+          "label": "Line 2"
+        },
+        {
+          "type": "text",
+          "id": "line_3",
+          "label": "Line 3"
+        },
+        {
+          "type": "text",
+          "id": "line_4",
+          "label": "Line 4"
+        },
+        {
+          "type": "text",
+          "id": "line_5",
+          "label": "Line 5"
+        },
+        {
+          "type": "text",
+          "id": "line_6",
+          "label": "Line 6"
+        }
+      ]
+    },
+    {
+      "type": "cro_scarcity",
+      "name": "Low-stock alert",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "header",
+          "content": "Notes",
+          "info": "Real inventory only: shown when the variant's stock is tracked, cannot be oversold and is at or below the threshold."
+        },
+        {
+          "type": "range",
+          "id": "threshold",
+          "label": "Threshold",
+          "min": 0,
+          "max": 50,
+          "step": 1,
+          "default": 0,
+          "info": "0 uses the low-stock threshold in Theme settings."
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Only {count} left in stock, order soon"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_bar",
+          "label": "Show stock bar",
+          "default": true
+        }
+      ]
+    },
+    {
+      "type": "cro_sold",
+      "name": "Sold count",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "header",
+          "content": "Notes",
+          "info": "Shows metafield custom.sold_count (number you enter). Hidden when empty."
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "truck",
+              "label": "Truck"
+            },
+            {
+              "value": "shield",
+              "label": "Shield"
+            },
+            {
+              "value": "cash",
+              "label": "Cash"
+            },
+            {
+              "value": "refresh",
+              "label": "Refresh / returns"
+            },
+            {
+              "value": "lock",
+              "label": "Lock"
+            },
+            {
+              "value": "star",
+              "label": "Star"
+            },
+            {
+              "value": "whatsapp",
+              "label": "WhatsApp"
+            },
+            {
+              "value": "gift",
+              "label": "Gift"
+            },
+            {
+              "value": "clock",
+              "label": "Clock"
+            },
+            {
+              "value": "tag",
+              "label": "Tag"
+            },
+            {
+              "value": "heart",
+              "label": "Heart"
+            },
+            {
+              "value": "check",
+              "label": "Check"
+            },
+            {
+              "value": "phone",
+              "label": "Phone"
+            },
+            {
+              "value": "box",
+              "label": "Box"
+            },
+            {
+              "value": "leaf",
+              "label": "Leaf"
+            },
+            {
+              "value": "award",
+              "label": "Award"
+            },
+            {
+              "value": "sparkle",
+              "label": "Sparkle"
+            },
+            {
+              "value": "percent",
+              "label": "Percent"
+            },
+            {
+              "value": "mail",
+              "label": "Mail"
+            },
+            {
+              "value": "map-pin",
+              "label": "Map pin"
+            },
+            {
+              "value": "thumbs-up",
+              "label": "Thumbs up"
+            },
+            {
+              "value": "package",
+              "label": "Package"
+            },
+            {
+              "value": "camera",
+              "label": "Camera"
+            },
+            {
+              "value": "play",
+              "label": "Play"
+            },
+            {
+              "value": "flame",
+              "label": "Flame"
+            }
+          ],
+          "default": "flame"
+        },
+        {
+          "type": "text",
+          "id": "icon_text",
+          "label": "Icon emoji / text",
+          "info": "Overrides the built-in icon."
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "Icon image",
+          "info": "Overrides emoji and built-in icon."
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "{count} sold"
+        }
+      ]
+    },
+    {
+      "type": "cro_delivery",
+      "name": "Delivery estimate",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "truck",
+              "label": "Truck"
+            },
+            {
+              "value": "shield",
+              "label": "Shield"
+            },
+            {
+              "value": "cash",
+              "label": "Cash"
+            },
+            {
+              "value": "refresh",
+              "label": "Refresh / returns"
+            },
+            {
+              "value": "lock",
+              "label": "Lock"
+            },
+            {
+              "value": "star",
+              "label": "Star"
+            },
+            {
+              "value": "whatsapp",
+              "label": "WhatsApp"
+            },
+            {
+              "value": "gift",
+              "label": "Gift"
+            },
+            {
+              "value": "clock",
+              "label": "Clock"
+            },
+            {
+              "value": "tag",
+              "label": "Tag"
+            },
+            {
+              "value": "heart",
+              "label": "Heart"
+            },
+            {
+              "value": "check",
+              "label": "Check"
+            },
+            {
+              "value": "phone",
+              "label": "Phone"
+            },
+            {
+              "value": "box",
+              "label": "Box"
+            },
+            {
+              "value": "leaf",
+              "label": "Leaf"
+            },
+            {
+              "value": "award",
+              "label": "Award"
+            },
+            {
+              "value": "sparkle",
+              "label": "Sparkle"
+            },
+            {
+              "value": "percent",
+              "label": "Percent"
+            },
+            {
+              "value": "mail",
+              "label": "Mail"
+            },
+            {
+              "value": "map-pin",
+              "label": "Map pin"
+            },
+            {
+              "value": "thumbs-up",
+              "label": "Thumbs up"
+            },
+            {
+              "value": "package",
+              "label": "Package"
+            },
+            {
+              "value": "camera",
+              "label": "Camera"
+            },
+            {
+              "value": "play",
+              "label": "Play"
+            },
+            {
+              "value": "flame",
+              "label": "Flame"
+            }
+          ],
+          "default": "truck"
+        },
+        {
+          "type": "text",
+          "id": "icon_text",
+          "label": "Icon emoji / text",
+          "info": "Overrides the built-in icon."
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "Icon image",
+          "info": "Overrides emoji and built-in icon."
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Estimated delivery:"
+        },
+        {
+          "type": "text",
+          "id": "date_template",
+          "label": "Date format",
+          "default": "{start} – {end}"
+        },
+        {
+          "type": "text",
+          "id": "fallback",
+          "label": "Text without JavaScript",
+          "default": "{min}–{max} working days",
+          "info": "Also shown while dates load."
+        },
+        {
+          "type": "number",
+          "id": "min_days",
+          "label": "Minimum working days",
+          "info": "Empty uses Theme settings. Replace with your verified policy."
+        },
+        {
+          "type": "number",
+          "id": "max_days",
+          "label": "Maximum working days",
+          "info": "Empty uses Theme settings."
+        },
+        {
+          "type": "textarea",
+          "id": "cities",
+          "label": "City / zone list",
+          "info": "Optional. One per line: City|min days|max days|note, e.g. Lahore|1|2|Delivery charge shown at checkout"
+        },
+        {
+          "type": "text",
+          "id": "city_label",
+          "label": "City selector label",
+          "default": "Choose your city"
+        }
+      ]
+    },
+    {
+      "type": "cro_trust_box",
+      "name": "Trust box",
+      "limit": 2,
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading"
+        },
+        {
+          "type": "select",
+          "id": "row_1_icon",
+          "label": "Row 1 icon",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "truck",
+              "label": "Truck"
+            },
+            {
+              "value": "shield",
+              "label": "Shield"
+            },
+            {
+              "value": "cash",
+              "label": "Cash"
+            },
+            {
+              "value": "refresh",
+              "label": "Refresh / returns"
+            },
+            {
+              "value": "lock",
+              "label": "Lock"
+            },
+            {
+              "value": "star",
+              "label": "Star"
+            },
+            {
+              "value": "whatsapp",
+              "label": "WhatsApp"
+            },
+            {
+              "value": "gift",
+              "label": "Gift"
+            },
+            {
+              "value": "clock",
+              "label": "Clock"
+            },
+            {
+              "value": "tag",
+              "label": "Tag"
+            },
+            {
+              "value": "heart",
+              "label": "Heart"
+            },
+            {
+              "value": "check",
+              "label": "Check"
+            },
+            {
+              "value": "phone",
+              "label": "Phone"
+            },
+            {
+              "value": "box",
+              "label": "Box"
+            },
+            {
+              "value": "leaf",
+              "label": "Leaf"
+            },
+            {
+              "value": "award",
+              "label": "Award"
+            },
+            {
+              "value": "sparkle",
+              "label": "Sparkle"
+            },
+            {
+              "value": "percent",
+              "label": "Percent"
+            },
+            {
+              "value": "mail",
+              "label": "Mail"
+            },
+            {
+              "value": "map-pin",
+              "label": "Map pin"
+            },
+            {
+              "value": "thumbs-up",
+              "label": "Thumbs up"
+            },
+            {
+              "value": "package",
+              "label": "Package"
+            },
+            {
+              "value": "camera",
+              "label": "Camera"
+            },
+            {
+              "value": "play",
+              "label": "Play"
+            },
+            {
+              "value": "flame",
+              "label": "Flame"
+            }
+          ],
+          "default": "truck"
+        },
+        {
+          "type": "text",
+          "id": "row_1_title",
+          "label": "Row 1 title",
+          "info": "Replace with your verified policy."
+        },
+        {
+          "type": "text",
+          "id": "row_1_text",
+          "label": "Row 1 text"
+        },
+        {
+          "type": "url",
+          "id": "row_1_link",
+          "label": "Row 1 link"
+        },
+        {
+          "type": "select",
+          "id": "row_2_icon",
+          "label": "Row 2 icon",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "truck",
+              "label": "Truck"
+            },
+            {
+              "value": "shield",
+              "label": "Shield"
+            },
+            {
+              "value": "cash",
+              "label": "Cash"
+            },
+            {
+              "value": "refresh",
+              "label": "Refresh / returns"
+            },
+            {
+              "value": "lock",
+              "label": "Lock"
+            },
+            {
+              "value": "star",
+              "label": "Star"
+            },
+            {
+              "value": "whatsapp",
+              "label": "WhatsApp"
+            },
+            {
+              "value": "gift",
+              "label": "Gift"
+            },
+            {
+              "value": "clock",
+              "label": "Clock"
+            },
+            {
+              "value": "tag",
+              "label": "Tag"
+            },
+            {
+              "value": "heart",
+              "label": "Heart"
+            },
+            {
+              "value": "check",
+              "label": "Check"
+            },
+            {
+              "value": "phone",
+              "label": "Phone"
+            },
+            {
+              "value": "box",
+              "label": "Box"
+            },
+            {
+              "value": "leaf",
+              "label": "Leaf"
+            },
+            {
+              "value": "award",
+              "label": "Award"
+            },
+            {
+              "value": "sparkle",
+              "label": "Sparkle"
+            },
+            {
+              "value": "percent",
+              "label": "Percent"
+            },
+            {
+              "value": "mail",
+              "label": "Mail"
+            },
+            {
+              "value": "map-pin",
+              "label": "Map pin"
+            },
+            {
+              "value": "thumbs-up",
+              "label": "Thumbs up"
+            },
+            {
+              "value": "package",
+              "label": "Package"
+            },
+            {
+              "value": "camera",
+              "label": "Camera"
+            },
+            {
+              "value": "play",
+              "label": "Play"
+            },
+            {
+              "value": "flame",
+              "label": "Flame"
+            }
+          ],
+          "default": "lock"
+        },
+        {
+          "type": "text",
+          "id": "row_2_title",
+          "label": "Row 2 title"
+        },
+        {
+          "type": "text",
+          "id": "row_2_text",
+          "label": "Row 2 text"
+        },
+        {
+          "type": "url",
+          "id": "row_2_link",
+          "label": "Row 2 link"
+        },
+        {
+          "type": "select",
+          "id": "row_3_icon",
+          "label": "Row 3 icon",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "truck",
+              "label": "Truck"
+            },
+            {
+              "value": "shield",
+              "label": "Shield"
+            },
+            {
+              "value": "cash",
+              "label": "Cash"
+            },
+            {
+              "value": "refresh",
+              "label": "Refresh / returns"
+            },
+            {
+              "value": "lock",
+              "label": "Lock"
+            },
+            {
+              "value": "star",
+              "label": "Star"
+            },
+            {
+              "value": "whatsapp",
+              "label": "WhatsApp"
+            },
+            {
+              "value": "gift",
+              "label": "Gift"
+            },
+            {
+              "value": "clock",
+              "label": "Clock"
+            },
+            {
+              "value": "tag",
+              "label": "Tag"
+            },
+            {
+              "value": "heart",
+              "label": "Heart"
+            },
+            {
+              "value": "check",
+              "label": "Check"
+            },
+            {
+              "value": "phone",
+              "label": "Phone"
+            },
+            {
+              "value": "box",
+              "label": "Box"
+            },
+            {
+              "value": "leaf",
+              "label": "Leaf"
+            },
+            {
+              "value": "award",
+              "label": "Award"
+            },
+            {
+              "value": "sparkle",
+              "label": "Sparkle"
+            },
+            {
+              "value": "percent",
+              "label": "Percent"
+            },
+            {
+              "value": "mail",
+              "label": "Mail"
+            },
+            {
+              "value": "map-pin",
+              "label": "Map pin"
+            },
+            {
+              "value": "thumbs-up",
+              "label": "Thumbs up"
+            },
+            {
+              "value": "package",
+              "label": "Package"
+            },
+            {
+              "value": "camera",
+              "label": "Camera"
+            },
+            {
+              "value": "play",
+              "label": "Play"
+            },
+            {
+              "value": "flame",
+              "label": "Flame"
+            }
+          ],
+          "default": "refresh"
+        },
+        {
+          "type": "text",
+          "id": "row_3_title",
+          "label": "Row 3 title"
+        },
+        {
+          "type": "text",
+          "id": "row_3_text",
+          "label": "Row 3 text"
+        },
+        {
+          "type": "url",
+          "id": "row_3_link",
+          "label": "Row 3 link"
+        },
+        {
+          "type": "select",
+          "id": "row_4_icon",
+          "label": "Row 4 icon",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "truck",
+              "label": "Truck"
+            },
+            {
+              "value": "shield",
+              "label": "Shield"
+            },
+            {
+              "value": "cash",
+              "label": "Cash"
+            },
+            {
+              "value": "refresh",
+              "label": "Refresh / returns"
+            },
+            {
+              "value": "lock",
+              "label": "Lock"
+            },
+            {
+              "value": "star",
+              "label": "Star"
+            },
+            {
+              "value": "whatsapp",
+              "label": "WhatsApp"
+            },
+            {
+              "value": "gift",
+              "label": "Gift"
+            },
+            {
+              "value": "clock",
+              "label": "Clock"
+            },
+            {
+              "value": "tag",
+              "label": "Tag"
+            },
+            {
+              "value": "heart",
+              "label": "Heart"
+            },
+            {
+              "value": "check",
+              "label": "Check"
+            },
+            {
+              "value": "phone",
+              "label": "Phone"
+            },
+            {
+              "value": "box",
+              "label": "Box"
+            },
+            {
+              "value": "leaf",
+              "label": "Leaf"
+            },
+            {
+              "value": "award",
+              "label": "Award"
+            },
+            {
+              "value": "sparkle",
+              "label": "Sparkle"
+            },
+            {
+              "value": "percent",
+              "label": "Percent"
+            },
+            {
+              "value": "mail",
+              "label": "Mail"
+            },
+            {
+              "value": "map-pin",
+              "label": "Map pin"
+            },
+            {
+              "value": "thumbs-up",
+              "label": "Thumbs up"
+            },
+            {
+              "value": "package",
+              "label": "Package"
+            },
+            {
+              "value": "camera",
+              "label": "Camera"
+            },
+            {
+              "value": "play",
+              "label": "Play"
+            },
+            {
+              "value": "flame",
+              "label": "Flame"
+            }
+          ],
+          "default": "mail"
+        },
+        {
+          "type": "text",
+          "id": "row_4_title",
+          "label": "Row 4 title"
+        },
+        {
+          "type": "text",
+          "id": "row_4_text",
+          "label": "Row 4 text"
+        },
+        {
+          "type": "url",
+          "id": "row_4_link",
+          "label": "Row 4 link"
+        }
+      ]
+    },
+    {
+      "type": "cro_payment",
+      "name": "Payment icons",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "header",
+          "content": "Notes",
+          "info": "Shows payment methods enabled in your Shopify checkout plus local methods switched on in Theme settings → CRO & conversion."
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Secure checkout"
+        }
+      ]
+    },
+    {
+      "type": "cro_qty_breaks",
+      "name": "Quantity breaks",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "header",
+          "content": "Notes",
+          "info": "Displayed savings only. Create a matching automatic discount in Shopify Admin → Discounts so the cart price matches."
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Buy more, save more"
+        },
+        {
+          "type": "text",
+          "id": "save_label",
+          "label": "Savings text",
+          "default": "Save {value}%"
+        },
+        {
+          "type": "range",
+          "id": "default_tile",
+          "label": "Pre-selected tile",
+          "min": 0,
+          "max": 3,
+          "step": 1,
+          "default": 1,
+          "info": "0 = none."
+        },
+        {
+          "type": "range",
+          "id": "tile_1_qty",
+          "label": "Tile 1 quantity",
+          "min": 0,
+          "max": 24,
+          "step": 1,
+          "default": 1,
+          "info": "0 hides the tile."
+        },
+        {
+          "type": "text",
+          "id": "tile_1_label",
+          "label": "Tile 1 label",
+          "default": "Buy 1"
+        },
+        {
+          "type": "range",
+          "id": "tile_1_percent",
+          "label": "Tile 1 discount",
+          "min": 0,
+          "max": 50,
+          "step": 1,
+          "default": 0,
+          "unit": "%"
+        },
+        {
+          "type": "text",
+          "id": "tile_1_badge",
+          "label": "Tile 1 badge"
+        },
+        {
+          "type": "range",
+          "id": "tile_2_qty",
+          "label": "Tile 2 quantity",
+          "min": 0,
+          "max": 24,
+          "step": 1,
+          "default": 2,
+          "info": "0 hides the tile."
+        },
+        {
+          "type": "text",
+          "id": "tile_2_label",
+          "label": "Tile 2 label",
+          "default": "Buy 2"
+        },
+        {
+          "type": "range",
+          "id": "tile_2_percent",
+          "label": "Tile 2 discount",
+          "min": 0,
+          "max": 50,
+          "step": 1,
+          "default": 0,
+          "unit": "%"
+        },
+        {
+          "type": "text",
+          "id": "tile_2_badge",
+          "label": "Tile 2 badge"
+        },
+        {
+          "type": "range",
+          "id": "tile_3_qty",
+          "label": "Tile 3 quantity",
+          "min": 0,
+          "max": 24,
+          "step": 1,
+          "default": 3,
+          "info": "0 hides the tile."
+        },
+        {
+          "type": "text",
+          "id": "tile_3_label",
+          "label": "Tile 3 label",
+          "default": "Buy 3"
+        },
+        {
+          "type": "range",
+          "id": "tile_3_percent",
+          "label": "Tile 3 discount",
+          "min": 0,
+          "max": 50,
+          "step": 1,
+          "default": 0,
+          "unit": "%"
+        },
+        {
+          "type": "text",
+          "id": "tile_3_badge",
+          "label": "Tile 3 badge"
+        }
+      ]
+    },
+    {
+      "type": "cro_variant_picker",
+      "name": "Variant picker (styled)",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "select",
+          "id": "style",
+          "label": "Style",
+          "options": [
+            {
+              "value": "pills",
+              "label": "Buttons"
+            },
+            {
+              "value": "swatch",
+              "label": "Image swatches"
+            },
+            {
+              "value": "dropdown",
+              "label": "Dropdown"
+            }
+          ],
+          "default": "pills"
+        },
+        {
+          "type": "text",
+          "id": "swatch_option",
+          "label": "Swatch option name",
+          "info": "e.g. Color. Empty uses the first option. Swatches use each variant's image."
+        },
+        {
+          "type": "checkbox",
+          "id": "show_selected",
+          "label": "Show selected value in label",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "unavailable_label",
+          "label": "Unavailable label",
+          "default": "Sold out"
+        },
+        {
+          "type": "page",
+          "id": "size_guide",
+          "label": "Size guide page"
+        },
+        {
+          "type": "text",
+          "id": "size_guide_label",
+          "label": "Size guide link text",
+          "default": "Size guide"
+        }
+      ]
+    },
+    {
+      "type": "cro_buy_buttons",
+      "name": "Buy buttons + WhatsApp",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "atc_label",
+          "label": "Add to cart label",
+          "info": "Empty uses the theme's 'Add to cart' text."
+        },
+        {
+          "type": "checkbox",
+          "id": "dynamic_checkout",
+          "label": "Show Buy it now / express checkout",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_whatsapp",
+          "label": "Order on WhatsApp button",
+          "default": true,
+          "info": "Needs the WhatsApp number in Theme settings → CRO & conversion."
+        },
+        {
+          "type": "text",
+          "id": "whatsapp_label",
+          "label": "WhatsApp button label",
+          "default": "Order on WhatsApp"
+        },
+        {
+          "type": "textarea",
+          "id": "whatsapp_message",
+          "label": "WhatsApp message",
+          "default": "Hi, I'd like to order {product} ({variant}), quantity {qty}. {url}",
+          "info": "Tokens: {product}, {variant}, {qty}, {url}."
+        }
+      ]
+    },
+    {
+      "type": "cro_guarantee",
+      "name": "Guarantee / returns box",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "truck",
+              "label": "Truck"
+            },
+            {
+              "value": "shield",
+              "label": "Shield"
+            },
+            {
+              "value": "cash",
+              "label": "Cash"
+            },
+            {
+              "value": "refresh",
+              "label": "Refresh / returns"
+            },
+            {
+              "value": "lock",
+              "label": "Lock"
+            },
+            {
+              "value": "star",
+              "label": "Star"
+            },
+            {
+              "value": "whatsapp",
+              "label": "WhatsApp"
+            },
+            {
+              "value": "gift",
+              "label": "Gift"
+            },
+            {
+              "value": "clock",
+              "label": "Clock"
+            },
+            {
+              "value": "tag",
+              "label": "Tag"
+            },
+            {
+              "value": "heart",
+              "label": "Heart"
+            },
+            {
+              "value": "check",
+              "label": "Check"
+            },
+            {
+              "value": "phone",
+              "label": "Phone"
+            },
+            {
+              "value": "box",
+              "label": "Box"
+            },
+            {
+              "value": "leaf",
+              "label": "Leaf"
+            },
+            {
+              "value": "award",
+              "label": "Award"
+            },
+            {
+              "value": "sparkle",
+              "label": "Sparkle"
+            },
+            {
+              "value": "percent",
+              "label": "Percent"
+            },
+            {
+              "value": "mail",
+              "label": "Mail"
+            },
+            {
+              "value": "map-pin",
+              "label": "Map pin"
+            },
+            {
+              "value": "thumbs-up",
+              "label": "Thumbs up"
+            },
+            {
+              "value": "package",
+              "label": "Package"
+            },
+            {
+              "value": "camera",
+              "label": "Camera"
+            },
+            {
+              "value": "play",
+              "label": "Play"
+            },
+            {
+              "value": "flame",
+              "label": "Flame"
+            }
+          ],
+          "default": "shield"
+        },
+        {
+          "type": "text",
+          "id": "icon_text",
+          "label": "Icon emoji / text",
+          "info": "Overrides the built-in icon."
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "Icon image",
+          "info": "Overrides emoji and built-in icon."
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "info": "Replace with your verified policy."
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text",
+          "info": "Replace with your verified policy."
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Policy link"
+        },
+        {
+          "type": "text",
+          "id": "link_label",
+          "label": "Link text",
+          "default": "Read the policy"
+        }
+      ]
+    },
+    {
+      "type": "cro_share",
+      "name": "Share",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Share:"
+        },
+        {
+          "type": "text",
+          "id": "copy_label",
+          "label": "Copy link text",
+          "default": "Copy link"
+        },
+        {
+          "type": "text",
+          "id": "copied_label",
+          "label": "Copied text",
+          "default": "Link copied"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_whatsapp",
+          "label": "WhatsApp",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_facebook",
+          "label": "Facebook",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "more_label",
+          "label": "More options text (mobile share sheet)",
+          "default": "More"
+        }
+      ]
+    },
+    {
+      "type": "cro_ask",
+      "name": "Ask a question",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Have a question?"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Ask us about sizes, materials or stock before you order."
+        },
+        {
+          "type": "checkbox",
+          "id": "show_whatsapp",
+          "label": "WhatsApp button",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "whatsapp_label",
+          "label": "WhatsApp label",
+          "default": "Ask on WhatsApp"
+        },
+        {
+          "type": "textarea",
+          "id": "whatsapp_message",
+          "label": "WhatsApp message",
+          "default": "Hi, I have a question about {product}: {url}"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_email",
+          "label": "Email button",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "email",
+          "label": "Email address",
+          "info": "Empty uses your store's contact email."
+        },
+        {
+          "type": "text",
+          "id": "email_label",
+          "label": "Email label",
+          "default": "Email us"
+        },
+        {
+          "type": "text",
+          "id": "email_subject",
+          "label": "Email subject",
+          "default": "Question about {product}"
+        },
+        {
+          "type": "url",
+          "id": "contact_link",
+          "label": "Contact page link"
+        },
+        {
+          "type": "text",
+          "id": "contact_label",
+          "label": "Contact link text",
+          "default": "Contact us"
+        }
+      ]
+    },
+    {
+      "type": "cro_policies",
+      "name": "Description & policies",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "description_tab",
+          "label": "Description as first tab",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "description_label",
+          "label": "Description tab label",
+          "default": "Description"
+        },
+        {
+          "type": "checkbox",
+          "id": "open_first",
+          "label": "Open the description tab",
+          "default": true
+        },
+        {
+          "type": "page",
+          "id": "shipping_page",
+          "label": "Shipping page",
+          "info": "Empty uses Theme settings → CRO & conversion."
+        },
+        {
+          "type": "text",
+          "id": "shipping_label",
+          "label": "Shipping tab label",
+          "default": "Shipping & delivery"
+        },
+        {
+          "type": "page",
+          "id": "returns_page",
+          "label": "Returns page",
+          "info": "Empty uses Theme settings → CRO & conversion."
+        },
+        {
+          "type": "text",
+          "id": "returns_label",
+          "label": "Returns tab label",
+          "default": "Returns & exchanges"
+        },
+        {
+          "type": "page",
+          "id": "extra_page",
+          "label": "Extra page"
+        },
+        {
+          "type": "text",
+          "id": "extra_label",
+          "label": "Extra tab label"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

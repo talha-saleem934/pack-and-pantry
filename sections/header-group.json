@@ -1,1 +1,157 @@
-{"type":"header","name":"Header group","sections":{"announcement":{"type":"announcement-bar","settings":{"text":"Practical storage for calmer kitchens and organised pantries","link":""}},"header":{"type":"header","custom_css":[],"settings":{"menu":"main-menu","sticky":true}},"cart_drawer":{"type":"cart-drawer","settings":{}}},"order":["announcement","header","cart_drawer"]}
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "type": "header",
+  "name": "Header group",
+  "sections": {
+    "cro_announcement": {
+      "type": "cro-announcement-bar",
+      "blocks": {
+        "blessed_friday": {
+          "type": "message",
+          "settings": {
+            "text": "Blessed Friday Sale: up to 30% off jars, bottles & organisers",
+            "link": "shopify://collections/all",
+            "link_label": "Shop the sale",
+            "icon": "flame",
+            "countdown_mode": "fixed",
+            "countdown_end": "2026-12-02 23:59",
+            "countdown_prefix": "Ends in",
+            "countdown_fallback": "Ends 2 December",
+            "expire_action": "hide_block"
+          }
+        },
+        "free_delivery": {
+          "type": "message",
+          "settings": {
+            "text": "Free delivery on orders over PKR 5,000",
+            "icon": "truck",
+            "link": "shopify://collections/all"
+          }
+        },
+        "message_existing": {
+          "type": "message",
+          "settings": {
+            "text": "Practical storage for calmer kitchens and organised pantries",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "blessed_friday",
+        "free_delivery",
+        "message_existing"
+      ],
+      "settings": {
+        "mode": "slider",
+        "slider_speed": 5,
+        "show_arrows": true,
+        "countdown_style": "inline"
+      }
+    },
+    "announcement": {
+      "type": "announcement-bar",
+      "disabled": true,
+      "settings": {
+        "text": "Practical storage for calmer kitchens and organised pantries",
+        "link": ""
+      }
+    },
+    "header": {
+      "type": "header",
+      "custom_css": [],
+      "settings": {
+        "menu": "main-menu",
+        "sticky": true
+      }
+    },
+    "cart_drawer": {
+      "type": "cart-drawer",
+      "settings": {},
+      "disabled": true
+    },
+    "cro_cart_drawer": {
+      "type": "cro-cart-drawer",
+      "blocks": {
+        "delivery": {
+          "type": "trust",
+          "settings": {
+            "icon": "truck",
+            "title": "Free delivery over PKR 5,000",
+            "text": "On eligible orders. Terms may apply.",
+            "link": "shopify://pages/shipping-information"
+          }
+        },
+        "secure": {
+          "type": "trust",
+          "settings": {
+            "icon": "lock",
+            "title": "Secure checkout",
+            "text": "Payment is handled by Shopify's encrypted checkout."
+          }
+        },
+        "returns": {
+          "type": "trust",
+          "settings": {
+            "icon": "refresh",
+            "title": "Returns & exchanges",
+            "text": "Read our policy before you order.",
+            "link": "shopify://pages/returns-exchanges"
+          }
+        },
+        "help": {
+          "type": "trust",
+          "settings": {
+            "icon": "mail",
+            "title": "Help when you need it",
+            "text": "Questions about sizes or stock? Contact us.",
+            "link": "shopify://pages/contact"
+          }
+        }
+      },
+      "block_order": [
+        "delivery",
+        "secure",
+        "returns",
+        "help"
+      ],
+      "settings": {
+        "upsell_collection": "jars",
+        "upsell_heading": "Complete your pantry",
+        "empty_collection": "jars",
+        "empty_limit": 3,
+        "checkout_label": "Checkout securely",
+        "confetti": true
+      }
+    },
+    "cro_floating": {
+      "type": "cro-floating-widgets",
+      "settings": {}
+    },
+    "cro_popup": {
+      "type": "cro-popup",
+      "disabled": true,
+      "settings": {
+        "heading": "Get first access to our next sale",
+        "text": "Join our list for new arrivals and member-only offers.",
+        "field": "email"
+      }
+    }
+  },
+  "order": [
+    "cro_announcement",
+    "announcement",
+    "header",
+    "cart_drawer",
+    "cro_cart_drawer",
+    "cro_floating",
+    "cro_popup"
+  ]
+}

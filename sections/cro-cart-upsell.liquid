@@ -1,0 +1,735 @@
+{%- liquid
+  assign s = section.settings
+  assign sid = section.id
+-%}
+{%- liquid
+  assign ship_threshold = s.threshold_override
+  if ship_threshold == blank or ship_threshold == 0
+    assign ship_threshold = settings.cro_free_delivery_threshold | default: 0
+  endif
+  assign ship_cents = ship_threshold | times: 100
+  assign ship_left = ship_cents | minus: cart.total_price
+  assign ship_pct = 0
+  if ship_cents > 0
+    assign ship_pct = cart.total_price | times: 100 | divided_by: ship_cents
+    if ship_pct > 100
+      assign ship_pct = 100
+    endif
+  endif
+-%}{%- liquid
+  assign cart_savings = 0
+  for item in cart.items
+    if item.variant.compare_at_price > item.variant.price
+      assign line_save = item.variant.compare_at_price | minus: item.variant.price | times: item.quantity
+      assign cart_savings = cart_savings | plus: line_save
+    endif
+    assign disc = item.original_line_price | minus: item.final_line_price
+    assign cart_savings = cart_savings | plus: disc
+  endfor
+  for d in cart.cart_level_discount_applications
+    assign cart_savings = cart_savings | plus: d.total_allocated_amount
+  endfor
+-%}
+{%- liquid
+  assign cart_ids = ','
+  for item in cart.items
+    assign cart_ids = cart_ids | append: item.product_id | append: ','
+  endfor
+-%}
+{{ 'cro-components.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'cro-core.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'cro-cart.js' | asset_url }}" defer="defer"></script>
+{%- liquid
+  case s.align
+    when 'start'
+      assign cro_justify = 'flex-start'
+    when 'end'
+      assign cro_justify = 'flex-end'
+    else
+      assign cro_justify = 'center'
+  endcase
+  assign cro_radius = s.radius | default: 16
+  assign cro_btn_radius = s.button_radius | default: 10
+-%}
+{% style %}
+#cro-{{ sid }} {
+  --cro-bg: {{ s.bg_color | default: '#F7F1E7' }};
+  --cro-heading: {{ s.heading_color | default: '#18231F' }};
+  --cro-text: {{ s.text_color | default: '#3F4A45' }};
+  --cro-accent: {{ s.accent_color | default: '#D4623D' }};
+  --cro-btn-bg: {{ s.button_bg | default: '#173F35' }};
+  --cro-btn-text: {{ s.button_text | default: '#FFFDF8' }};
+  --cro-btn-hover-bg: {{ s.button_hover_bg | default: '#0F2F27' }};
+  --cro-btn-hover-text: {{ s.button_hover_text | default: '#FFFFFF' }};
+  --cro-link-hover: {{ s.link_hover_color | default: '#D4623D' }};
+  --cro-border: {{ s.border_color | default: '#D7CEC1' }};
+  --cro-card-bg: {{ s.card_bg | default: '#FFFDF8' }};
+  --cro-icon: {{ s.icon_color | default: '#173F35' }};
+  --cro-badge-bg: {{ s.badge_bg | default: '#C64F32' }};
+  --cro-badge-text: {{ s.badge_text | default: '#FFFFFF' }};
+  --cro-radius: {{ cro_radius }}px;
+  --cro-justify: {{ cro_justify }};
+  background: var(--cro-bg);
+  color: var(--cro-text);
+  padding-block: {{ s.padding_top_mobile | default: 40 }}px {{ s.padding_bottom_mobile | default: 40 }}px;
+}
+#cro-{{ sid }}[hidden] { display: none; }
+#cro-{{ sid }} .cro-wrap { box-sizing: border-box; max-inline-size: {% if s.full_width %}none{% else %}{{ s.container_width | default: 1300 }}px{% endif %}; margin-inline: auto; padding-inline: var(--gutter, 16px); }
+#cro-{{ sid }} .cro-head { display: flex; flex-direction: column; align-items: {{ cro_justify }}; gap: 8px; margin-block-end: 28px; text-align: {{ s.align | default: 'center' }}; }
+#cro-{{ sid }} .cro-head--row { flex-direction: row; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; text-align: start; }
+#cro-{{ sid }} .cro-eyebrow { margin: 0; color: var(--cro-accent); font-weight: 700; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; }
+#cro-{{ sid }} .cro-h { margin: 0; color: var(--cro-heading); font-family: var(--font-heading); font-weight: var(--font-heading-weight, 700); font-size: {{ s.heading_size_mobile | default: 28 }}px; line-height: 1.15; }
+#cro-{{ sid }} .cro-sub { margin: 0; max-inline-size: 680px; font-size: {{ s.text_size_mobile | default: 15 }}px; line-height: 1.55; }
+#cro-{{ sid }} .cro-body { font-size: {{ s.text_size_mobile | default: 15 }}px; line-height: 1.55; }
+#cro-{{ sid }} .cro-body > :first-child { margin-block-start: 0; }
+#cro-{{ sid }} .cro-body > :last-child { margin-block-end: 0; }
+#cro-{{ sid }} .cro-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-sizing: border-box;
+  min-block-size: 48px; padding: 0 24px; border: 0; border-radius: {{ cro_btn_radius }}px;
+  background: var(--cro-btn-bg); color: var(--cro-btn-text); font: inherit; font-weight: 700; line-height: 1.2;
+  text-decoration: none; cursor: pointer; transition: background-color .2s ease, color .2s ease, transform .2s ease;
+}
+#cro-{{ sid }} .cro-btn:hover { background: var(--cro-btn-hover-bg); color: var(--cro-btn-hover-text); }
+#cro-{{ sid }} .cro-btn[disabled] { opacity: .55; cursor: not-allowed; }
+#cro-{{ sid }} .cro-btn--ghost { background: transparent; color: var(--cro-heading); box-shadow: inset 0 0 0 2px currentColor; }
+#cro-{{ sid }} .cro-btn--ghost:hover { background: var(--cro-btn-bg); color: var(--cro-btn-text); box-shadow: none; }
+#cro-{{ sid }} .cro-link { color: var(--cro-heading); text-decoration: underline; text-underline-offset: 4px; }
+#cro-{{ sid }} .cro-link:hover { color: var(--cro-link-hover); }
+#cro-{{ sid }} .cro-card { background: var(--cro-card-bg); border: 1px solid var(--cro-border); border-radius: var(--cro-radius); }
+#cro-{{ sid }} .cro-ico { display: inline-flex; flex: none; align-items: center; justify-content: center; color: var(--cro-icon); }
+#cro-{{ sid }} .cro-badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 999px; background: var(--cro-badge-bg); color: var(--cro-badge-text); font-size: 12px; font-weight: 700; letter-spacing: .03em; }
+#cro-{{ sid }} a:focus-visible, #cro-{{ sid }} button:focus-visible, #cro-{{ sid }} summary:focus-visible, #cro-{{ sid }} input:focus-visible, #cro-{{ sid }} select:focus-visible { outline: 2px solid var(--cro-accent); outline-offset: 2px; }
+@media (min-width: 750px) {
+  #cro-{{ sid }} { padding-block: {{ s.padding_top_desktop | default: 64 }}px {{ s.padding_bottom_desktop | default: 64 }}px; }
+  #cro-{{ sid }} .cro-h { font-size: {{ s.heading_size_desktop | default: 38 }}px; }
+  #cro-{{ sid }} .cro-sub, #cro-{{ sid }} .cro-body { font-size: {{ s.text_size_desktop | default: 17 }}px; }
+}
+
+
+#cro-{{ sid }} .cro-grid { --cro-cols-d: {{ s.columns_desktop }}; --cro-cols-t: {{ s.columns_tablet }}; --cro-cols-m: {{ s.columns_mobile }}; }
+#cro-{{ sid }} { --cro-ship-track: {{ s.ship_track }}; --cro-ship-fill: {{ s.ship_fill }}; }
+#cro-{{ sid }} .cro-cu__panel { display: grid; gap: 16px; padding: 18px; margin-block-end: 32px; }
+#cro-{{ sid }} .cro-cu__save { margin: 0; color: {{ s.savings_color }}; font-weight: 700; }
+#cro-{{ sid }} .cro-cu__note { margin: 0; font-size: 14px; }
+@media (min-width: 990px) { #cro-{{ sid }} .cro-cu__panel { grid-template-columns: 1.2fr 1fr; align-items: center; } }
+
+{% endstyle %}
+
+<section id="cro-{{ sid }}" class="cro-cart-upsell" aria-labelledby="CroHeading-{{ sid }}">
+  <div class="cro-wrap">
+    {%- capture panel -%}
+      {%- if cart.item_count > 0 -%}{%- if s.show_shipping and ship_cents > 0 and cart.item_count > 0 -%}
+  <div class="cro-ship" data-cro-ship data-pct="{{ ship_pct }}">
+    <p class="cro-ship__msg" role="status">
+      {%- if ship_left > 0 -%}{%- assign ship_money = ship_left | money -%}{{ s.ship_progress | escape | replace: '{amount}', ship_money }}{%- else -%}{{ s.ship_done | escape }}{%- endif -%}
+    </p>
+    <span class="cro-ship__bar" aria-hidden="true"><span class="cro-ship__fill"></span></span>
+  </div>
+{%- endif -%}{%- endif -%}
+      {%- if s.show_savings and cart_savings > 0 -%}<p class="cro-cu__save">{%- assign save_money = cart_savings | money -%}{{ s.savings_label | escape | replace: '{amount}', save_money }}</p>{%- endif -%}
+      {%- if s.delivery_note != blank -%}<p class="cro-cu__note">{{ s.delivery_note | escape }}</p>{%- endif -%}
+      {%- if section.blocks.size > 0 -%}{% render 'cro-trust-badges', blocks: section.blocks, block_type: 'trust' %}{%- endif -%}
+      {%- if s.show_payment -%}{% render 'cro-payment-icons' %}{%- endif -%}
+    {%- endcapture -%}
+    {%- if panel != blank -%}<div class="cro-cu__panel cro-card">{{ panel }}</div>{%- endif -%}
+    {%- if s.collection != blank -%}
+      {%- capture recs -%}
+        {%- assign shown = 0 -%}
+        {%- for product in s.collection.products limit: 40 -%}
+          {%- assign pid = ',' | append: product.id | append: ',' -%}
+          {%- if product.available and shown < s.limit -%}
+            {%- unless cart_ids contains pid -%}
+              {%- assign shown = shown | plus: 1 -%}
+              {% render 'cro-product-card', card_product: product, add_label: s.add_label, choose_label: s.choose_label, sold_out_label: s.sold_out_label, low_stock_label: s.low_stock_label, show_rating: s.show_rating, show_low_stock: s.show_low_stock %}
+            {%- endunless -%}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endcapture -%}
+      {%- if recs != blank -%}
+        {%- if s.eyebrow != blank or s.heading != blank or s.subheading != blank -%}
+      <div class="cro-head">
+        {%- if s.eyebrow != blank -%}<p class="cro-eyebrow">{{ s.eyebrow | escape }}</p>{%- endif -%}
+        {%- if s.heading != blank -%}<h2 class="cro-h" id="CroHeading-{{ sid }}">{{ s.heading | escape }}</h2>{%- endif -%}
+        {%- if s.subheading != blank -%}<p class="cro-sub">{{ s.subheading | escape }}</p>{%- endif -%}
+      </div>
+    {%- endif -%}
+        <div class="cro-grid">{{ recs }}</div>
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "CRO cart upsell",
+  "tag": "div",
+  "class": "cro-section",
+  "max_blocks": 4,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "You may also like"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Products from collection",
+      "info": "Products already in the cart are skipped."
+    },
+    {
+      "type": "range",
+      "id": "limit",
+      "label": "Products to show",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "checkbox",
+      "id": "show_savings",
+      "label": "Show total savings",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "savings_label",
+      "label": "Savings text",
+      "default": "You're saving {amount} on this order"
+    },
+    {
+      "type": "text",
+      "id": "delivery_note",
+      "label": "Delivery note",
+      "info": "Replace with your verified policy."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_payment",
+      "label": "Show payment icons",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Free-delivery bar",
+      "info": "Uses the free-delivery threshold in Theme settings → CRO & conversion unless you set one here. It must match your real shipping rates."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_shipping",
+      "label": "Show free-delivery progress",
+      "default": true
+    },
+    {
+      "type": "number",
+      "id": "threshold_override",
+      "label": "Threshold override",
+      "info": "Plain amount, e.g. 5000. Empty uses Theme settings."
+    },
+    {
+      "type": "text",
+      "id": "ship_progress",
+      "label": "Message before threshold",
+      "default": "You're {amount} away from free delivery"
+    },
+    {
+      "type": "text",
+      "id": "ship_done",
+      "label": "Message when reached",
+      "default": "You've unlocked free delivery!"
+    },
+    {
+      "type": "color",
+      "id": "ship_track",
+      "label": "Bar track",
+      "default": "#DCE8D8"
+    },
+    {
+      "type": "color",
+      "id": "ship_fill",
+      "label": "Bar fill",
+      "default": "#173F35"
+    },
+    {
+      "type": "header",
+      "content": "Product card labels"
+    },
+    {
+      "type": "text",
+      "id": "add_label",
+      "label": "Add to cart label",
+      "default": "Add to cart"
+    },
+    {
+      "type": "text",
+      "id": "choose_label",
+      "label": "Choose options label",
+      "default": "Choose options"
+    },
+    {
+      "type": "text",
+      "id": "sold_out_label",
+      "label": "Sold-out label",
+      "default": "Sold out"
+    },
+    {
+      "type": "text",
+      "id": "low_stock_label",
+      "label": "Low-stock label",
+      "default": "Only {count} left"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "label": "Show rating (real review data only)",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_low_stock",
+      "label": "Show low-stock note (real inventory only)",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "Full width",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "container_width",
+      "label": "Container width",
+      "min": 800,
+      "max": 1800,
+      "step": 50,
+      "default": 1300,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "align",
+      "label": "Heading alignment",
+      "options": [
+        {
+          "value": "start",
+          "label": "Start"
+        },
+        {
+          "value": "center",
+          "label": "Centre"
+        },
+        {
+          "value": "end",
+          "label": "End"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "radius",
+      "label": "Card corner radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "button_radius",
+      "label": "Button corner radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "default": 10,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns (desktop)",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "columns_tablet",
+      "label": "Columns (tablet)",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "columns_mobile",
+      "label": "Columns (mobile)",
+      "min": 1,
+      "max": 2,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "heading_size_desktop",
+      "label": "Heading size (desktop)",
+      "min": 16,
+      "max": 72,
+      "step": 2,
+      "default": 30,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "label": "Heading size (mobile)",
+      "min": 16,
+      "max": 56,
+      "step": 2,
+      "default": 24,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "text_size_desktop",
+      "label": "Body text size (desktop)",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "default": 17,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "text_size_mobile",
+      "label": "Body text size (mobile)",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "default": 15,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "label": "Padding top (desktop)",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 24,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "label": "Padding bottom (desktop)",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 64,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Padding top (mobile)",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Padding bottom (mobile)",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Colours",
+      "info": "Keep text at a 4.5:1 contrast ratio or better against its background (WCAG AA)."
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#F7F1E7"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "default": "#18231F"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#3F4A45"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent (eyebrow, focus ring)",
+      "default": "#D4623D"
+    },
+    {
+      "type": "color",
+      "id": "button_bg",
+      "label": "Button background",
+      "default": "#173F35"
+    },
+    {
+      "type": "color",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "#FFFDF8"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_bg",
+      "label": "Button hover background",
+      "default": "#0F2F27"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_text",
+      "label": "Button hover text",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "link_hover_color",
+      "label": "Link hover",
+      "default": "#D4623D"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border",
+      "default": "#D7CEC1"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card background",
+      "default": "#FFFDF8"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon",
+      "default": "#173F35"
+    },
+    {
+      "type": "color",
+      "id": "badge_bg",
+      "label": "Badge background",
+      "default": "#C64F32"
+    },
+    {
+      "type": "color",
+      "id": "badge_text",
+      "label": "Badge text",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "savings_color",
+      "label": "Savings colour",
+      "default": "#2F6F4E"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "trust",
+      "name": "Trust item",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "truck",
+              "label": "Truck"
+            },
+            {
+              "value": "shield",
+              "label": "Shield"
+            },
+            {
+              "value": "cash",
+              "label": "Cash"
+            },
+            {
+              "value": "refresh",
+              "label": "Refresh / returns"
+            },
+            {
+              "value": "lock",
+              "label": "Lock"
+            },
+            {
+              "value": "star",
+              "label": "Star"
+            },
+            {
+              "value": "whatsapp",
+              "label": "WhatsApp"
+            },
+            {
+              "value": "gift",
+              "label": "Gift"
+            },
+            {
+              "value": "clock",
+              "label": "Clock"
+            },
+            {
+              "value": "tag",
+              "label": "Tag"
+            },
+            {
+              "value": "heart",
+              "label": "Heart"
+            },
+            {
+              "value": "check",
+              "label": "Check"
+            },
+            {
+              "value": "phone",
+              "label": "Phone"
+            },
+            {
+              "value": "box",
+              "label": "Box"
+            },
+            {
+              "value": "leaf",
+              "label": "Leaf"
+            },
+            {
+              "value": "award",
+              "label": "Award"
+            },
+            {
+              "value": "sparkle",
+              "label": "Sparkle"
+            },
+            {
+              "value": "percent",
+              "label": "Percent"
+            },
+            {
+              "value": "mail",
+              "label": "Mail"
+            },
+            {
+              "value": "map-pin",
+              "label": "Map pin"
+            },
+            {
+              "value": "thumbs-up",
+              "label": "Thumbs up"
+            },
+            {
+              "value": "package",
+              "label": "Package"
+            },
+            {
+              "value": "camera",
+              "label": "Camera"
+            },
+            {
+              "value": "play",
+              "label": "Play"
+            },
+            {
+              "value": "flame",
+              "label": "Flame"
+            }
+          ],
+          "default": "check"
+        },
+        {
+          "type": "text",
+          "id": "icon_text",
+          "label": "Icon emoji / text",
+          "info": "Overrides the built-in icon."
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "Icon image",
+          "info": "Overrides emoji and built-in icon."
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Trust point",
+          "info": "Replace with your verified policy."
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "CRO cart upsell"
+    }
+  ]
+}
+{% endschema %}

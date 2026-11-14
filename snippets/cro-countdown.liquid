@@ -1,0 +1,86 @@
+{%- comment -%}
+  CRO countdown. Requires assets/cro-core.js + assets/cro-components.css (loaded by the calling section).
+  Params:
+    id               unique id (e.g. section.id or block.id)                       required
+    mode             'fixed' | 'daily' | 'evergreen'                                 default 'fixed'
+    end              fixed mode: 'YYYY-MM-DD HH:MM' in the shop timezone
+    hours            evergreen mode: length of the per-visitor timer in hours
+    cutoff_hour      daily mode override (0-23); default settings.cro_dispatch_cutoff_hour
+    skip_days        daily mode override, e.g. 'Sun'; default settings.cro_excluded_weekdays
+    prefix           text before the timer
+    suffix           text after the timer (daily: when cut-off is today)
+    suffix_later     daily only: text after the timer when the next cut-off is another day; {day} = weekday name
+    expire_action    'hide' | 'message' | 'restart' (restart = evergreen only)       default 'hide'
+    expired_message  text shown when expire_action = 'message'
+    style            'boxes' | 'inline' | 'minimal' | 'circular'                     default 'inline'
+    show_days        boolean                                                         default true
+    pad              boolean leading zeros                                           default true
+    separator        character between units                                         default ':'
+    label_d/h/m/s    unit labels
+    urgent           minutes remaining at which the urgent colour applies (0 = off)
+    fallback         static text shown before/without JavaScript
+  Colours are read from the parent's custom properties: --cro-cd-box-bg, --cro-cd-digit, --cro-cd-label,
+  --cro-cd-sep, --cro-cd-urgent, --cro-cd-radius.
+{%- endcomment -%}
+{%- liquid
+  assign cd_mode = mode | default: 'fixed'
+  assign cd_style = style | default: 'inline'
+  assign cd_tz = settings.cro_timezone | default: 'Asia/Karachi'
+  assign cd_cutoff_hour = cutoff_hour | default: settings.cro_dispatch_cutoff_hour | default: 14
+  assign cd_skip = skip_days | default: settings.cro_excluded_weekdays
+  assign cd_holidays = settings.cro_holidays | newline_to_br | replace: '<br />', ',' | strip_newlines
+  assign cd_expire = expire_action | default: 'hide'
+  if cd_expire == 'restart' and cd_mode != 'evergreen'
+    assign cd_expire = 'hide'
+  endif
+  assign cd_sep = separator | default: ':'
+  assign cd_show_days = true
+  if show_days == false
+    assign cd_show_days = false
+  endif
+  assign cd_pad = true
+  if pad == false
+    assign cd_pad = false
+  endif
+  assign cd_l_d = label_d | default: 'Days'
+  assign cd_l_h = label_h | default: 'Hrs'
+  assign cd_l_m = label_m | default: 'Min'
+  assign cd_l_s = label_s | default: 'Sec'
+  assign cd_fallback = fallback
+  if cd_fallback == blank and cd_mode == 'fixed' and end != blank
+    assign cd_fallback = prefix | append: ' ' | append: end
+  endif
+-%}
+<span
+  class="cro-cd cro-cd--{{ cd_style }}"
+  id="CroCountdown-{{ id }}"
+  data-cro-countdown
+  data-mode="{{ cd_mode }}"
+  data-tz="{{ cd_tz | escape }}"
+  {%- if cd_mode == 'fixed' %} data-end="{{ end | escape }}"{% endif -%}
+  {%- if cd_mode == 'evergreen' %} data-hours="{{ hours | default: 24 }}" data-key="{{ id }}"{% endif -%}
+  {%- if cd_mode == 'daily' %} data-cutoff="{{ cd_cutoff_hour }}:00" data-skip="{{ cd_skip | escape }}" data-holidays="{{ cd_holidays | escape }}" data-suffix-today="{{ suffix | escape }}" data-suffix-later="{{ suffix_later | default: suffix | escape }}"{% endif %}
+  data-expire="{{ cd_expire }}"
+  data-pad="{{ cd_pad }}"
+  data-urgent="{{ urgent | default: 0 }}"
+  data-labels="{{ cd_l_d | escape }}|{{ cd_l_h | escape }}|{{ cd_l_m | escape }}"
+>
+  {%- if cd_fallback != blank -%}<span class="cro-cd__fallback">{{ cd_fallback | strip | escape }}</span>{%- endif -%}
+  <span class="cro-cd__live">
+    {%- if prefix != blank -%}<span class="cro-cd__prefix">{{ prefix | escape }}</span>{%- endif -%}
+    <span class="cro-cd__timer" aria-hidden="true">
+      {%- if cd_show_days -%}
+        <span class="cro-cd__unit" data-unit="d"><span class="cro-cd__num" data-num>00</span><span class="cro-cd__label">{{ cd_l_d | escape }}</span></span>
+        {%- if cd_sep != blank -%}<span class="cro-cd__sep">{{ cd_sep | escape }}</span>{%- endif -%}
+      {%- endif -%}
+      <span class="cro-cd__unit" data-unit="h"><span class="cro-cd__num" data-num>00</span><span class="cro-cd__label">{{ cd_l_h | escape }}</span></span>
+      {%- if cd_sep != blank -%}<span class="cro-cd__sep">{{ cd_sep | escape }}</span>{%- endif -%}
+      <span class="cro-cd__unit" data-unit="m"><span class="cro-cd__num" data-num>00</span><span class="cro-cd__label">{{ cd_l_m | escape }}</span></span>
+      {%- if cd_sep != blank -%}<span class="cro-cd__sep">{{ cd_sep | escape }}</span>{%- endif -%}
+      <span class="cro-cd__unit" data-unit="s"><span class="cro-cd__num" data-num>00</span><span class="cro-cd__label">{{ cd_l_s | escape }}</span></span>
+    </span>
+    <span class="cro-vh" role="timer" data-cro-cd-sr></span>
+    {%- if suffix != blank or cd_mode == 'daily' -%}<span class="cro-cd__suffix" data-cro-cd-suffix>{{ suffix | escape }}</span>{%- endif -%}
+  </span>
+  {%- if cd_expire == 'message' and expired_message != blank -%}<span class="cro-cd__expired" data-cro-cd-expired hidden>{{ expired_message | escape }}</span>{%- endif -%}
+</span>

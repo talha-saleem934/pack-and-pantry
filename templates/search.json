@@ -1,1 +1,36 @@
-{"sections":{"main":{"type":"main-search","settings":{"results_per_page":18}}},"order":["main"]}
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-search",
+      "settings": {
+        "results_per_page": 18
+      }
+    },
+    "cro_search_empty": {
+      "type": "cro-search-empty",
+      "settings": {
+        "link_collection_1": "jars",
+        "link_collection_2": "bottles",
+        "link_collection_3": "storage-organizers",
+        "collection": "jars",
+        "limit": 4,
+        "products_heading": "Popular right now",
+        "add_label": "Add to cart",
+        "choose_label": "Choose options"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "cro_search_empty"
+  ]
+}

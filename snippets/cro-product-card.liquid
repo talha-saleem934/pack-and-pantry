@@ -1,0 +1,101 @@
+{%- comment -%}
+  CRO product card (used by new cro-* sections only). Data is read from Shopify; nothing is invented.
+  Params:
+    card_product     product (required)
+    show_rating      default true  (Judge.me / Shopify reviews.rating metafield, else custom.rating + custom.review_count)
+    show_low_stock   default true  (only tracked inventory that cannot be oversold, at or below the threshold)
+    show_second      default settings.show_second_image
+    show_quick_add   default true
+    savings          'percent' | 'amount' | 'none'
+    eager            true for above-the-fold cards
+    sizes            image sizes attribute
+  Labels (all optional): save_label, sold_out_label, new_label, best_label, low_stock_label ('Only {count} left'),
+  add_label, choose_label, reviews_label ('{count} reviews')
+{%- endcomment -%}
+{%- liquid
+  assign pc = card_product
+  assign pc_variant = pc.selected_or_first_available_variant
+  assign pc_ratio = settings.product_image_ratio | default: 'square'
+  assign pc_loading = 'lazy'
+  if eager
+    assign pc_loading = 'eager'
+  endif
+  assign pc_sizes = sizes | default: '(min-width: 990px) 25vw, 50vw'
+  assign pc_second = settings.show_second_image
+  if show_second == false
+    assign pc_second = false
+  endif
+
+  assign pc_rating = blank
+  assign pc_count = 0
+  if pc.metafields.reviews.rating.value != blank
+    assign pc_rating = pc.metafields.reviews.rating.value.rating | round: 1
+    assign pc_scale = pc.metafields.reviews.rating.value.scale_max | default: 5
+    assign pc_count = pc.metafields.reviews.rating_count.value | default: 0
+  elsif pc.metafields.custom.rating.value != blank
+    assign pc_rating = pc.metafields.custom.rating.value | round: 1
+    assign pc_scale = 5
+    assign pc_count = pc.metafields.custom.review_count.value | default: 0
+  endif
+
+  assign pc_low = false
+  assign pc_threshold = settings.cro_low_stock_threshold | default: 5
+  if show_low_stock != false and pc_variant.inventory_management == 'shopify' and pc_variant.inventory_policy == 'deny' and pc_variant.inventory_quantity > 0 and pc_variant.inventory_quantity <= pc_threshold
+    assign pc_low = true
+  endif
+
+  assign pc_on_sale = false
+  if pc_variant.compare_at_price > pc_variant.price
+    assign pc_on_sale = true
+  endif
+  assign pc_best = false
+  if pc.metafields.custom.best_seller.value == true or pc.tags contains 'best-seller' or pc.tags contains 'Best Seller'
+    assign pc_best = true
+  endif
+-%}
+<article class="cro-pc">
+  <a class="cro-pc__media cro-pc__media--{{ pc_ratio }}" href="{{ pc.url }}" tabindex="-1" aria-hidden="true">
+    {%- if pc.featured_media -%}
+      {{ pc.featured_media | image_url: width: 900 | image_tag: widths: '240, 360, 480, 720, 900', sizes: pc_sizes, loading: pc_loading, class: 'cro-pc__img', alt: '' }}
+      {%- if pc_second and pc.media[1] != blank and pc.media[1].media_type == 'image' -%}
+        {{ pc.media[1] | image_url: width: 900 | image_tag: widths: '240, 360, 480, 720, 900', sizes: pc_sizes, loading: 'lazy', class: 'cro-pc__img cro-pc__img--alt', alt: '' }}
+      {%- endif -%}
+    {%- else -%}
+      <span class="cro-pc__placeholder">{{ 'product-1' | placeholder_svg_tag }}</span>
+    {%- endif -%}
+  </a>
+  <div class="cro-pc__badges">
+    {%- unless pc.available -%}<span class="cro-pc__badge cro-pc__badge--muted">{{ sold_out_label | default: 'Sold out' | escape }}</span>{%- endunless -%}
+    {%- if pc_on_sale and pc.available -%}
+      {%- assign pc_pct = pc_variant.compare_at_price | minus: pc_variant.price | times: 100.0 | divided_by: pc_variant.compare_at_price | round -%}
+      <span class="cro-pc__badge cro-pc__badge--sale">-{{ pc_pct }}%</span>
+    {%- endif -%}
+    {%- if pc.metafields.custom.new_arrival.value == true -%}<span class="cro-pc__badge cro-pc__badge--new">{{ new_label | default: 'New' | escape }}</span>{%- endif -%}
+    {%- if pc_best -%}<span class="cro-pc__badge cro-pc__badge--best">{{ best_label | default: 'Best seller' | escape }}</span>{%- endif -%}
+  </div>
+  <div class="cro-pc__body">
+    {%- if show_rating != false and pc_rating != blank -%}
+      <div class="cro-pc__rating">
+        {%- assign pc_rating_pct = pc_rating | times: 100.0 | divided_by: pc_scale -%}
+        <span class="cro-stars" style="--cro-stars:{{ pc_rating_pct }}%" aria-hidden="true"></span>
+        <span class="cro-vh">{{ pc_rating }} / {{ pc_scale }}</span>
+        {%- if pc_count > 0 -%}<span class="cro-pc__count">({{ pc_count }})</span>{%- endif -%}
+      </div>
+    {%- endif -%}
+    <h3 class="cro-pc__title"><a href="{{ pc.url }}">{{ pc.title | escape }}</a></h3>
+    {% render 'cro-price', product: pc, size: 'sm', savings: 'none', show_from: true %}
+    {%- if pc_low -%}
+      <p class="cro-pc__low">{{ low_stock_label | default: 'Only {count} left' | replace: '{count}', pc_variant.inventory_quantity | escape }}</p>
+    {%- endif -%}
+    {%- if show_quick_add != false and pc.available -%}
+      {%- if pc.has_only_default_variant -%}
+        {%- form 'product', pc, class: 'cro-pc__form', data-product-form: '' -%}
+          <input type="hidden" name="id" value="{{ pc_variant.id }}">
+          <button class="cro-pc__add" type="submit">{{ add_label | default: 'Add to cart' | escape }}</button>
+        {%- endform -%}
+      {%- else -%}
+        <button class="cro-pc__add" type="button" data-quick-add data-url="{{ pc.url }}?section_id=quick-add-product">{{ choose_label | default: 'Choose options' | escape }}</button>
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+</article>

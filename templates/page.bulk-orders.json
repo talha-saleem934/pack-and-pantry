@@ -1,1 +1,30 @@
-{"sections":{"form":{"type":"bulk-order-form","settings":{}}},"order":["form"]}
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "form": {
+      "type": "bulk-order-form",
+      "settings": {}
+    },
+    "cro_contact": {
+      "type": "cro-page-contact-boost",
+      "settings": {
+        "heading": "Prefer to talk first?",
+        "subheading": "Reach us directly about larger orders.",
+        "padding_top_desktop": 8,
+        "padding_top_mobile": 8
+      }
+    }
+  },
+  "order": [
+    "form",
+    "cro_contact"
+  ]
+}

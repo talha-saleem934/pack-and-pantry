@@ -1,0 +1,48 @@
+{%- comment -%}
+  CRO price with compare-at and savings badge. All amounts come from Shopify (money filters, minor units).
+  Params:
+    product       product object (uses selected_or_first_available_variant)
+    variant       optional variant object (overrides product)
+    savings       'percent' | 'amount' | 'none'         default 'percent'
+    save_label    text with {value}, e.g. 'Save {value}'  default 'Save {value}'
+    pdp           true adds data-product-price (theme.js updates it on variant change)
+    size          'sm' | 'md' | 'lg'                     default 'md'
+    show_from     true prefixes 'from_label' when variant prices differ (cards)
+    from_label    default 'From'
+    sale_label / regular_label   screen-reader labels
+    tax_note      small note under the price (optional)
+{%- endcomment -%}
+{%- liquid
+  assign cp_target = variant | default: product.selected_or_first_available_variant
+  assign cp_price = cp_target.price | default: 0
+  assign cp_compare = cp_target.compare_at_price | default: 0
+  assign cp_on_sale = false
+  if cp_compare > cp_price
+    assign cp_on_sale = true
+  endif
+  assign cp_savings = savings | default: 'percent'
+  assign cp_save_label = save_label | default: 'Save {value}'
+  assign cp_size = size | default: 'md'
+  if cp_on_sale
+    assign cp_diff = cp_compare | minus: cp_price
+    if cp_savings == 'amount'
+      assign cp_value = cp_diff | money_without_trailing_zeros
+    else
+      assign cp_pct = cp_diff | times: 100.0 | divided_by: cp_compare | round
+      assign cp_value = cp_pct | append: '%'
+    endif
+  endif
+-%}
+<div class="cro-price cro-price--{{ cp_size }}{% if cp_on_sale %} cro-price--sale{% endif %}">
+  {%- if cp_on_sale and sale_label != blank -%}<span class="cro-vh">{{ sale_label | escape }}</span>{%- endif -%}
+  <span class="cro-price__now"{% if pdp %} data-product-price{% endif %}>
+    {%- if show_from and product.price_varies and variant == blank -%}{{ from_label | default: 'From' | escape }} {% endif -%}
+    {{- cp_price | money -}}
+  </span>
+  {%- if cp_on_sale -%}
+    {%- if regular_label != blank -%}<span class="cro-vh">{{ regular_label | escape }}</span>{%- endif -%}
+    <s class="cro-price__was">{{ cp_compare | money }}</s>
+    {%- if cp_savings != 'none' -%}<span class="cro-price__save">{{ cp_save_label | replace: '{value}', cp_value | escape }}</span>{%- endif -%}
+  {%- endif -%}
+  {%- if tax_note != blank -%}<span class="cro-price__note">{{ tax_note | escape }}</span>{%- endif -%}
+</div>

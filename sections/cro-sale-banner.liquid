@@ -1,0 +1,382 @@
+{%- liquid
+  assign s = section.settings
+  assign sid = section.id
+  assign layout = s.layout
+  assign now_ts = 'now' | date: '%s' | plus: 0
+  assign has_cd = false
+  if s.countdown_mode != 'none'
+    assign has_cd = true
+  endif
+  assign server_expired = false
+  if s.countdown_mode == 'fixed' and s.countdown_end != blank
+    assign end_ts = s.countdown_end | date: '%s' | plus: 0
+    if end_ts > 1000000000 and end_ts < now_ts
+      assign server_expired = true
+    endif
+  endif
+  assign scope_action = 'none'
+  if has_cd
+    assign scope_action = s.on_expire
+  endif
+  assign has_image = false
+  if s.image != blank and layout != 'colour' and layout != 'slim'
+    assign has_image = true
+  endif
+  case s.align
+    when 'start'
+      assign justify = 'flex-start'
+    when 'end'
+      assign justify = 'flex-end'
+    else
+      assign justify = 'center'
+  endcase
+  assign img_loading = 'lazy'
+  if s.image_eager
+    assign img_loading = 'eager'
+  endif
+-%}
+{%- unless server_expired and scope_action == 'hide' and request.design_mode == false -%}
+{{ 'cro-components.css' | asset_url | stylesheet_tag }}
+{%- if has_cd or s.coupon_code != blank -%}<script src="{{ 'cro-core.js' | asset_url }}" defer="defer"></script>{%- endif -%}
+{% style %}
+  #cro-{{ sid }} {
+    --cro-sb-bg: {{ s.bg_color }};
+    --cro-sb-panel: {{ s.panel_color }};
+    --cro-sb-heading: {{ s.heading_color }};
+    --cro-sb-text: {{ s.text_color }};
+    --cro-sb-accent: {{ s.accent_color }};
+    --cro-sb-badge-bg: {{ s.badge_bg }};
+    --cro-sb-badge-text: {{ s.badge_text_color }};
+    --cro-sb-btn-bg: {{ s.button_bg }};
+    --cro-sb-btn-text: {{ s.button_text }};
+    --cro-sb-btn-hover-bg: {{ s.button_hover_bg }};
+    --cro-sb-btn-hover-text: {{ s.button_hover_text }};
+    --cro-sb-link: {{ s.link_color }};
+    --cro-sb-link-hover: {{ s.link_hover_color }};
+    --cro-sb-coupon-bg: {{ s.coupon_bg }};
+    --cro-sb-coupon-border: {{ s.coupon_border }};
+    --cro-sb-coupon-text: {{ s.coupon_text }};
+    --cro-sb-copy-bg: {{ s.copy_bg }};
+    --cro-sb-copy-text: {{ s.copy_text }};
+    --cro-sb-border: {{ s.border_color }};
+    --cro-sb-radius: {{ s.radius }}px;
+    --cro-cd-box-bg: {{ s.cd_box_bg }};
+    --cro-cd-digit: {{ s.cd_digit }};
+    --cro-cd-label: {{ s.cd_label }};
+    --cro-cd-sep: {{ s.cd_separator }};
+    --cro-cd-urgent: {{ s.cd_urgent }};
+    --cro-cd-radius: 10px;
+    background: var(--cro-sb-bg);
+    color: var(--cro-sb-text);
+    padding-block: {{ s.padding_top_mobile }}px {{ s.padding_bottom_mobile }}px;
+  }
+  #cro-{{ sid }}[hidden] { display: none; }
+  #cro-{{ sid }} .cro-sb__wrap { max-inline-size: {% if s.full_width %}none{% else %}{{ s.container_width }}px{% endif %}; margin-inline: auto; padding-inline: {% if s.full_width %}0{% else %}var(--gutter, 16px){% endif %}; }
+  #cro-{{ sid }} .cro-sb__inner {
+    position: relative; display: grid; overflow: hidden; isolation: isolate;
+    background: var(--cro-sb-panel); border-radius: var(--cro-sb-radius);
+    {%- if s.show_border %} border: 1px solid var(--cro-sb-border);{% endif %}
+  }
+  #cro-{{ sid }} .cro-sb__media { position: relative; min-block-size: 0; }
+  #cro-{{ sid }} .cro-sb__media img { display: block; inline-size: 100%; block-size: 100%; object-fit: cover; }
+  #cro-{{ sid }} .cro-sb__content { display: flex; flex-direction: column; justify-content: center; align-items: {{ justify }}; gap: 14px; padding: {{ s.inner_padding_mobile }}px; text-align: {{ s.align }}; }
+  #cro-{{ sid }} .cro-sb__offer, #cro-{{ sid }} .cro-sb__expired { display: flex; flex-direction: column; align-items: inherit; gap: 14px; max-inline-size: {{ s.content_width }}px; }
+  #cro-{{ sid }} .cro-sb__expired { display: none; }
+  #cro-{{ sid }}.is-expired .cro-sb__offer { display: none; }
+  #cro-{{ sid }}.is-expired .cro-sb__expired { display: flex; }
+  #cro-{{ sid }} .cro-sb__eyebrow { margin: 0; color: var(--cro-sb-accent); font-weight: 700; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; }
+  #cro-{{ sid }} .cro-sb__badge { display: inline-flex; align-self: {{ justify }}; padding: 6px 14px; border-radius: 999px; background: var(--cro-sb-badge-bg); color: var(--cro-sb-badge-text); font-weight: 700; font-size: {{ s.badge_size }}px; letter-spacing: .04em; }
+  #cro-{{ sid }} .cro-sb__heading { margin: 0; color: var(--cro-sb-heading); font-family: var(--font-heading); font-weight: var(--font-heading-weight, 700); font-size: {{ s.heading_size_mobile }}px; line-height: 1.12; }
+  #cro-{{ sid }} .cro-sb__text { font-size: {{ s.text_size_mobile }}px; line-height: 1.55; }
+  #cro-{{ sid }} .cro-sb__text > :first-child { margin-block-start: 0; }
+  #cro-{{ sid }} .cro-sb__text > :last-child { margin-block-end: 0; }
+  #cro-{{ sid }} .cro-sb__cd { font-size: {{ s.countdown_size_mobile }}px; color: var(--cro-sb-heading); }
+  #cro-{{ sid }} .cro-sb__coupon { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 6px 6px 6px 14px; border: 2px dashed var(--cro-sb-coupon-border); border-radius: 12px; background: var(--cro-sb-coupon-bg); color: var(--cro-sb-coupon-text); }
+  #cro-{{ sid }} .cro-sb__code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 1.1em; font-weight: 700; letter-spacing: .08em; }
+  #cro-{{ sid }} .cro-sb__copy { display: inline-flex; align-items: center; justify-content: center; min-block-size: 44px; min-inline-size: 48px; padding: 0 14px; border: 0; border-radius: 8px; background: var(--cro-sb-copy-bg); color: var(--cro-sb-copy-text); font: inherit; font-weight: 700; cursor: pointer; }
+  #cro-{{ sid }} .cro-sb__actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: {{ justify }}; gap: 12px 18px; }
+  #cro-{{ sid }} .cro-sb__btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-block-size: 48px; padding: 0 26px;
+    border-radius: {{ s.button_radius }}px; background: var(--cro-sb-btn-bg); color: var(--cro-sb-btn-text);
+    font-weight: 700; text-decoration: none; transition: background-color .2s ease, color .2s ease, transform .2s ease;
+  }
+  #cro-{{ sid }} .cro-sb__btn:hover { background: var(--cro-sb-btn-hover-bg); color: var(--cro-sb-btn-hover-text); transform: translateY(-1px); }
+  #cro-{{ sid }} .cro-sb__link { display: inline-flex; align-items: center; min-block-size: 48px; color: var(--cro-sb-link); text-decoration: underline; text-underline-offset: 4px; }
+  #cro-{{ sid }} .cro-sb__link:hover { color: var(--cro-sb-link-hover); }
+  #cro-{{ sid }} a:focus-visible, #cro-{{ sid }} button:focus-visible { outline: 2px solid var(--cro-sb-accent); outline-offset: 3px; }
+  #cro-{{ sid }} .cro-sb__terms { margin: 0; font-size: 12px; opacity: .85; }
+  #cro-{{ sid }} .cro-sb__products { margin-block-start: 28px; }
+  #cro-{{ sid }} .cro-sb__products-heading { margin: 0 0 16px; color: var(--cro-sb-heading); font-family: var(--font-heading); font-size: {{ s.heading_size_mobile | times: 0.6 | round }}px; text-align: {{ s.align }}; }
+  #cro-{{ sid }} .cro-sb__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+
+  {%- if layout == 'background' %}
+  #cro-{{ sid }} .cro-sb__media { position: absolute; inset: 0; z-index: -1; }
+  #cro-{{ sid }} .cro-sb__media::after { content: ""; position: absolute; inset: 0; background: {{ s.overlay_color }}; opacity: {{ s.overlay_opacity | divided_by: 100.0 }}; }
+  #cro-{{ sid }} .cro-sb__inner { min-block-size: {{ s.min_height_mobile }}px; }
+  {%- elsif layout == 'slim' %}
+  #cro-{{ sid }} .cro-sb__content { flex-direction: row; flex-wrap: wrap; justify-content: {{ justify }}; padding-block: 12px; }
+  #cro-{{ sid }} .cro-sb__offer, #cro-{{ sid }} .cro-sb__expired { flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: {{ justify }}; max-inline-size: none; gap: 10px 18px; }
+  #cro-{{ sid }} .cro-sb__heading { font-size: {{ s.heading_size_mobile | times: 0.6 | round }}px; }
+  {%- elsif has_image %}
+  #cro-{{ sid }} .cro-sb__media { aspect-ratio: {{ s.image.aspect_ratio | default: 1.5 }}; }
+  {%- endif %}
+
+  @media (min-width: 750px) {
+    #cro-{{ sid }} { padding-block: {{ s.padding_top_desktop }}px {{ s.padding_bottom_desktop }}px; }
+    #cro-{{ sid }} .cro-sb__content { padding: {{ s.inner_padding_desktop }}px; }
+    #cro-{{ sid }} .cro-sb__heading { font-size: {{ s.heading_size_desktop }}px; }
+    #cro-{{ sid }} .cro-sb__text { font-size: {{ s.text_size_desktop }}px; }
+    #cro-{{ sid }} .cro-sb__cd { font-size: {{ s.countdown_size_desktop }}px; }
+    #cro-{{ sid }} .cro-sb__products-heading { font-size: {{ s.heading_size_desktop | times: 0.6 | round }}px; }
+    #cro-{{ sid }} .cro-sb__grid { grid-template-columns: repeat({{ s.product_columns }}, minmax(0, 1fr)); gap: 20px; }
+    {%- if has_image and layout == 'image_left' %}
+    #cro-{{ sid }} .cro-sb__inner { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+    #cro-{{ sid }} .cro-sb__media { aspect-ratio: auto; min-block-size: {{ s.min_height_desktop }}px; }
+    #cro-{{ sid }} .cro-sb__media img { position: absolute; inset: 0; }
+    {%- elsif has_image and layout == 'image_right' %}
+    #cro-{{ sid }} .cro-sb__inner { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+    #cro-{{ sid }} .cro-sb__media { order: 2; aspect-ratio: auto; min-block-size: {{ s.min_height_desktop }}px; }
+    #cro-{{ sid }} .cro-sb__media img { position: absolute; inset: 0; }
+    {%- elsif layout == 'background' %}
+    #cro-{{ sid }} .cro-sb__inner { min-block-size: {{ s.min_height_desktop }}px; }
+    {%- elsif layout == 'slim' %}
+    #cro-{{ sid }} .cro-sb__heading { font-size: {{ s.heading_size_desktop | times: 0.55 | round }}px; }
+    {%- endif %}
+  }
+{% endstyle %}
+
+<section
+  id="cro-{{ sid }}"
+  class="cro-sb cro-sb--{{ layout }}{% if server_expired and scope_action == 'message' %} is-expired{% endif %}"
+  aria-labelledby="CroSaleHeading-{{ sid }}"
+  {%- if scope_action != 'none' %} data-cro-expire-scope="{{ scope_action }}"{% endif %}
+>
+  <div class="cro-sb__wrap">
+    <div class="cro-sb__inner">
+      {%- if has_image -%}
+        <div class="cro-sb__media">
+          <picture>
+            {%- if s.mobile_image != blank -%}
+              <source media="(max-width: 749px)" srcset="{{ s.mobile_image | image_url: width: 750 }} 750w, {{ s.mobile_image | image_url: width: 1100 }} 1100w" sizes="100vw" width="{{ s.mobile_image.width }}" height="{{ s.mobile_image.height }}">
+            {%- endif -%}
+            {%- if img_loading == 'eager' -%}
+              {{ s.image | image_url: width: 1800 | image_tag: widths: '540, 750, 1000, 1400, 1800', sizes: '(min-width: 750px) 50vw, 100vw', loading: 'eager', fetchpriority: 'high', alt: s.image_alt }}
+            {%- else -%}
+              {{ s.image | image_url: width: 1800 | image_tag: widths: '540, 750, 1000, 1400, 1800', sizes: '(min-width: 750px) 50vw, 100vw', loading: 'lazy', alt: s.image_alt }}
+            {%- endif -%}
+          </picture>
+        </div>
+      {%- endif -%}
+
+      <div class="cro-sb__content">
+        <div class="cro-sb__offer">
+          {%- if s.eyebrow != blank -%}<p class="cro-sb__eyebrow">{{ s.eyebrow | escape }}</p>{%- endif -%}
+          {%- if s.badge != blank -%}<span class="cro-sb__badge">{{ s.badge | escape }}</span>{%- endif -%}
+          <h2 class="cro-sb__heading" id="CroSaleHeading-{{ sid }}">{{ s.heading | escape }}</h2>
+          {%- if s.text != blank and layout != 'slim' -%}<div class="cro-sb__text">{{ s.text }}</div>{%- endif -%}
+          {%- if has_cd -%}
+            <div class="cro-sb__cd">
+              {% render 'cro-countdown',
+                id: sid,
+                mode: s.countdown_mode,
+                end: s.countdown_end,
+                hours: s.evergreen_hours,
+                prefix: s.countdown_prefix,
+                suffix: s.countdown_suffix,
+                suffix_later: s.countdown_suffix_later,
+                expire_action: s.timer_expire,
+                expired_message: s.timer_expired_message,
+                style: s.countdown_style,
+                show_days: s.countdown_show_days,
+                pad: s.countdown_pad,
+                separator: s.countdown_separator,
+                label_d: s.label_days,
+                label_h: s.label_hours,
+                label_m: s.label_minutes,
+                label_s: s.label_seconds,
+                urgent: s.countdown_urgent,
+                fallback: s.countdown_fallback
+              %}
+            </div>
+          {%- endif -%}
+          {%- if s.coupon_code != blank -%}
+            <div class="cro-sb__coupon">
+              {%- if s.coupon_label != blank -%}<span>{{ s.coupon_label | escape }}</span>{%- endif -%}
+              <code class="cro-sb__code">{{ s.coupon_code | escape }}</code>
+              <button type="button" class="cro-sb__copy" data-cro-copy data-copy="{{ s.coupon_code | escape }}" data-copied="{{ s.copied_label | escape }}" aria-label="{{ s.copy_label | append: ' ' | append: s.coupon_code | escape }}">
+                <span data-cro-copy-label>{{ s.copy_label | escape }}</span>
+              </button>
+              <span class="cro-vh" aria-live="polite" data-cro-copy-status></span>
+            </div>
+          {%- endif -%}
+          {%- if s.button_label != blank or s.secondary_label != blank -%}
+            <div class="cro-sb__actions">
+              {%- if s.button_label != blank -%}<a class="cro-sb__btn" href="{{ s.button_link | default: routes.all_products_collection_url }}">{{ s.button_label | escape }}</a>{%- endif -%}
+              {%- if s.secondary_label != blank -%}<a class="cro-sb__link" href="{{ s.secondary_link | default: routes.collections_url }}">{{ s.secondary_label | escape }}</a>{%- endif -%}
+            </div>
+          {%- endif -%}
+          {%- if s.terms != blank -%}<p class="cro-sb__terms">{{ s.terms | escape }}</p>{%- endif -%}
+        </div>
+
+        {%- if scope_action == 'message' -%}
+          <div class="cro-sb__expired">
+            {%- if s.expired_heading != blank -%}<h2 class="cro-sb__heading">{{ s.expired_heading | escape }}</h2>{%- endif -%}
+            {%- if s.expired_text != blank -%}<div class="cro-sb__text">{{ s.expired_text }}</div>{%- endif -%}
+            {%- if s.expired_button_label != blank -%}
+              <div class="cro-sb__actions"><a class="cro-sb__btn" href="{{ s.expired_button_link | default: routes.all_products_collection_url }}">{{ s.expired_button_label | escape }}</a></div>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+
+    {%- if s.product_collection != blank and s.product_limit > 0 -%}
+      <div class="cro-sb__products">
+        {%- if s.products_heading != blank -%}<h3 class="cro-sb__products-heading">{{ s.products_heading | escape }}</h3>{%- endif -%}
+        <div class="cro-sb__grid">
+          {%- for product in s.product_collection.products limit: s.product_limit -%}
+            {% render 'product-card', card_product: product %}
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+{%- endunless -%}
+
+{% schema %}
+{
+  "name": "CRO sale banner",
+  "tag": "div",
+  "class": "cro-section cro-section--sale",
+  "disabled_on": { "groups": ["header"] },
+  "settings": [
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "select", "id": "layout", "label": "Layout", "default": "image_right",
+      "options": [
+        { "value": "image_right", "label": "Image right" },
+        { "value": "image_left", "label": "Image left" },
+        { "value": "background", "label": "Image as background" },
+        { "value": "colour", "label": "Colour panel (no image)" },
+        { "value": "slim", "label": "Slim strip" }
+      ]
+    },
+    { "type": "checkbox", "id": "full_width", "label": "Full width", "default": false },
+    { "type": "range", "id": "container_width", "label": "Container width", "min": 800, "max": 1800, "step": 50, "unit": "px", "default": 1300 },
+    { "type": "range", "id": "content_width", "label": "Text column max width", "min": 320, "max": 900, "step": 20, "unit": "px", "default": 560 },
+    { "type": "select", "id": "align", "label": "Text alignment", "default": "start", "options": [ { "value": "start", "label": "Start" }, { "value": "center", "label": "Centre" }, { "value": "end", "label": "End" } ] },
+    { "type": "range", "id": "min_height_desktop", "label": "Minimum banner height (desktop)", "info": "Applies to image layouts.", "min": 240, "max": 800, "step": 20, "unit": "px", "default": 440 },
+    { "type": "range", "id": "min_height_mobile", "label": "Minimum banner height with background image (mobile)", "min": 240, "max": 800, "step": 20, "unit": "px", "default": 420 },
+    { "type": "range", "id": "radius", "label": "Corner radius", "min": 0, "max": 40, "step": 2, "unit": "px", "default": 24 },
+    { "type": "checkbox", "id": "show_border", "label": "Border", "default": false },
+
+    { "type": "header", "content": "Content" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Limited-time offer" },
+    { "type": "text", "id": "badge", "label": "Discount badge", "default": "Save on storage essentials", "info": "e.g. 'Up to 30% off'. Only state a discount you are actually offering." },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Stock up your shelves" },
+    { "type": "richtext", "id": "text", "label": "Offer text", "default": "<p>Describe the offer, which products it covers and how to claim it.</p>", "info": "Hidden in the slim strip layout." },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Shop the offer" },
+    { "type": "url", "id": "button_link", "label": "Button link" },
+    { "type": "text", "id": "secondary_label", "label": "Secondary link label" },
+    { "type": "url", "id": "secondary_link", "label": "Secondary link" },
+    { "type": "text", "id": "terms", "label": "Terms (small print)", "info": "Replace with your verified offer terms." },
+
+    { "type": "header", "content": "Coupon code" },
+    { "type": "text", "id": "coupon_code", "label": "Code", "info": "Create this exact code in Shopify Admin → Discounts. Leave empty to hide the coupon box." },
+    { "type": "text", "id": "coupon_label", "label": "Label", "default": "Use code" },
+    { "type": "text", "id": "copy_label", "label": "Copy button", "default": "Copy" },
+    { "type": "text", "id": "copied_label", "label": "Copied confirmation", "default": "Copied!" },
+
+    { "type": "header", "content": "Countdown" },
+    {
+      "type": "select", "id": "countdown_mode", "label": "Countdown", "default": "none",
+      "options": [ { "value": "none", "label": "None" }, { "value": "fixed", "label": "Offer ends at a date and time" }, { "value": "daily", "label": "Daily dispatch cut-off" }, { "value": "evergreen", "label": "Per-visitor timer" } ],
+      "info": "Daily cut-off uses the hour, non-dispatch days and timezone in Theme settings → CRO & conversion."
+    },
+    { "type": "text", "id": "countdown_end", "label": "End date and time", "placeholder": "2026-12-31 23:59", "info": "Format YYYY-MM-DD HH:MM in the shop timezone (Pakistan time by default). Set it to when the discount really ends." },
+    { "type": "range", "id": "evergreen_hours", "label": "Per-visitor timer length", "min": 1, "max": 72, "step": 1, "unit": "h", "default": 24, "info": "Each visitor gets their own timer, saved in their browser. Only use it for an offer that is genuinely available to each visitor for this long." },
+    { "type": "text", "id": "countdown_prefix", "label": "Text before timer", "default": "Offer ends in" },
+    { "type": "text", "id": "countdown_suffix", "label": "Text after timer", "info": "Daily cut-off: shown when the cut-off is today. Replace with your verified dispatch promise." },
+    { "type": "text", "id": "countdown_suffix_later", "label": "Text after timer (cut-off on another day)", "default": "for dispatch on {day}", "info": "Daily cut-off only. {day} becomes the weekday name." },
+    { "type": "text", "id": "countdown_fallback", "label": "Text shown before the timer loads", "info": "Also shown without JavaScript. Leave empty to show the text before timer plus the end date." },
+    { "type": "select", "id": "countdown_style", "label": "Style", "default": "boxes", "options": [ { "value": "boxes", "label": "Boxes" }, { "value": "circular", "label": "Circular" }, { "value": "inline", "label": "Inline" }, { "value": "minimal", "label": "Minimal (00:00:00)" } ] },
+    { "type": "checkbox", "id": "countdown_show_days", "label": "Show days", "default": true },
+    { "type": "checkbox", "id": "countdown_pad", "label": "Leading zeros", "default": true },
+    { "type": "text", "id": "countdown_separator", "label": "Separator", "default": ":" },
+    { "type": "text", "id": "label_days", "label": "Days label", "default": "Days" },
+    { "type": "text", "id": "label_hours", "label": "Hours label", "default": "Hrs" },
+    { "type": "text", "id": "label_minutes", "label": "Minutes label", "default": "Min" },
+    { "type": "text", "id": "label_seconds", "label": "Seconds label", "default": "Sec" },
+    { "type": "range", "id": "countdown_urgent", "label": "Urgent colour when under", "min": 0, "max": 120, "step": 5, "unit": "min", "default": 60, "info": "0 turns the urgent colour off." },
+    { "type": "range", "id": "countdown_size_desktop", "label": "Countdown size (desktop)", "min": 12, "max": 32, "step": 1, "unit": "px", "default": 18 },
+    { "type": "range", "id": "countdown_size_mobile", "label": "Countdown size (mobile)", "min": 12, "max": 32, "step": 1, "unit": "px", "default": 15 },
+
+    { "type": "header", "content": "When the countdown ends" },
+    { "type": "select", "id": "on_expire", "label": "Section", "default": "hide", "options": [ { "value": "hide", "label": "Hide the whole section" }, { "value": "message", "label": "Show an alternative message" }, { "value": "none", "label": "Keep the section, hide only the timer" } ] },
+    { "type": "select", "id": "timer_expire", "label": "Timer", "default": "hide", "options": [ { "value": "hide", "label": "Hide" }, { "value": "message", "label": "Show expired text" }, { "value": "restart", "label": "Restart (per-visitor timer only)" } ] },
+    { "type": "text", "id": "timer_expired_message", "label": "Expired text beside the timer", "default": "This offer has ended" },
+    { "type": "text", "id": "expired_heading", "label": "Alternative heading", "default": "This offer has ended" },
+    { "type": "richtext", "id": "expired_text", "label": "Alternative text", "default": "<p>Browse our full range of jars and storage.</p>" },
+    { "type": "text", "id": "expired_button_label", "label": "Alternative button label", "default": "Shop all products" },
+    { "type": "url", "id": "expired_button_link", "label": "Alternative button link" },
+
+    { "type": "header", "content": "Image" },
+    { "type": "image_picker", "id": "image", "label": "Image" },
+    { "type": "image_picker", "id": "mobile_image", "label": "Mobile image", "info": "Optional." },
+    { "type": "text", "id": "image_alt", "label": "Image alt text", "info": "Describe the image for screen readers." },
+    { "type": "checkbox", "id": "image_eager", "label": "Load image immediately", "default": false, "info": "Turn on only when this is the first section on the page." },
+    { "type": "color", "id": "overlay_color", "label": "Background-image overlay", "default": "#0F2F27" },
+    { "type": "range", "id": "overlay_opacity", "label": "Overlay opacity", "min": 0, "max": 90, "step": 5, "unit": "%", "default": 45 },
+
+    { "type": "header", "content": "Featured products" },
+    { "type": "collection", "id": "product_collection", "label": "Collection" },
+    { "type": "range", "id": "product_limit", "label": "Products to show", "min": 0, "max": 4, "step": 1, "default": 0, "info": "0 hides the product row." },
+    { "type": "range", "id": "product_columns", "label": "Columns (desktop)", "min": 2, "max": 4, "step": 1, "default": 4 },
+    { "type": "text", "id": "products_heading", "label": "Products heading", "default": "Included in the offer" },
+
+    { "type": "header", "content": "Typography" },
+    { "type": "range", "id": "heading_size_desktop", "label": "Heading size (desktop)", "min": 24, "max": 72, "step": 2, "unit": "px", "default": 44 },
+    { "type": "range", "id": "heading_size_mobile", "label": "Heading size (mobile)", "min": 20, "max": 48, "step": 2, "unit": "px", "default": 30 },
+    { "type": "range", "id": "text_size_desktop", "label": "Body text size (desktop)", "min": 12, "max": 24, "step": 1, "unit": "px", "default": 17 },
+    { "type": "range", "id": "text_size_mobile", "label": "Body text size (mobile)", "min": 12, "max": 24, "step": 1, "unit": "px", "default": 15 },
+    { "type": "range", "id": "badge_size", "label": "Badge text size", "min": 11, "max": 24, "step": 1, "unit": "px", "default": 14 },
+    { "type": "range", "id": "button_radius", "label": "Button corner radius", "min": 0, "max": 30, "step": 2, "unit": "px", "default": 10 },
+
+    { "type": "header", "content": "Spacing" },
+    { "type": "range", "id": "padding_top_desktop", "label": "Padding top (desktop)", "min": 0, "max": 160, "step": 4, "unit": "px", "default": 64 },
+    { "type": "range", "id": "padding_bottom_desktop", "label": "Padding bottom (desktop)", "min": 0, "max": 160, "step": 4, "unit": "px", "default": 64 },
+    { "type": "range", "id": "padding_top_mobile", "label": "Padding top (mobile)", "min": 0, "max": 160, "step": 4, "unit": "px", "default": 40 },
+    { "type": "range", "id": "padding_bottom_mobile", "label": "Padding bottom (mobile)", "min": 0, "max": 160, "step": 4, "unit": "px", "default": 40 },
+    { "type": "range", "id": "inner_padding_desktop", "label": "Inner padding (desktop)", "min": 12, "max": 96, "step": 4, "unit": "px", "default": 56 },
+    { "type": "range", "id": "inner_padding_mobile", "label": "Inner padding (mobile)", "min": 12, "max": 96, "step": 4, "unit": "px", "default": 24 },
+
+    { "type": "header", "content": "Colours", "info": "Keep text at a 4.5:1 contrast ratio or better against the panel, overlay and button colours (WCAG AA)." },
+    { "type": "color", "id": "bg_color", "label": "Section background", "default": "#F7F1E7" },
+    { "type": "color", "id": "panel_color", "label": "Banner panel", "default": "#173F35" },
+    { "type": "color", "id": "heading_color", "label": "Heading and timer text", "default": "#FFFDF8" },
+    { "type": "color", "id": "text_color", "label": "Body text", "default": "#F7F1E7" },
+    { "type": "color", "id": "accent_color", "label": "Eyebrow and focus ring", "default": "#E8B44A" },
+    { "type": "color", "id": "badge_bg", "label": "Badge background", "default": "#C64F32" },
+    { "type": "color", "id": "badge_text_color", "label": "Badge text", "default": "#FFFFFF" },
+    { "type": "color", "id": "button_bg", "label": "Button background", "default": "#E8B44A" },
+    { "type": "color", "id": "button_text", "label": "Button text", "default": "#173F35" },
+    { "type": "color", "id": "button_hover_bg", "label": "Button hover background", "default": "#D4623D" },
+    { "type": "color", "id": "button_hover_text", "label": "Button hover text", "default": "#FFFDF8" },
+    { "type": "color", "id": "link_color", "label": "Secondary link", "default": "#FFFDF8" },
+    { "type": "color", "id": "link_hover_color", "label": "Secondary link hover", "default": "#E8B44A" },
+    { "type": "color", "id": "coupon_bg", "label": "Coupon box background", "default": "#0F2F27" },
+    { "type": "color", "id": "coupon_border", "label": "Coupon box border", "default": "#E8B44A" },
+    { "type": "color", "id": "coupon_text", "label": "Coupon text", "default": "#FFFDF8" },
+    { "type": "color", "id": "copy_bg", "label": "Copy button background", "default": "#E8B44A" },
+    { "type": "color", "id": "copy_text", "label": "Copy button text", "default": "#173F35" },
+    { "type": "color", "id": "border_color", "label": "Border", "default": "#D7CEC1" },
+    { "type": "color", "id": "cd_box_bg", "label": "Countdown box background", "default": "#0F2F27" },
+    { "type": "color", "id": "cd_digit", "label": "Countdown digits", "default": "#FFFDF8" },
+    { "type": "color", "id": "cd_label", "label": "Countdown labels", "default": "#E8B44A" },
+    { "type": "color", "id": "cd_separator", "label": "Countdown separator", "default": "#E8B44A" },
+    { "type": "color", "id": "cd_urgent", "label": "Countdown urgent colour", "default": "#F2A38A", "info": "Shown on the dark panel, so it is lighter than the brand promotion colour." }
+  ],
+  "presets": [ { "name": "CRO sale banner" } ]
+}
+{% endschema %}

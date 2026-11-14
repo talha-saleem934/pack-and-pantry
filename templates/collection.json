@@ -1,1 +1,128 @@
-{"sections":{"main":{"type":"main-collection","custom_css":[".collection-hero {padding: 18px 0 !important; background: #f7f1e7 !important; border-bottom: 1px solid #c8d8c5;}",".collection-hero__inner {display: block !important;}",".collection-hero__image,.collection-hero .eyebrow,.collection-hero .rte {display: none !important;}",".collection-hero h1 {font-size: 32px !important; margin: 0 !important; color: #173f35 !important;}",".collection-toolbar {display: none !important;}",".section--compact {padding-top: 24px !important;}"],"settings":{"products_per_page":24,"columns":3}},"support":{"type":"rich-text","custom_css":[".text-center{max-width:820px;margin:auto;padding:40px 24px;background:#fffdf8;border:1px solid #d7cec1;border-radius:22px;text-align:center;display:flex;flex-direction:column;align-items:center}",".text-center h2{font-size:44px;color:#173f35;margin:10px auto 18px;max-width:700px}",".text-center .eyebrow{color:#d4623d;margin:0 auto}",".text-center .rte{line-height:28px;margin:0 auto 18px;max-width:620px}",".text-center .button{margin:0 auto!important}"],"settings":{"eyebrow":"Need help choosing?","heading":"Find the right container for the job","text":"<p>Check each product page for verified size, capacity, material and care details. Contact us if you need help with a specific use.<\/p>","button_label":"Shop Now","button_link":"shopify:\/\/collections\/all"}}},"order":["main","support"]}
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "cro_collection_banner": {
+      "type": "cro-collection-banner",
+      "settings": {
+        "eyebrow": "Blessed Friday Sale",
+        "badge": "Up to 30% off",
+        "heading": "Blessed Friday Sale is on",
+        "text": "Up to 30% off jars, bottles and storage organisers, applied automatically. No code needed.",
+        "button_label": "Shop all deals",
+        "button_link": "shopify://collections/all",
+        "countdown_mode": "fixed",
+        "countdown_end": "2026-12-02 23:59",
+        "countdown_prefix": "Ends in",
+        "countdown_fallback": "Ends 2 December",
+        "countdown_style": "boxes",
+        "label_days": "Days",
+        "label_hours": "Hrs",
+        "label_minutes": "Min",
+        "label_seconds": "Sec",
+        "on_expire": "hide",
+        "min_height_desktop": 180,
+        "min_height_mobile": 160
+      }
+    },
+    "cro_collection_trust": {
+      "type": "cro-collection-trust",
+      "blocks": {
+        "delivery": {
+          "type": "trust",
+          "settings": {
+            "icon": "truck",
+            "title": "Free delivery over PKR 5,000",
+            "text": "On eligible orders. Terms may apply.",
+            "link": "shopify://pages/shipping-information"
+          }
+        },
+        "secure": {
+          "type": "trust",
+          "settings": {
+            "icon": "lock",
+            "title": "Secure checkout",
+            "text": "Payment is handled by Shopify's encrypted checkout."
+          }
+        },
+        "returns": {
+          "type": "trust",
+          "settings": {
+            "icon": "refresh",
+            "title": "Returns & exchanges",
+            "text": "Read our policy before you order.",
+            "link": "shopify://pages/returns-exchanges"
+          }
+        },
+        "help": {
+          "type": "trust",
+          "settings": {
+            "icon": "mail",
+            "title": "Help when you need it",
+            "text": "Questions about sizes or stock? Contact us.",
+            "link": "shopify://pages/contact"
+          }
+        }
+      },
+      "block_order": [
+        "delivery",
+        "secure",
+        "returns",
+        "help"
+      ],
+      "settings": {}
+    },
+    "main": {
+      "type": "main-collection",
+      "custom_css": [
+        ".collection-hero {padding: 18px 0 !important; background: #f7f1e7 !important; border-bottom: 1px solid #c8d8c5;}",
+        ".collection-hero__inner {display: block !important;}",
+        ".collection-hero__image,.collection-hero .eyebrow,.collection-hero .rte {display: none !important;}",
+        ".collection-hero h1 {font-size: 32px !important; margin: 0 !important; color: #173f35 !important;}",
+        ".section--compact {padding-top: 24px !important;}"
+      ],
+      "settings": {
+        "products_per_page": 24,
+        "columns": 3
+      }
+    },
+    "support": {
+      "type": "rich-text",
+      "custom_css": [
+        ".text-center{max-width:820px;margin:auto;padding:40px 24px;background:#fffdf8;border:1px solid #d7cec1;border-radius:22px;text-align:center;display:flex;flex-direction:column;align-items:center}",
+        ".text-center h2{font-size:44px;color:#173f35;margin:10px auto 18px;max-width:700px}",
+        ".text-center .eyebrow{color:#d4623d;margin:0 auto}",
+        ".text-center .rte{line-height:28px;margin:0 auto 18px;max-width:620px}",
+        ".text-center .button{margin:0 auto!important}"
+      ],
+      "settings": {
+        "eyebrow": "Need help choosing?",
+        "heading": "Find the right container for the job",
+        "text": "<p>Check each product page for verified size, capacity, material and care details. Contact us if you need help with a specific use.</p>",
+        "button_label": "Shop Now",
+        "button_link": "shopify://collections/all"
+      }
+    },
+    "cro_recently_viewed": {
+      "type": "cro-pdp-recently-viewed",
+      "settings": {
+        "heading": "Recently viewed",
+        "limit": 4
+      }
+    }
+  },
+  "order": [
+    "cro_collection_banner",
+    "cro_collection_trust",
+    "main",
+    "support",
+    "cro_recently_viewed"
+  ]
+}

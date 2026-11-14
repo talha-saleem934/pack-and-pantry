@@ -1,1 +1,76 @@
-{"sections":{"main":{"type":"main-cart","settings":{"enable_note":true}}},"order":["main"]}
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-cart",
+      "settings": {
+        "enable_note": true
+      }
+    },
+    "cro_cart_upsell": {
+      "type": "cro-cart-upsell",
+      "blocks": {
+        "delivery": {
+          "type": "trust",
+          "settings": {
+            "icon": "truck",
+            "title": "Free delivery over PKR 5,000",
+            "text": "On eligible orders. Terms may apply.",
+            "link": "shopify://pages/shipping-information"
+          }
+        },
+        "secure": {
+          "type": "trust",
+          "settings": {
+            "icon": "lock",
+            "title": "Secure checkout",
+            "text": "Payment is handled by Shopify's encrypted checkout."
+          }
+        },
+        "returns": {
+          "type": "trust",
+          "settings": {
+            "icon": "refresh",
+            "title": "Returns & exchanges",
+            "text": "Read our policy before you order.",
+            "link": "shopify://pages/returns-exchanges"
+          }
+        },
+        "help": {
+          "type": "trust",
+          "settings": {
+            "icon": "mail",
+            "title": "Help when you need it",
+            "text": "Questions about sizes or stock? Contact us.",
+            "link": "shopify://pages/contact"
+          }
+        }
+      },
+      "block_order": [
+        "delivery",
+        "secure",
+        "returns",
+        "help"
+      ],
+      "settings": {
+        "heading": "You may also like",
+        "collection": "jars",
+        "limit": 4,
+        "add_label": "Add to cart",
+        "choose_label": "Choose options"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "cro_cart_upsell"
+  ]
+}

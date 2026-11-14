@@ -1,0 +1,723 @@
+{%- liquid
+  assign s = section.settings
+  assign sid = section.id
+-%}
+{%- liquid
+  assign ship_threshold = s.threshold_override
+  if ship_threshold == blank or ship_threshold == 0
+    assign ship_threshold = settings.cro_free_delivery_threshold | default: 0
+  endif
+  assign ship_cents = ship_threshold | times: 100
+  assign ship_left = ship_cents | minus: cart.total_price
+  assign ship_pct = 0
+  if ship_cents > 0
+    assign ship_pct = cart.total_price | times: 100 | divided_by: ship_cents
+    if ship_pct > 100
+      assign ship_pct = 100
+    endif
+  endif
+-%}{%- liquid
+  assign cart_savings = 0
+  for item in cart.items
+    if item.variant.compare_at_price > item.variant.price
+      assign line_save = item.variant.compare_at_price | minus: item.variant.price | times: item.quantity
+      assign cart_savings = cart_savings | plus: line_save
+    endif
+    assign disc = item.original_line_price | minus: item.final_line_price
+    assign cart_savings = cart_savings | plus: disc
+  endfor
+  for d in cart.cart_level_discount_applications
+    assign cart_savings = cart_savings | plus: d.total_allocated_amount
+  endfor
+-%}
+{%- liquid
+  assign cart_ids = ','
+  for item in cart.items
+    assign cart_ids = cart_ids | append: item.product_id | append: ','
+  endfor
+-%}
+{{ 'cro-components.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'cart-drawer.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'cro-core.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'cro-cart.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'cro-confetti.js' | asset_url }}" defer="defer"></script>
+{%- if settings.cro_enable_analytics -%}<script src="{{ 'cro-analytics-events.js' | asset_url }}" defer="defer"></script>{%- endif -%}
+<script>window.CRO_MONEY_FORMAT = {{ shop.money_format | json }};</script>
+{% style %}
+  #cro-{{ sid }} {
+    --cro-heading: {{ s.heading_color }}; --cro-text: {{ s.text_color }}; --cro-accent: {{ s.accent_color }};
+    --cro-border: {{ s.border_color }}; --cro-card-bg: {{ s.card_bg }}; --cro-icon: {{ s.icon_color }};
+    --cro-btn-bg: {{ s.button_bg }}; --cro-btn-text: {{ s.button_text }};
+    --cro-ship-track: {{ s.ship_track }}; --cro-ship-fill: {{ s.ship_fill }};
+    --cro-link-hover: {{ s.accent_color }};
+  }
+  #cro-{{ sid }} .cart-drawer__panel { background: {{ s.bg_color }}; color: var(--cro-text); }
+  #cro-{{ sid }} .cart-drawer__footer { background: {{ s.bg_color }}; }
+  #cro-{{ sid }} .cro-cd__ship { padding: 12px 22px; border-block-end: 1px solid var(--cro-border); background: {{ s.ship_panel_bg }}; }
+  #cro-{{ sid }} .cro-cd__save-line { margin: 4px 0 0; color: {{ s.savings_color }}; font-size: 13px; font-weight: 700; }
+  #cro-{{ sid }} .cro-cd__was { color: var(--cro-text); font-size: 12px; font-weight: 400; display: block; text-align: end; }
+  #cro-{{ sid }} .cro-cd__upsell { margin-block-start: 18px; padding-block-start: 16px; border-block-start: 1px solid var(--cro-border); }
+  #cro-{{ sid }} .cro-cd__upsell-title { margin: 0 0 10px; color: var(--cro-heading); font-size: 15px; font-weight: 700; }
+  #cro-{{ sid }} .cro-cd__ups { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+  #cro-{{ sid }} .cro-cd__up { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 8px; border: 1px solid var(--cro-border); border-radius: 12px; background: var(--cro-card-bg); }
+  #cro-{{ sid }} .cro-cd__up img { inline-size: 56px; block-size: 56px; border-radius: 8px; object-fit: cover; }
+  #cro-{{ sid }} .cro-cd__up a { color: var(--cro-heading); font-size: 14px; font-weight: 700; text-decoration: none; }
+  #cro-{{ sid }} .cro-cd__up-price { display: block; font-size: 13px; }
+  #cro-{{ sid }} .cro-cd__up-btn { min-block-size: 40px; min-inline-size: 44px; padding: 0 12px; border: 1px solid var(--cro-btn-bg); border-radius: 8px; background: transparent; color: var(--cro-btn-bg); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+  #cro-{{ sid }} .cro-cd__up-btn:hover { background: var(--cro-btn-bg); color: var(--cro-btn-text); }
+  #cro-{{ sid }} .cro-cd__extras { display: grid; gap: 8px; margin-block-end: 12px; }
+  #cro-{{ sid }} .cro-cd__extras details summary { cursor: pointer; font-size: 14px; font-weight: 700; color: var(--cro-heading); min-block-size: 36px; display: flex; align-items: center; }
+  #cro-{{ sid }} .cro-cd__extras textarea, #cro-{{ sid }} .cro-cd__extras input { box-sizing: border-box; inline-size: 100%; min-block-size: 44px; padding: 8px 12px; border: 1px solid var(--cro-border); border-radius: 8px; font: inherit; }
+  #cro-{{ sid }} .cro-cd__trust { margin-block-end: 12px; }
+  #cro-{{ sid }} .cro-cd__trust .cro-trust { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #cro-{{ sid }} .cro-cd__checkout { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+  #cro-{{ sid }} .cro-cd__empty-list { display: grid; gap: 10px; margin: 18px 0 0; padding: 0; list-style: none; text-align: start; }
+  #cro-{{ sid }} .cro-cd__pay { margin-block-start: 10px; justify-content: center; }
+{% endstyle %}
+<span hidden data-cro-confetti-config data-enabled="{{ s.confetti }}" data-colors="{{ s.confetti_1 }},{{ s.confetti_2 }},{{ s.confetti_3 }},{{ s.confetti_4 }}" data-count="{{ s.confetti_count }}" data-duration="{{ s.confetti_duration | times: 100 }}"></span>
+<div id="cro-{{ sid }}" data-cart-drawer-section data-section-id="{{ section.id }}">
+  <cart-drawer class="cart-drawer" data-cart-drawer aria-hidden="true">
+    <button class="cart-drawer__overlay" type="button" data-cart-close tabindex="-1" aria-label="{{ 'accessibility.close' | t }}"></button>
+    <div class="cart-drawer__panel" role="dialog" aria-modal="true" aria-labelledby="CartDrawerTitle">
+      <header class="cart-drawer__header"><h2 id="CartDrawerTitle">{{ s.title | escape }} <span class="muted">({{ cart.item_count }})</span></h2><button class="icon-button" type="button" data-cart-close aria-label="{{ 'accessibility.close' | t }}">{% render 'icon', icon: 'close' %}</button></header>
+      {%- if s.show_shipping and ship_cents > 0 and cart.item_count > 0 -%}<div class="cro-cd__ship">{%- if s.show_shipping and ship_cents > 0 and cart.item_count > 0 -%}
+  <div class="cro-ship" data-cro-ship data-pct="{{ ship_pct }}">
+    <p class="cro-ship__msg" role="status">
+      {%- if ship_left > 0 -%}{%- assign ship_money = ship_left | money -%}{{ s.ship_progress | escape | replace: '{amount}', ship_money }}{%- else -%}{{ s.ship_done | escape }}{%- endif -%}
+    </p>
+    <span class="cro-ship__bar" aria-hidden="true"><span class="cro-ship__fill"></span></span>
+  </div>
+{%- endif -%}</div>{%- endif -%}
+      <div class="cart-drawer__content">
+        {%- if cart.item_count > 0 -%}
+          <div class="cart-drawer__items">
+            {%- for item in cart.items -%}
+              <article class="cart-drawer__item">
+                {%- if item.image -%}<a href="{{ item.url }}">{{ item.image | image_url: width: 220 | image_tag: width: 88, height: 110, loading: 'lazy', alt: item.image.alt | default: item.product.title }}</a>{%- endif -%}
+                <div>
+                  <h3><a href="{{ item.url }}">{{ item.product.title }}</a></h3>
+                  {%- unless item.product.has_only_default_variant -%}<p class="muted">{{ item.variant.title }}</p>{%- endunless -%}
+                  {%- if item.selling_plan_allocation -%}<p class="muted">{{ item.selling_plan_allocation.selling_plan.name }}</p>{%- endif -%}
+                  {%- for discount in item.line_level_discount_allocations -%}<p class="cro-cd__save-line">{{ discount.discount_application.title }} (−{{ discount.amount | money }})</p>{%- endfor -%}
+                  <div class="quantity" data-drawer-quantity>
+                    <button type="button" data-cart-change="{{ forloop.index }}" data-quantity="{{ item.quantity | minus: 1 }}" aria-label="{{ s.decrease_label | escape }} {{ item.product.title | escape }}">{% render 'icon', icon: 'minus' %}</button>
+                    <input type="number" value="{{ item.quantity }}" min="0" readonly aria-label="{{ 'products.product.quantity' | t }}: {{ item.product.title | escape }}">
+                    <button type="button" data-cart-change="{{ forloop.index }}" data-quantity="{{ item.quantity | plus: 1 }}" aria-label="{{ s.increase_label | escape }} {{ item.product.title | escape }}">{% render 'icon', icon: 'plus' %}</button>
+                  </div>
+                  <button class="link-button" type="button" data-cart-change="{{ forloop.index }}" data-quantity="0">{{ s.remove_label | escape }}</button>
+                </div>
+                <strong class="cart-drawer__item-price">
+                  {{ item.final_line_price | money }}
+                  {%- assign item_compare = item.variant.compare_at_price | times: item.quantity -%}
+                  {%- if item_compare > item.final_line_price -%}<s class="cro-cd__was">{{ item_compare | money }}</s>{%- elsif item.original_line_price > item.final_line_price -%}<s class="cro-cd__was">{{ item.original_line_price | money }}</s>{%- endif -%}
+                </strong>
+              </article>
+            {%- endfor -%}
+          </div>
+          {%- if s.show_upsell and s.upsell_collection != blank -%}
+            {%- capture ups -%}
+              {%- assign shown = 0 -%}
+              {%- for product in s.upsell_collection.products limit: 30 -%}
+                {%- assign pid = ',' | append: product.id | append: ',' -%}
+                {%- if product.available and shown < s.upsell_limit -%}
+                  {%- unless cart_ids contains pid -%}
+                    {%- assign shown = shown | plus: 1 -%}
+                    <li class="cro-cd__up">
+                      {%- if product.featured_media -%}{{ product.featured_media | image_url: width: 120, height: 120, crop: 'center' | image_tag: loading: 'lazy', alt: '', width: 56, height: 56 }}{%- else -%}<span></span>{%- endif -%}
+                      <span><a href="{{ product.url }}">{{ product.title | escape }}</a><span class="cro-cd__up-price">{{ product.price | money }}</span></span>
+                      {%- if product.has_only_default_variant -%}
+                        {%- form 'product', product, data-product-form: '' -%}<input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}"><button class="cro-cd__up-btn" type="submit" aria-label="{{ s.upsell_add | escape }}: {{ product.title | escape }}">{{ s.upsell_add | escape }}</button>{%- endform -%}
+                      {%- else -%}
+                        <button class="cro-cd__up-btn" type="button" data-quick-add data-url="{{ product.url }}?section_id=quick-add-product" aria-label="{{ s.upsell_choose | escape }}: {{ product.title | escape }}">{{ s.upsell_choose | escape }}</button>
+                      {%- endif -%}
+                    </li>
+                  {%- endunless -%}
+                {%- endif -%}
+              {%- endfor -%}
+            {%- endcapture -%}
+            {%- if ups != blank -%}
+              <div class="cro-cd__upsell"><p class="cro-cd__upsell-title">{{ s.upsell_heading | escape }}</p><ul class="cro-cd__ups" role="list">{{ ups }}</ul></div>
+            {%- endif -%}
+          {%- endif -%}
+        {%- else -%}
+          <div class="empty-state">
+            <div class="feature__icon" style="margin-inline:auto">{% render 'icon', icon: 'cart' %}</div>
+            <h3>{{ s.empty_heading | escape }}</h3>
+            {%- if s.empty_text != blank -%}<p>{{ s.empty_text | escape }}</p>{%- endif -%}
+            <a class="button" href="{{ s.empty_link | default: routes.all_products_collection_url }}">{{ s.empty_button | escape }}</a>
+            {%- if s.empty_collection != blank -%}
+              <ul class="cro-cd__empty-list" role="list">
+                {%- for product in s.empty_collection.products limit: s.empty_limit -%}
+                  <li class="cro-cd__up">
+                    {%- if product.featured_media -%}{{ product.featured_media | image_url: width: 120, height: 120, crop: 'center' | image_tag: loading: 'lazy', alt: '', width: 56, height: 56 }}{%- else -%}<span></span>{%- endif -%}
+                    <span><a href="{{ product.url }}">{{ product.title | escape }}</a><span class="cro-cd__up-price">{{ product.price | money }}</span></span>
+                    <a class="cro-cd__up-btn" href="{{ product.url }}" style="display:inline-flex;align-items:center">{{ s.empty_view | escape }}</a>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      </div>
+      {%- if cart.item_count > 0 -%}
+        <footer class="cart-drawer__footer">
+          {%- if section.blocks.size > 0 -%}<div class="cro-cd__trust">{% render 'cro-trust-badges', blocks: section.blocks, block_type: 'trust', icon_size: 18 %}</div>{%- endif -%}
+          <form action="{{ routes.cart_url }}" method="post" data-cro-checkout-form>
+            {%- if s.show_note or s.show_discount -%}
+              <div class="cro-cd__extras">
+                {%- if s.show_note -%}<details><summary>{{ s.note_label | escape }}</summary><label class="cro-vh" for="CroNote-{{ sid }}">{{ s.note_label | escape }}</label><textarea id="CroNote-{{ sid }}" name="note" data-cro-note rows="2">{{ cart.note }}</textarea></details>{%- endif -%}
+                {%- if s.show_discount -%}<details><summary>{{ s.discount_label | escape }}</summary><label class="cro-vh" for="CroDiscount-{{ sid }}">{{ s.discount_label | escape }}</label><input id="CroDiscount-{{ sid }}" type="text" autocomplete="off" data-cro-discount placeholder="{{ s.discount_placeholder | escape }}"></details>{%- endif -%}
+              </div>
+            {%- endif -%}
+            <div class="cart-drawer__total"><span>{{ s.subtotal_label | escape }}</span><strong>{{ cart.total_price | money_with_currency }}</strong></div>
+            {%- if s.show_savings and cart_savings > 0 -%}<p class="cro-cd__save-line">{%- assign save_money = cart_savings | money -%}{{ s.savings_label | escape | replace: '{amount}', save_money }}</p>{%- endif -%}
+            {%- if s.tax_note != blank -%}<p class="muted">{{ s.tax_note | escape }}</p>{%- endif -%}
+            <div class="cart-drawer__actions">
+              <a class="button button--secondary" href="{{ routes.cart_url }}">{{ s.view_cart_label | escape }}</a>
+              <button class="button button--full cro-cd__checkout" type="submit" name="checkout">{% render 'cro-icon', icon: 'lock', size: 16 %}{{ s.checkout_label | escape }}</button>
+            </div>
+          </form>
+          {%- if s.show_payment -%}<div class="cro-cd__pay">{% render 'cro-payment-icons' %}</div>{%- endif -%}
+        </footer>
+      {%- endif -%}
+    </div>
+  </cart-drawer>
+  <dialog class="quick-add-dialog" data-quick-add-dialog><button class="icon-button quick-add-dialog__close" type="button" data-quick-add-close aria-label="{{ 'accessibility.close' | t }}">{% render 'icon', icon: 'close' %}</button><div data-quick-add-content></div></dialog>
+</div>
+
+{% schema %}
+{
+  "name": "CRO cart drawer",
+  "tag": "div",
+  "class": "cro-section cro-section--drawer",
+  "enabled_on": {
+    "groups": [
+      "header",
+      "footer"
+    ]
+  },
+  "max_blocks": 4,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Your cart"
+    },
+    {
+      "type": "text",
+      "id": "subtotal_label",
+      "label": "Subtotal label",
+      "default": "Subtotal"
+    },
+    {
+      "type": "text",
+      "id": "tax_note",
+      "label": "Note under subtotal",
+      "default": "Taxes, discounts and shipping are calculated at checkout."
+    },
+    {
+      "type": "text",
+      "id": "view_cart_label",
+      "label": "View cart label",
+      "default": "View cart"
+    },
+    {
+      "type": "text",
+      "id": "checkout_label",
+      "label": "Checkout label",
+      "default": "Checkout securely"
+    },
+    {
+      "type": "text",
+      "id": "remove_label",
+      "label": "Remove label",
+      "default": "Remove"
+    },
+    {
+      "type": "text",
+      "id": "decrease_label",
+      "label": "Decrease label (screen readers)",
+      "default": "Decrease quantity of"
+    },
+    {
+      "type": "text",
+      "id": "increase_label",
+      "label": "Increase label (screen readers)",
+      "default": "Increase quantity of"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_payment",
+      "label": "Show payment icons",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Free-delivery bar",
+      "info": "Uses the free-delivery threshold in Theme settings → CRO & conversion unless you set one here. It must match your real shipping rates."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_shipping",
+      "label": "Show free-delivery progress",
+      "default": true
+    },
+    {
+      "type": "number",
+      "id": "threshold_override",
+      "label": "Threshold override",
+      "info": "Plain amount, e.g. 5000. Empty uses Theme settings."
+    },
+    {
+      "type": "text",
+      "id": "ship_progress",
+      "label": "Message before threshold",
+      "default": "You're {amount} away from free delivery"
+    },
+    {
+      "type": "text",
+      "id": "ship_done",
+      "label": "Message when reached",
+      "default": "You've unlocked free delivery!"
+    },
+    {
+      "type": "color",
+      "id": "ship_track",
+      "label": "Bar track",
+      "default": "#DCE8D8"
+    },
+    {
+      "type": "color",
+      "id": "ship_fill",
+      "label": "Bar fill",
+      "default": "#173F35"
+    },
+    {
+      "type": "color",
+      "id": "ship_panel_bg",
+      "label": "Free-delivery panel background",
+      "default": "#F7F1E7"
+    },
+    {
+      "type": "header",
+      "content": "Savings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_savings",
+      "label": "Show total savings",
+      "default": true,
+      "info": "Adds up compare-at savings and applied discounts."
+    },
+    {
+      "type": "text",
+      "id": "savings_label",
+      "label": "Savings text",
+      "default": "You're saving {amount}"
+    },
+    {
+      "type": "color",
+      "id": "savings_color",
+      "label": "Savings colour",
+      "default": "#2F6F4E"
+    },
+    {
+      "type": "header",
+      "content": "Upsell",
+      "info": "Shows available products from the collection that are not already in the cart."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_upsell",
+      "label": "Show upsell",
+      "default": true
+    },
+    {
+      "type": "collection",
+      "id": "upsell_collection",
+      "label": "Upsell collection"
+    },
+    {
+      "type": "range",
+      "id": "upsell_limit",
+      "label": "Products to show",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "text",
+      "id": "upsell_heading",
+      "label": "Heading",
+      "default": "Complete your pantry"
+    },
+    {
+      "type": "text",
+      "id": "upsell_add",
+      "label": "Add label",
+      "default": "Add"
+    },
+    {
+      "type": "text",
+      "id": "upsell_choose",
+      "label": "Options label",
+      "default": "Options"
+    },
+    {
+      "type": "header",
+      "content": "Order note and discount code"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_note",
+      "label": "Order note",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "note_label",
+      "label": "Note label",
+      "default": "Add an order note"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_discount",
+      "label": "Discount code field",
+      "default": true,
+      "info": "The code is applied on the checkout page."
+    },
+    {
+      "type": "text",
+      "id": "discount_label",
+      "label": "Discount label",
+      "default": "Have a discount code?"
+    },
+    {
+      "type": "text",
+      "id": "discount_placeholder",
+      "label": "Discount placeholder",
+      "default": "Enter code"
+    },
+    {
+      "type": "header",
+      "content": "Empty cart"
+    },
+    {
+      "type": "text",
+      "id": "empty_heading",
+      "label": "Heading",
+      "default": "Your cart is ready for something useful."
+    },
+    {
+      "type": "text",
+      "id": "empty_text",
+      "label": "Text",
+      "default": "Explore jars, storage and packaging for your next shelf or project."
+    },
+    {
+      "type": "text",
+      "id": "empty_button",
+      "label": "Button label",
+      "default": "Shop storage"
+    },
+    {
+      "type": "url",
+      "id": "empty_link",
+      "label": "Button link"
+    },
+    {
+      "type": "collection",
+      "id": "empty_collection",
+      "label": "Suggested products collection"
+    },
+    {
+      "type": "range",
+      "id": "empty_limit",
+      "label": "Suggested products",
+      "min": 0,
+      "max": 6,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "text",
+      "id": "empty_view",
+      "label": "View label",
+      "default": "View"
+    },
+    {
+      "type": "header",
+      "content": "Add-to-cart confetti",
+      "info": "Plays after a successful add to cart (not on quantity changes). Turned off for visitors who prefer reduced motion."
+    },
+    {
+      "type": "checkbox",
+      "id": "confetti",
+      "label": "Confetti on add to cart",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "confetti_1",
+      "label": "Colour 1",
+      "default": "#173F35"
+    },
+    {
+      "type": "color",
+      "id": "confetti_2",
+      "label": "Colour 2",
+      "default": "#E8B44A"
+    },
+    {
+      "type": "color",
+      "id": "confetti_3",
+      "label": "Colour 3",
+      "default": "#D4623D"
+    },
+    {
+      "type": "color",
+      "id": "confetti_4",
+      "label": "Colour 4",
+      "default": "#DCE8D8"
+    },
+    {
+      "type": "range",
+      "id": "confetti_count",
+      "label": "Pieces",
+      "min": 40,
+      "max": 200,
+      "step": 10,
+      "default": 120
+    },
+    {
+      "type": "range",
+      "id": "confetti_duration",
+      "label": "Duration",
+      "min": 10,
+      "max": 40,
+      "step": 2,
+      "default": 18,
+      "info": "In tenths of a second."
+    },
+    {
+      "type": "header",
+      "content": "Colours",
+      "info": "Keep text at a 4.5:1 contrast ratio or better against its background (WCAG AA)."
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#FFFDF8"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Headings",
+      "default": "#18231F"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#3F4A45"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#D4623D"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Borders",
+      "default": "#D7CEC1"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Upsell card background",
+      "default": "#F7F1E7"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icons",
+      "default": "#173F35"
+    },
+    {
+      "type": "color",
+      "id": "button_bg",
+      "label": "Upsell button",
+      "default": "#173F35"
+    },
+    {
+      "type": "color",
+      "id": "button_text",
+      "label": "Upsell button hover text",
+      "default": "#FFFDF8"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "trust",
+      "name": "Trust item",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "truck",
+              "label": "Truck"
+            },
+            {
+              "value": "shield",
+              "label": "Shield"
+            },
+            {
+              "value": "cash",
+              "label": "Cash"
+            },
+            {
+              "value": "refresh",
+              "label": "Refresh / returns"
+            },
+            {
+              "value": "lock",
+              "label": "Lock"
+            },
+            {
+              "value": "star",
+              "label": "Star"
+            },
+            {
+              "value": "whatsapp",
+              "label": "WhatsApp"
+            },
+            {
+              "value": "gift",
+              "label": "Gift"
+            },
+            {
+              "value": "clock",
+              "label": "Clock"
+            },
+            {
+              "value": "tag",
+              "label": "Tag"
+            },
+            {
+              "value": "heart",
+              "label": "Heart"
+            },
+            {
+              "value": "check",
+              "label": "Check"
+            },
+            {
+              "value": "phone",
+              "label": "Phone"
+            },
+            {
+              "value": "box",
+              "label": "Box"
+            },
+            {
+              "value": "leaf",
+              "label": "Leaf"
+            },
+            {
+              "value": "award",
+              "label": "Award"
+            },
+            {
+              "value": "sparkle",
+              "label": "Sparkle"
+            },
+            {
+              "value": "percent",
+              "label": "Percent"
+            },
+            {
+              "value": "mail",
+              "label": "Mail"
+            },
+            {
+              "value": "map-pin",
+              "label": "Map pin"
+            },
+            {
+              "value": "thumbs-up",
+              "label": "Thumbs up"
+            },
+            {
+              "value": "package",
+              "label": "Package"
+            },
+            {
+              "value": "camera",
+              "label": "Camera"
+            },
+            {
+              "value": "play",
+              "label": "Play"
+            },
+            {
+              "value": "flame",
+              "label": "Flame"
+            }
+          ],
+          "default": "check"
+        },
+        {
+          "type": "text",
+          "id": "icon_text",
+          "label": "Icon emoji / text",
+          "info": "Overrides the built-in icon."
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "Icon image",
+          "info": "Overrides emoji and built-in icon."
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Trust point",
+          "info": "Replace with your verified policy."
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "CRO cart drawer"
+    }
+  ]
+}
+{% endschema %}

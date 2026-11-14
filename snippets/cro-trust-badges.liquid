@@ -1,0 +1,34 @@
+{%- comment -%}
+  Row of trust badges. Either pass `blocks` (section.blocks filtered by block.type == block_type)
+  or call once per item with icon/title/text/link.
+  Params:
+    blocks       array of blocks with settings icon, icon_text, icon_image, title, text, link
+    block_type   only render blocks of this type (default 'trust')
+    icon_size    default 22
+    layout       'row' | 'stack'   default 'row'
+{%- endcomment -%}
+{%- liquid
+  assign tb_type = block_type | default: 'trust'
+  assign tb_size = icon_size | default: 22
+  assign tb_layout = layout | default: 'row'
+-%}
+<ul class="cro-trust cro-trust--{{ tb_layout }}" role="list">
+  {%- for tb in blocks -%}
+    {%- if tb.type == tb_type -%}
+      {%- assign tbs = tb.settings -%}
+      <li class="cro-trust__item" {{ tb.shopify_attributes }}>
+        {%- if tbs.icon != 'none' or tbs.icon_image != blank or tbs.icon_text != blank -%}
+          <span class="cro-trust__icon">{% render 'cro-icon', icon: tbs.icon, image: tbs.icon_image, text: tbs.icon_text, size: tb_size %}</span>
+        {%- endif -%}
+        <span class="cro-trust__body">
+          {%- if tbs.link != blank -%}
+            <a class="cro-trust__title" href="{{ tbs.link }}">{{ tbs.title | escape }}</a>
+          {%- else -%}
+            <span class="cro-trust__title">{{ tbs.title | escape }}</span>
+          {%- endif -%}
+          {%- if tbs.text != blank -%}<span class="cro-trust__text">{{ tbs.text | escape }}</span>{%- endif -%}
+        </span>
+      </li>
+    {%- endif -%}
+  {%- endfor -%}
+</ul>

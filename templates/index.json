@@ -1,1 +1,698 @@
-{"sections":{"1784654787fbcb7748":{"type":"_blocks","blocks":{"ai_gen_block_dc57955_8hnDyL":{"type":"ai_gen_block_dc57955","settings":{"desktop_image":"shopify:\/\/shop_images\/Hero_Banner_Pack_Pantry.png","mobile_image":"shopify:\/\/shop_images\/Hero_Banner_Pack_Pantry.png","image_alt":"Hero banner","focal_point_x":50,"focal_point_y":50,"desktop_height":600,"mobile_height":200,"enable_overlay":false,"overlay_color":"#000000","overlay_opacity":0.3,"button_text":"","button_link":"","button_bg_color":"#173f35","button_text_color":"#ffffff","button_hover_bg_color":"#0f2f27"},"blocks":{}}},"block_order":["ai_gen_block_dc57955_8hnDyL"],"settings":{}},"hero":{"type":"hero","disabled":true,"settings":{"image_alt":"An organised kitchen shelf with glass storage jars","eyebrow":"Storage with purpose","heading":"Good things, neatly kept.","text":"<p>Jars, storage and packaging for organised homes and growing food businesses.<\/p>","primary_label":"Shop Now","primary_link":"","secondary_label":"","secondary_link":"","stamp":"Find your container"}},"categories":{"type":"collection-list","blocks":{"pantry":{"type":"collection","settings":{"collection":"jars","image":"shopify:\/\/shop_images\/aJ0T2BMy_1jfHp-QXgf4cV.png","title":"Jars","text":"Make every shelf easier to use"}},"jars":{"type":"collection","settings":{"collection":"bottles","image":"shopify:\/\/shop_images\/Ha4f2bb249f16492c8ad817c70c770a49x.jpg","title":"Bottles","text":"For ingredients, treats and more"}},"storage":{"type":"collection","settings":{"collection":"storage-organizers","image":"shopify:\/\/shop_images\/H218c8558d85b4391a1d659eaf53a2fbfd.jpg","title":"Storage Organizers","text":"Keep everyday essentials in order"}},"bottles":{"type":"collection","disabled":true,"settings":{"collection":"","title":"Bottles & containers","text":"Shapes for a range of uses"}},"packaging":{"type":"collection","disabled":true,"settings":{"collection":"","title":"Packaging","text":"For makers and small businesses"}}},"block_order":["pantry","jars","storage","bottles","packaging"],"settings":{"eyebrow":"Start with a category","heading":"A place for everything","text":"Browse useful storage and packaging categories, then narrow the choice using real product details.","button_label":"","button_link":"","scheme":"cream","columns":3}},"featured":{"type":"featured-collection","settings":{"eyebrow":"Pantry favourites","heading":"Useful pieces, ready to organise","text":"Choose a collection to display real products, prices and availability from Shopify.","collection":"jars","limit":4,"columns":3,"scheme":"white"}},"purposes":{"type":"shop-by-purpose","blocks":{"home":{"type":"purpose","settings":{"label":"At home","heading":"A calmer pantry","text":"Make ingredients easier to see, group and reach.","link":"shopify:\/\/products\/180ml-spice-jar"}},"bakers":{"type":"purpose","settings":{"label":"For bakers","heading":"Ingredients at hand","text":"Find containers for everyday preparation and display.","link":""}},"cafes":{"type":"purpose","settings":{"label":"For cafés","heading":"Storage that keeps up","text":"Explore practical containers for busy workspaces.","link":""}},"gifting":{"type":"purpose","settings":{"label":"For gifting","heading":"Present it thoughtfully","text":"Browse packaging ideas for products and occasions.","link":""}}},"block_order":["home","bakers","cafes","gifting"],"disabled":true,"settings":{"eyebrow":"Shop by purpose","heading":"Made for the way you work","text":"Start with what you need to organise, store or prepare, then explore the products that fit.","scheme":"white"}},"guide":{"type":"selection-guide","blocks":{"use":{"type":"step","settings":{"heading":"What will it hold?","text":"Start with the ingredient, product or item you want to store or package."}},"space":{"type":"step","settings":{"heading":"How much space is available?","text":"Check the product capacity and dimensions where they have been supplied."}},"care":{"type":"step","settings":{"heading":"How will it be used?","text":"Review the verified material, closure, care and intended-use information."}}},"block_order":["use","space","care"],"disabled":true,"settings":{"eyebrow":"Find your container","heading":"Three questions make choosing easier","text":"<p>Begin with the intended use, confirm the size you need, then check the verified material and care details on the product page.<\/p>","button_label":"Browse all products","button_link":"","scheme":"sage"}},"business":{"type":"bulk-callout","blocks":{"cafes":{"type":"use","settings":{"label":"Cafés"}},"bakeries":{"type":"use","settings":{"label":"Bakeries"}},"caterers":{"type":"use","settings":{"label":"Caterers"}},"retailers":{"type":"use","settings":{"label":"Retailers"}},"gifting":{"type":"use","settings":{"label":"Gifting"}}},"block_order":["cafes","bakeries","caterers","retailers","gifting"],"settings":{"eyebrow":"For food businesses","heading":"Packaging that works as hard as you do","text":"Planning a larger order for a café, bakery, retailer or gifting business? Tell us which products and quantities you are considering.","label":"Plan a bulk order","link":""}},"inspiration":{"type":"image-with-text","settings":{"image_alt":"Glass jars and containers arranged on kitchen shelving","eyebrow":"Pantry inspiration","heading":"Make every shelf easier to manage","text":"<p>Group everyday ingredients, make quantities easier to see and give each item a clear home. Check product pages for verified details before choosing.<\/p>","button_label":"Organise your pantry","button_link":"","layout":"reverse","scheme":"cream"}},"benefits":{"type":"benefits","blocks":{"fit":{"type":"benefit","settings":{"heading":"Find the right fit","text":"Compare sizes, uses and materials where product data is available."}},"audience":{"type":"benefit","settings":{"heading":"For home or business","text":"Browse solutions for pantries, cafés, bakers, gifting and retail."}},"details":{"type":"benefit","settings":{"heading":"Clear product details","text":"See real prices, availability and options from the Shopify catalogue."}},"bulk":{"type":"benefit","settings":{"heading":"Planning a larger order?","text":"Use the business enquiry route to share your requirements."}}},"block_order":["fit","audience","details","bulk"],"settings":{"scheme":"cream"}},"178429943153181245":{"type":"_blocks","blocks":{"ai_gen_block_9fa09a4_h8iVBm":{"type":"ai_gen_block_9fa09a4","settings":{"eyebrow":"A little extra, neatly delivered","heading":"Fill your shelves, not your delivery bill.","text":"Enjoy free delivery on eligible orders over PKR 5,000. Terms may apply.","button_text":"Shop storage","button_link":"","container_width":900,"padding_desktop":80,"padding_mobile":50,"icon_size":100,"icon_color":"#e8b44a","eyebrow_font":"assistant_n4","eyebrow_size":12,"eyebrow_color":"#e8b44a","heading_font":"aleo_n7","heading_size":42,"heading_color":"#f7f1e7","text_font":"assistant_n4","text_size":20,"text_color":"#f7f1e7","button_font":"assistant_n4","button_size":15,"button_radius":8,"button_bg_color":"#e8b44a","button_text_color":"#173f35","button_hover_bg_color":"#d4623d","button_hover_text_color":"#fffdf8","background_color":"#521010"},"blocks":{}}},"block_order":["ai_gen_block_9fa09a4_h8iVBm"],"settings":{}},"faq":{"type":"faq","blocks":{"size":{"type":"question","settings":{"question":"How do I choose the right container size?","answer":"<p>Use the capacity and dimensions supplied on each product page, then compare them with the available shelf or workspace.<\/p>"}},"materials":{"type":"question","settings":{"question":"Where can I find material and care information?","answer":"<p>Verified material and care details appear in the product specifications when they have been supplied.<\/p>"}},"delivery":{"type":"question","settings":{"question":"Where will delivery and returns information appear?","answer":"<p>Add the verified delivery and returns policies before publishing this section.<\/p>"}},"bulk":{"type":"question","settings":{"question":"Can I enquire about a larger order?","answer":"<p>Use the Bulk Orders page to share the products and estimated quantities you are considering.<\/p>"}}},"block_order":["size","materials","delivery","bulk"],"settings":{"eyebrow":"Good to know","heading":"Storage questions, neatly answered","text":"Helpful starting points for choosing and ordering storage."}},"newsletter":{"type":"newsletter","custom_css":[".newsletter-form {max-width: 620px !important; padding: 8px; background: #fff; border: 1px solid #d7cec1; border-radius: 16px; box-shadow: 0 14px 35px #173f3526; transition: 0.3s;}",".newsletter-form:focus-within {transform: translateY(-4px); box-shadow: 0 20px 45px #173f3540;}",".input {background: #fff !important; color: #18231f !important; border: 0 !important;}",".input::placeholder {color: #637069 !important;}",".button {border-radius: 12px; transition: 0.25s;}",".button:hover {background: #e8b44a; color: #18231f; transform: scale(1.03);}"],"settings":{"eyebrow":"Keep things organised","heading":"Fresh ideas for shelves and small businesses","text":"Receive product updates and practical storage inspiration. Add the required consent wording before publishing."}}},"order":["1784654787fbcb7748","hero","categories","featured","purposes","guide","business","inspiration","benefits","178429943153181245","faq","newsletter"]}
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "1784654787fbcb7748": {
+      "type": "_blocks",
+      "blocks": {
+        "ai_gen_block_dc57955_8hnDyL": {
+          "type": "ai_gen_block_dc57955",
+          "settings": {
+            "desktop_image": "shopify://shop_images/Hero_Banner_Pack_Pantry.png",
+            "mobile_image": "shopify://shop_images/Hero_Banner_Pack_Pantry.png",
+            "image_alt": "Hero banner",
+            "focal_point_x": 50,
+            "focal_point_y": 50,
+            "desktop_height": 600,
+            "mobile_height": 200,
+            "enable_overlay": false,
+            "overlay_color": "#000000",
+            "overlay_opacity": 0.3,
+            "button_text": "Shop now",
+            "button_link": "shopify://collections/all",
+            "button_bg_color": "#173f35",
+            "button_text_color": "#ffffff",
+            "button_hover_bg_color": "#0f2f27"
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "ai_gen_block_dc57955_8hnDyL"
+      ],
+      "settings": {}
+    },
+    "cro_trust_bar": {
+      "type": "cro-trust-bar",
+      "blocks": {
+        "delivery": {
+          "type": "item",
+          "settings": {
+            "icon": "truck",
+            "title": "Free delivery over PKR 5,000",
+            "text": "On eligible orders. Terms may apply.",
+            "link": "shopify://pages/shipping-information"
+          }
+        },
+        "bulk": {
+          "type": "item",
+          "settings": {
+            "icon": "box",
+            "title": "Bulk orders welcome",
+            "text": "Cafés, bakeries and retailers can request a quote.",
+            "link": "shopify://pages/bulk-orders"
+          }
+        },
+        "returns": {
+          "type": "item",
+          "settings": {
+            "icon": "refresh",
+            "title": "Returns & exchanges",
+            "text": "Read our policy before you order.",
+            "link": "shopify://pages/returns-exchanges"
+          }
+        },
+        "help": {
+          "type": "item",
+          "settings": {
+            "icon": "mail",
+            "title": "Help when you need it",
+            "text": "Questions about sizes or stock? Our team will reply.",
+            "link": "shopify://pages/contact"
+          }
+        }
+      },
+      "block_order": [
+        "delivery",
+        "bulk",
+        "returns",
+        "help"
+      ],
+      "settings": {
+        "style": "cards",
+        "mobile_layout": "grid",
+        "icon_position": "start"
+      }
+    },
+    "cro_blessed_friday": {
+      "type": "cro-sale-banner",
+      "settings": {
+        "layout": "image_right",
+        "eyebrow": "Blessed Friday Sale",
+        "badge": "Up to 30% off",
+        "heading": "Stock your pantry for less this Blessed Friday",
+        "text": "<p>Glass jars, bottles and storage organisers at up to 30% off, with the discount applied automatically. No code needed. Pair it with free delivery on orders over PKR 5,000 and organise every shelf for less.</p>",
+        "button_label": "Shop the sale",
+        "button_link": "shopify://collections/all",
+        "secondary_label": "Browse jars",
+        "secondary_link": "shopify://collections/jars",
+        "terms": "Discount varies by product; sale prices are shown on each product page.",
+        "countdown_mode": "fixed",
+        "countdown_end": "2026-12-02 23:59",
+        "countdown_prefix": "Sale ends in",
+        "countdown_fallback": "Sale ends 2 December at midnight",
+        "on_expire": "hide",
+        "timer_expire": "hide",
+        "image": "shopify://shop_images/aJ0T2BMy_1jfHp-QXgf4cV.png",
+        "image_alt": "Glass storage jars from Pack & Pantry",
+        "product_collection": "jars",
+        "product_limit": 0,
+        "product_columns": 4,
+        "products_heading": "Sale favourites"
+      }
+    },
+    "cro_deals": {
+      "type": "cro-deal-products",
+      "settings": {
+        "eyebrow": "Blessed Friday deals",
+        "heading": "Up to 30% off, while the sale lasts",
+        "subheading": "Real sale prices on jars, bottles and organisers. Grab them before 2 December.",
+        "source": "all",
+        "only_discounted": true,
+        "hide_sold_out": true,
+        "limit": 8,
+        "layout": "carousel",
+        "columns_desktop": 4,
+        "columns_tablet": 3,
+        "columns_mobile": 2,
+        "view_all_label": "Shop the full sale",
+        "view_all_link": "shopify://collections/all",
+        "countdown_mode": "fixed",
+        "countdown_end": "2026-12-02 23:59",
+        "strip_text_label": "Sale ends in",
+        "countdown_fallback": "Sale ends 2 December",
+        "countdown_style": "boxes",
+        "label_days": "Days",
+        "label_hours": "Hrs",
+        "label_minutes": "Min",
+        "label_seconds": "Sec",
+        "on_expire": "hide",
+        "add_label": "Add to cart",
+        "choose_label": "Choose options"
+      }
+    },
+    "categories": {
+      "type": "collection-list",
+      "blocks": {
+        "pantry": {
+          "type": "collection",
+          "settings": {
+            "collection": "jars",
+            "image": "shopify://shop_images/aJ0T2BMy_1jfHp-QXgf4cV.png",
+            "title": "Jars",
+            "text": "Make every shelf easier to use"
+          }
+        },
+        "jars": {
+          "type": "collection",
+          "settings": {
+            "collection": "bottles",
+            "image": "shopify://shop_images/Ha4f2bb249f16492c8ad817c70c770a49x.jpg",
+            "title": "Bottles",
+            "text": "For ingredients, treats and more"
+          }
+        },
+        "storage": {
+          "type": "collection",
+          "settings": {
+            "collection": "storage-organizers",
+            "image": "shopify://shop_images/H218c8558d85b4391a1d659eaf53a2fbfd.jpg",
+            "title": "Storage Organizers",
+            "text": "Keep everyday essentials in order"
+          }
+        },
+        "bottles": {
+          "type": "collection",
+          "disabled": true,
+          "settings": {
+            "collection": "",
+            "title": "Bottles & containers",
+            "text": "Shapes for a range of uses"
+          }
+        },
+        "packaging": {
+          "type": "collection",
+          "disabled": true,
+          "settings": {
+            "collection": "",
+            "title": "Packaging",
+            "text": "For makers and small businesses"
+          }
+        }
+      },
+      "block_order": [
+        "pantry",
+        "jars",
+        "storage",
+        "bottles",
+        "packaging"
+      ],
+      "settings": {
+        "eyebrow": "Start with a category",
+        "heading": "A place for everything",
+        "text": "Browse useful storage and packaging categories, then narrow the choice using real product details.",
+        "button_label": "",
+        "button_link": "",
+        "scheme": "cream",
+        "columns": 3
+      }
+    },
+    "cro_tabs": {
+      "type": "cro-best-sellers-tabs",
+      "blocks": {
+        "jars": {
+          "type": "tab",
+          "settings": {
+            "label": "Jars",
+            "collection": "jars",
+            "limit": 8
+          }
+        },
+        "bottles": {
+          "type": "tab",
+          "settings": {
+            "label": "Bottles",
+            "collection": "bottles",
+            "limit": 8
+          }
+        },
+        "organisers": {
+          "type": "tab",
+          "settings": {
+            "label": "Storage organisers",
+            "collection": "storage-organizers",
+            "limit": 8
+          }
+        }
+      },
+      "block_order": [
+        "jars",
+        "bottles",
+        "organisers"
+      ],
+      "settings": {
+        "eyebrow": "Shop the range",
+        "heading": "Find the right container for every shelf",
+        "view_all_label": "View all {collection}",
+        "add_label": "Add to cart",
+        "choose_label": "Choose options"
+      }
+    },
+    "featured": {
+      "type": "featured-collection",
+      "settings": {
+        "eyebrow": "Pantry favourites",
+        "heading": "Useful pieces, ready to organise",
+        "text": "Choose a collection to display real products, prices and availability from Shopify.",
+        "collection": "jars",
+        "limit": 4,
+        "columns": 3,
+        "scheme": "white"
+      },
+      "disabled": true
+    },
+    "cro_marquee": {
+      "type": "cro-marquee",
+      "blocks": {
+        "jars": {
+          "type": "text",
+          "settings": {
+            "text": "Glass jars",
+            "link": "shopify://collections/jars"
+          }
+        },
+        "bottles": {
+          "type": "text",
+          "settings": {
+            "text": "Bottles",
+            "link": "shopify://collections/bottles"
+          }
+        },
+        "organisers": {
+          "type": "text",
+          "settings": {
+            "text": "Storage organisers",
+            "link": "shopify://collections/storage-organizers"
+          }
+        },
+        "bulk": {
+          "type": "text",
+          "settings": {
+            "text": "Bulk orders for cafés & bakeries",
+            "link": "shopify://pages/bulk-orders"
+          }
+        }
+      },
+      "block_order": [
+        "jars",
+        "bottles",
+        "organisers",
+        "bulk"
+      ],
+      "settings": {}
+    },
+    "cro_how_it_works": {
+      "type": "cro-how-it-works",
+      "blocks": {
+        "choose": {
+          "type": "step",
+          "settings": {
+            "icon": "box",
+            "title": "Pick your containers",
+            "text": "Browse jars, bottles and organisers with sizes and prices on every page."
+          }
+        },
+        "checkout": {
+          "type": "step",
+          "settings": {
+            "icon": "lock",
+            "title": "Check out securely",
+            "text": "Pay through Shopify's secure checkout."
+          }
+        },
+        "pack": {
+          "type": "step",
+          "settings": {
+            "icon": "package",
+            "title": "We pack and dispatch",
+            "text": "Your order is prepared and sent on its way."
+          }
+        },
+        "deliver": {
+          "type": "step",
+          "settings": {
+            "icon": "truck",
+            "title": "Delivered to your door",
+            "text": "Free delivery on orders over PKR 5,000."
+          }
+        }
+      },
+      "block_order": [
+        "choose",
+        "checkout",
+        "pack",
+        "deliver"
+      ],
+      "settings": {
+        "eyebrow": "Simple from start to shelf",
+        "heading": "How ordering works",
+        "button_label": "Start shopping",
+        "button_link": "shopify://collections/all"
+      }
+    },
+    "hero": {
+      "type": "hero",
+      "disabled": true,
+      "settings": {
+        "image_alt": "An organised kitchen shelf with glass storage jars",
+        "eyebrow": "Storage with purpose",
+        "heading": "Good things, neatly kept.",
+        "text": "<p>Jars, storage and packaging for organised homes and growing food businesses.</p>",
+        "primary_label": "Shop Now",
+        "primary_link": "",
+        "secondary_label": "",
+        "secondary_link": "",
+        "stamp": "Find your container"
+      }
+    },
+    "purposes": {
+      "type": "shop-by-purpose",
+      "blocks": {
+        "home": {
+          "type": "purpose",
+          "settings": {
+            "label": "At home",
+            "heading": "A calmer pantry",
+            "text": "Make ingredients easier to see, group and reach.",
+            "link": "shopify://products/180ml-spice-jar"
+          }
+        },
+        "bakers": {
+          "type": "purpose",
+          "settings": {
+            "label": "For bakers",
+            "heading": "Ingredients at hand",
+            "text": "Find containers for everyday preparation and display.",
+            "link": ""
+          }
+        },
+        "cafes": {
+          "type": "purpose",
+          "settings": {
+            "label": "For cafés",
+            "heading": "Storage that keeps up",
+            "text": "Explore practical containers for busy workspaces.",
+            "link": ""
+          }
+        },
+        "gifting": {
+          "type": "purpose",
+          "settings": {
+            "label": "For gifting",
+            "heading": "Present it thoughtfully",
+            "text": "Browse packaging ideas for products and occasions.",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "home",
+        "bakers",
+        "cafes",
+        "gifting"
+      ],
+      "disabled": true,
+      "settings": {
+        "eyebrow": "Shop by purpose",
+        "heading": "Made for the way you work",
+        "text": "Start with what you need to organise, store or prepare, then explore the products that fit.",
+        "scheme": "white"
+      }
+    },
+    "guide": {
+      "type": "selection-guide",
+      "blocks": {
+        "use": {
+          "type": "step",
+          "settings": {
+            "heading": "What will it hold?",
+            "text": "Start with the ingredient, product or item you want to store or package."
+          }
+        },
+        "space": {
+          "type": "step",
+          "settings": {
+            "heading": "How much space is available?",
+            "text": "Check the product capacity and dimensions where they have been supplied."
+          }
+        },
+        "care": {
+          "type": "step",
+          "settings": {
+            "heading": "How will it be used?",
+            "text": "Review the verified material, closure, care and intended-use information."
+          }
+        }
+      },
+      "block_order": [
+        "use",
+        "space",
+        "care"
+      ],
+      "disabled": true,
+      "settings": {
+        "eyebrow": "Find your container",
+        "heading": "Three questions make choosing easier",
+        "text": "<p>Begin with the intended use, confirm the size you need, then check the verified material and care details on the product page.</p>",
+        "button_label": "Browse all products",
+        "button_link": "",
+        "scheme": "sage"
+      }
+    },
+    "business": {
+      "type": "bulk-callout",
+      "blocks": {
+        "cafes": {
+          "type": "use",
+          "settings": {
+            "label": "Cafés"
+          }
+        },
+        "bakeries": {
+          "type": "use",
+          "settings": {
+            "label": "Bakeries"
+          }
+        },
+        "caterers": {
+          "type": "use",
+          "settings": {
+            "label": "Caterers"
+          }
+        },
+        "retailers": {
+          "type": "use",
+          "settings": {
+            "label": "Retailers"
+          }
+        },
+        "gifting": {
+          "type": "use",
+          "settings": {
+            "label": "Gifting"
+          }
+        }
+      },
+      "block_order": [
+        "cafes",
+        "bakeries",
+        "caterers",
+        "retailers",
+        "gifting"
+      ],
+      "settings": {
+        "eyebrow": "For food businesses",
+        "heading": "Packaging that works as hard as you do",
+        "text": "Planning a larger order for a café, bakery, retailer or gifting business? Tell us which products and quantities you are considering.",
+        "label": "Plan a bulk order",
+        "link": "shopify://pages/bulk-orders"
+      }
+    },
+    "inspiration": {
+      "type": "image-with-text",
+      "settings": {
+        "image_alt": "Glass jars and containers arranged on kitchen shelving",
+        "eyebrow": "Pantry inspiration",
+        "heading": "Make every shelf easier to manage",
+        "text": "<p>Group everyday ingredients, make quantities easier to see and give each item a clear home. Check product pages for verified details before choosing.</p>",
+        "button_label": "Organise your pantry",
+        "button_link": "",
+        "layout": "reverse",
+        "scheme": "cream"
+      }
+    },
+    "benefits": {
+      "type": "benefits",
+      "blocks": {
+        "fit": {
+          "type": "benefit",
+          "settings": {
+            "heading": "Find the right fit",
+            "text": "Compare sizes, uses and materials where product data is available."
+          }
+        },
+        "audience": {
+          "type": "benefit",
+          "settings": {
+            "heading": "For home or business",
+            "text": "Browse solutions for pantries, cafés, bakers, gifting and retail."
+          }
+        },
+        "details": {
+          "type": "benefit",
+          "settings": {
+            "heading": "Clear product details",
+            "text": "See real prices, availability and options from the Shopify catalogue."
+          }
+        },
+        "bulk": {
+          "type": "benefit",
+          "settings": {
+            "heading": "Planning a larger order?",
+            "text": "Use the business enquiry route to share your requirements."
+          }
+        }
+      },
+      "block_order": [
+        "fit",
+        "audience",
+        "details",
+        "bulk"
+      ],
+      "settings": {
+        "scheme": "cream"
+      },
+      "disabled": true
+    },
+    "178429943153181245": {
+      "type": "_blocks",
+      "blocks": {
+        "ai_gen_block_9fa09a4_h8iVBm": {
+          "type": "ai_gen_block_9fa09a4",
+          "settings": {
+            "eyebrow": "A little extra, neatly delivered",
+            "heading": "Fill your shelves, not your delivery bill.",
+            "text": "Enjoy free delivery on eligible orders over PKR 5,000. Terms may apply.",
+            "button_text": "Shop storage",
+            "button_link": "shopify://collections/all",
+            "container_width": 900,
+            "padding_desktop": 80,
+            "padding_mobile": 50,
+            "icon_size": 100,
+            "icon_color": "#e8b44a",
+            "eyebrow_font": "assistant_n4",
+            "eyebrow_size": 12,
+            "eyebrow_color": "#e8b44a",
+            "heading_font": "aleo_n7",
+            "heading_size": 42,
+            "heading_color": "#f7f1e7",
+            "text_font": "assistant_n4",
+            "text_size": 20,
+            "text_color": "#f7f1e7",
+            "button_font": "assistant_n4",
+            "button_size": 15,
+            "button_radius": 8,
+            "button_bg_color": "#e8b44a",
+            "button_text_color": "#173f35",
+            "button_hover_bg_color": "#d4623d",
+            "button_hover_text_color": "#fffdf8",
+            "background_color": "#173f35"
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "ai_gen_block_9fa09a4_h8iVBm"
+      ],
+      "settings": {}
+    },
+    "faq": {
+      "type": "faq",
+      "blocks": {
+        "size": {
+          "type": "question",
+          "settings": {
+            "question": "How do I choose the right container size?",
+            "answer": "<p>Use the capacity and dimensions supplied on each product page, then compare them with the available shelf or workspace.</p>"
+          }
+        },
+        "materials": {
+          "type": "question",
+          "settings": {
+            "question": "Where can I find material and care information?",
+            "answer": "<p>Verified material and care details appear in the product specifications when they have been supplied.</p>"
+          }
+        },
+        "delivery": {
+          "type": "question",
+          "settings": {
+            "question": "Where will delivery and returns information appear?",
+            "answer": "<p>Add the verified delivery and returns policies before publishing this section.</p>"
+          },
+          "disabled": true
+        },
+        "bulk": {
+          "type": "question",
+          "settings": {
+            "question": "Can I enquire about a larger order?",
+            "answer": "<p>Use the Bulk Orders page to share the products and estimated quantities you are considering.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "size",
+        "materials",
+        "delivery",
+        "bulk"
+      ],
+      "settings": {
+        "eyebrow": "Good to know",
+        "heading": "Storage questions, neatly answered",
+        "text": "Helpful starting points for choosing and ordering storage."
+      }
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "custom_css": [
+        ".newsletter-form {max-width: 620px !important; padding: 8px; background: #fff; border: 1px solid #d7cec1; border-radius: 16px; box-shadow: 0 14px 35px #173f3526; transition: 0.3s;}",
+        ".newsletter-form:focus-within {transform: translateY(-4px); box-shadow: 0 20px 45px #173f3540;}",
+        ".input {background: #fff !important; color: #18231f !important; border: 0 !important;}",
+        ".input::placeholder {color: #637069 !important;}",
+        ".button {border-radius: 12px; transition: 0.25s;}",
+        ".button:hover {background: #e8b44a; color: #18231f; transform: scale(1.03);}"
+      ],
+      "settings": {
+        "eyebrow": "Keep things organised",
+        "heading": "Fresh ideas for shelves and small businesses",
+        "text": "Receive product updates and practical storage inspiration."
+      }
+    }
+  },
+  "order": [
+    "1784654787fbcb7748",
+    "cro_trust_bar",
+    "cro_blessed_friday",
+    "cro_deals",
+    "categories",
+    "cro_tabs",
+    "featured",
+    "cro_marquee",
+    "cro_how_it_works",
+    "hero",
+    "purposes",
+    "guide",
+    "business",
+    "inspiration",
+    "benefits",
+    "178429943153181245",
+    "faq",
+    "newsletter"
+  ]
+}

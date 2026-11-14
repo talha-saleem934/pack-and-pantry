@@ -1,0 +1,619 @@
+{%- liquid
+  assign s = section.settings
+  assign sid = section.id
+-%}
+{%- liquid
+  assign pt = request.page_type
+  assign allowed = false
+  case pt
+    when 'index'
+      assign allowed = s.show_home
+    when 'product'
+      assign allowed = s.show_product
+    when 'collection', 'list-collections'
+      assign allowed = s.show_collection
+    when 'cart', 'password', 'gift_card', 'customers/login', 'customers/register', 'customers/account', 'customers/order', 'customers/addresses'
+      assign allowed = false
+    else
+      assign allowed = s.show_other
+  endcase
+  if request.design_mode
+    assign allowed = true
+  endif
+  assign triggers = ''
+  if s.trigger_delay
+    assign triggers = triggers | append: 'delay,'
+  endif
+  if s.trigger_scroll
+    assign triggers = triggers | append: 'scroll,'
+  endif
+  if s.trigger_exit
+    assign triggers = triggers | append: 'exit,'
+  endif
+  if s.trigger_idle
+    assign triggers = triggers | append: 'idle,'
+  endif
+  assign popup_key = section.id | append: s.heading | md5 | slice: 0, 10
+-%}
+{%- if allowed -%}
+{{ 'cro-components.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'cro-core.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'cro-ui.js' | asset_url }}" defer="defer"></script>
+{%- liquid
+  case s.align
+    when 'start'
+      assign cro_justify = 'flex-start'
+    when 'end'
+      assign cro_justify = 'flex-end'
+    else
+      assign cro_justify = 'center'
+  endcase
+  assign cro_radius = s.radius | default: 16
+  assign cro_btn_radius = s.button_radius | default: 10
+-%}
+{% style %}
+#cro-{{ sid }} {
+  --cro-bg: {{ s.bg_color | default: '#F7F1E7' }};
+  --cro-heading: {{ s.heading_color | default: '#18231F' }};
+  --cro-text: {{ s.text_color | default: '#3F4A45' }};
+  --cro-accent: {{ s.accent_color | default: '#D4623D' }};
+  --cro-btn-bg: {{ s.button_bg | default: '#173F35' }};
+  --cro-btn-text: {{ s.button_text | default: '#FFFDF8' }};
+  --cro-btn-hover-bg: {{ s.button_hover_bg | default: '#0F2F27' }};
+  --cro-btn-hover-text: {{ s.button_hover_text | default: '#FFFFFF' }};
+  --cro-link-hover: {{ s.link_hover_color | default: '#D4623D' }};
+  --cro-border: {{ s.border_color | default: '#D7CEC1' }};
+  --cro-card-bg: {{ s.card_bg | default: '#FFFDF8' }};
+  --cro-icon: {{ s.icon_color | default: '#173F35' }};
+  --cro-badge-bg: {{ s.badge_bg | default: '#C64F32' }};
+  --cro-badge-text: {{ s.badge_text | default: '#FFFFFF' }};
+  --cro-radius: {{ cro_radius }}px;
+  --cro-justify: {{ cro_justify }};
+  background: var(--cro-bg);
+  color: var(--cro-text);
+  padding-block: {{ s.padding_top_mobile | default: 40 }}px {{ s.padding_bottom_mobile | default: 40 }}px;
+}
+#cro-{{ sid }}[hidden] { display: none; }
+#cro-{{ sid }} .cro-wrap { box-sizing: border-box; max-inline-size: {% if s.full_width %}none{% else %}{{ s.container_width | default: 1300 }}px{% endif %}; margin-inline: auto; padding-inline: var(--gutter, 16px); }
+#cro-{{ sid }} .cro-head { display: flex; flex-direction: column; align-items: {{ cro_justify }}; gap: 8px; margin-block-end: 28px; text-align: {{ s.align | default: 'center' }}; }
+#cro-{{ sid }} .cro-head--row { flex-direction: row; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; text-align: start; }
+#cro-{{ sid }} .cro-eyebrow { margin: 0; color: var(--cro-accent); font-weight: 700; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; }
+#cro-{{ sid }} .cro-h { margin: 0; color: var(--cro-heading); font-family: var(--font-heading); font-weight: var(--font-heading-weight, 700); font-size: {{ s.heading_size_mobile | default: 28 }}px; line-height: 1.15; }
+#cro-{{ sid }} .cro-sub { margin: 0; max-inline-size: 680px; font-size: {{ s.text_size_mobile | default: 15 }}px; line-height: 1.55; }
+#cro-{{ sid }} .cro-body { font-size: {{ s.text_size_mobile | default: 15 }}px; line-height: 1.55; }
+#cro-{{ sid }} .cro-body > :first-child { margin-block-start: 0; }
+#cro-{{ sid }} .cro-body > :last-child { margin-block-end: 0; }
+#cro-{{ sid }} .cro-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-sizing: border-box;
+  min-block-size: 48px; padding: 0 24px; border: 0; border-radius: {{ cro_btn_radius }}px;
+  background: var(--cro-btn-bg); color: var(--cro-btn-text); font: inherit; font-weight: 700; line-height: 1.2;
+  text-decoration: none; cursor: pointer; transition: background-color .2s ease, color .2s ease, transform .2s ease;
+}
+#cro-{{ sid }} .cro-btn:hover { background: var(--cro-btn-hover-bg); color: var(--cro-btn-hover-text); }
+#cro-{{ sid }} .cro-btn[disabled] { opacity: .55; cursor: not-allowed; }
+#cro-{{ sid }} .cro-btn--ghost { background: transparent; color: var(--cro-heading); box-shadow: inset 0 0 0 2px currentColor; }
+#cro-{{ sid }} .cro-btn--ghost:hover { background: var(--cro-btn-bg); color: var(--cro-btn-text); box-shadow: none; }
+#cro-{{ sid }} .cro-link { color: var(--cro-heading); text-decoration: underline; text-underline-offset: 4px; }
+#cro-{{ sid }} .cro-link:hover { color: var(--cro-link-hover); }
+#cro-{{ sid }} .cro-card { background: var(--cro-card-bg); border: 1px solid var(--cro-border); border-radius: var(--cro-radius); }
+#cro-{{ sid }} .cro-ico { display: inline-flex; flex: none; align-items: center; justify-content: center; color: var(--cro-icon); }
+#cro-{{ sid }} .cro-badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 999px; background: var(--cro-badge-bg); color: var(--cro-badge-text); font-size: 12px; font-weight: 700; letter-spacing: .03em; }
+#cro-{{ sid }} a:focus-visible, #cro-{{ sid }} button:focus-visible, #cro-{{ sid }} summary:focus-visible, #cro-{{ sid }} input:focus-visible, #cro-{{ sid }} select:focus-visible { outline: 2px solid var(--cro-accent); outline-offset: 2px; }
+@media (min-width: 750px) {
+  #cro-{{ sid }} { padding-block: {{ s.padding_top_desktop | default: 64 }}px {{ s.padding_bottom_desktop | default: 64 }}px; }
+  #cro-{{ sid }} .cro-h { font-size: {{ s.heading_size_desktop | default: 38 }}px; }
+  #cro-{{ sid }} .cro-sub, #cro-{{ sid }} .cro-body { font-size: {{ s.text_size_desktop | default: 17 }}px; }
+}
+
+
+
+#cro-{{ sid }} { padding: 0; background: transparent; }
+#cro-{{ sid }} .cro-pop { box-sizing: border-box; inline-size: min(92vw, {{ s.width }}px); max-inline-size: none; max-block-size: 90vh; padding: 0; border: 0; border-radius: var(--cro-radius); background: var(--cro-card-bg); color: var(--cro-text); overflow: auto; }
+#cro-{{ sid }} .cro-pop::backdrop { background: rgba(8, 27, 22, {{ s.backdrop_opacity | divided_by: 100.0 }}); }
+#cro-{{ sid }} .cro-pop__grid { display: grid; }
+#cro-{{ sid }} .cro-pop__media img { display: block; inline-size: 100%; block-size: 100%; max-block-size: 260px; object-fit: cover; }
+#cro-{{ sid }} .cro-pop__body { display: grid; gap: 14px; padding: 28px 24px 24px; text-align: {{ s.align }}; }
+#cro-{{ sid }} .cro-pop__close { position: absolute; inset-block-start: 10px; inset-inline-end: 10px; z-index: 2; display: inline-flex; align-items: center; justify-content: center; inline-size: 44px; block-size: 44px; border: 0; border-radius: 50%; background: rgba(255, 253, 248, .95); color: #18231F; cursor: pointer; }
+#cro-{{ sid }} .cro-pop form { display: grid; gap: 10px; }
+#cro-{{ sid }} .cro-pop input[type="email"], #cro-{{ sid }} .cro-pop input[type="tel"] { min-block-size: 50px; padding: 0 16px; border: 1px solid var(--cro-border); border-radius: 10px; font: inherit; }
+#cro-{{ sid }} .cro-pop__no { justify-self: center; min-block-size: 44px; border: 0; background: none; color: var(--cro-text); font: inherit; text-decoration: underline; cursor: pointer; }
+#cro-{{ sid }} .cro-pop__consent { margin: 0; font-size: 12px; }
+#cro-{{ sid }} .cro-pop__code { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; padding: 8px; border: 2px dashed var(--cro-accent); border-radius: 10px; }
+#cro-{{ sid }} .cro-pop__code code { font-size: 18px; font-weight: 700; letter-spacing: .08em; }
+#cro-{{ sid }} .cro-pop__msg { margin: 0; font-weight: 700; color: var(--cro-heading); }
+@media (max-width: 749px) {
+  #cro-{{ sid }} .cro-pop { inline-size: 100vw; margin: auto 0 0; border-radius: var(--cro-radius) var(--cro-radius) 0 0; padding-block-end: env(safe-area-inset-bottom, 0px); }
+}
+@media (min-width: 750px) {
+  {%- if s.image_position == 'start' and s.image != blank %}
+  #cro-{{ sid }} .cro-pop__grid { grid-template-columns: 1fr 1.2fr; }
+  #cro-{{ sid }} .cro-pop__media img { max-block-size: none; min-block-size: 100%; }
+  {%- endif %}
+}
+
+{% endstyle %}
+
+<div id="cro-{{ sid }}">
+  <dialog class="cro-pop" id="cro-popup" data-cro-popup data-key="{{ popup_key }}" data-triggers="{{ triggers }}" data-delay="{{ s.delay }}" data-scroll="{{ s.scroll }}" data-idle="{{ s.idle }}" data-days="{{ s.days }}" data-gap="{{ s.gap }}" data-suppress-after-submit="{{ s.suppress_after_submit }}" data-preview="{{ s.preview }}" aria-labelledby="CroPopHeading-{{ sid }}">
+    <button class="cro-pop__close" type="button" data-cro-popup-close aria-label="{{ s.close_label | escape }}">{% render 'cro-icon', icon: 'close', size: 18 %}</button>
+    <div class="cro-pop__grid">
+      {%- if s.image != blank and s.image_position != 'none' -%}<div class="cro-pop__media">{{ s.image | image_url: width: 900 | image_tag: loading: 'lazy', widths: '450, 700, 900', sizes: '(min-width: 750px) 400px, 100vw', alt: s.image_alt }}</div>{%- endif -%}
+      <div class="cro-pop__body">
+        <h2 class="cro-h" id="CroPopHeading-{{ sid }}">{{ s.heading | escape }}</h2>
+        {%- if s.text != blank -%}<p class="cro-sub" style="max-inline-size:none">{{ s.text | escape }}</p>{%- endif -%}
+        {%- if s.field == 'email' -%}
+          {%- assign pop_form_id = 'CroPopForm-' | append: sid -%}
+          {%- form 'customer', id: pop_form_id -%}
+            {%- if form.posted_successfully? -%}
+              <script>document.currentScript && document.currentScript.closest('dialog') && document.currentScript.closest('dialog').setAttribute('data-submitted','true');</script>
+              <p class="cro-pop__msg" role="status">{{ s.success_text | escape }}</p>
+              {%- if s.code != blank -%}<div class="cro-pop__code"><code>{{ s.code | escape }}</code><button class="cro-btn" type="button" data-cro-copy data-copy="{{ s.code | escape }}" data-copied="{{ s.copied_label | escape }}"><span data-cro-copy-label>{{ s.copy_label | escape }}</span></button><span class="cro-vh" aria-live="polite" data-cro-copy-status></span></div>{%- endif -%}
+            {%- else -%}
+              <input type="hidden" name="contact[tags]" value="{{ s.tags | escape }}">
+              {%- if form.errors -%}<p class="cro-pop__msg" role="alert">{{ form.errors | default_errors }}</p>{%- endif -%}
+              <label class="cro-vh" for="CroPopEmail-{{ sid }}">{{ s.placeholder | escape }}</label>
+              <input id="CroPopEmail-{{ sid }}" type="email" name="contact[email]" autocomplete="email" placeholder="{{ s.placeholder | escape }}" required>
+              <button class="cro-btn" type="submit">{{ s.button_label | escape }}</button>
+              {%- if s.consent != blank -%}<p class="cro-pop__consent">{{ s.consent }}</p>{%- endif -%}
+            {%- endif -%}
+          {%- endform -%}
+        {%- elsif s.field == 'phone' -%}
+          {%- assign pop_form_id = 'CroPopForm-' | append: sid -%}
+          {%- form 'contact', id: pop_form_id -%}
+            {%- if form.posted_successfully? -%}
+              <p class="cro-pop__msg" role="status">{{ s.success_text | escape }}</p>
+            {%- else -%}
+              <input type="hidden" name="contact[tags]" value="{{ s.tags | escape }}">
+              <input type="hidden" name="contact[body]" value="{{ s.heading | escape }}">
+              <label class="cro-vh" for="CroPopPhone-{{ sid }}">{{ s.placeholder | escape }}</label>
+              <input id="CroPopPhone-{{ sid }}" type="tel" name="contact[phone]" autocomplete="tel" placeholder="{{ s.placeholder | escape }}" required>
+              <button class="cro-btn" type="submit">{{ s.button_label | escape }}</button>
+              {%- if s.consent != blank -%}<p class="cro-pop__consent">{{ s.consent }}</p>{%- endif -%}
+            {%- endif -%}
+          {%- endform -%}
+        {%- else -%}
+          {%- if s.code != blank -%}<div class="cro-pop__code"><code>{{ s.code | escape }}</code><button class="cro-btn" type="button" data-cro-copy data-copy="{{ s.code | escape }}" data-copied="{{ s.copied_label | escape }}"><span data-cro-copy-label>{{ s.copy_label | escape }}</span></button><span class="cro-vh" aria-live="polite" data-cro-copy-status></span></div>{%- endif -%}
+          {%- if s.button_label != blank -%}<a class="cro-btn" href="{{ s.button_link | default: routes.all_products_collection_url }}">{{ s.button_label | escape }}</a>{%- endif -%}
+        {%- endif -%}
+        {%- if s.no_thanks != blank -%}<button class="cro-pop__no" type="button" data-cro-popup-close>{{ s.no_thanks | escape }}</button>{%- endif -%}
+      </div>
+    </div>
+  </dialog>
+</div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "CRO pop-up",
+  "tag": "div",
+  "class": "cro-section cro-section--popup",
+  "enabled_on": {
+    "groups": [
+      "header",
+      "footer"
+    ]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Get first access to our next sale"
+    },
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Text",
+      "default": "Join our list for new arrivals and member-only offers.",
+      "info": "Only promise what you will actually send."
+    },
+    {
+      "type": "select",
+      "id": "field",
+      "label": "Form",
+      "options": [
+        {
+          "value": "email",
+          "label": "Email sign-up"
+        },
+        {
+          "value": "phone",
+          "label": "Phone number (contact form)"
+        },
+        {
+          "value": "none",
+          "label": "No form (offer + button)"
+        }
+      ],
+      "default": "email"
+    },
+    {
+      "type": "text",
+      "id": "placeholder",
+      "label": "Field placeholder",
+      "default": "Your email address"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Sign me up"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link (no-form mode)"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "consent",
+      "label": "Consent text",
+      "info": "Add your privacy consent wording and a link to your privacy policy."
+    },
+    {
+      "type": "text",
+      "id": "success_text",
+      "label": "Success message",
+      "default": "You're on the list. Thank you!"
+    },
+    {
+      "type": "text",
+      "id": "code",
+      "label": "Discount code",
+      "info": "Optional. Create it in Shopify Admin → Discounts. Shown after sign-up (or straight away in no-form mode)."
+    },
+    {
+      "type": "text",
+      "id": "copy_label",
+      "label": "Copy label",
+      "default": "Copy"
+    },
+    {
+      "type": "text",
+      "id": "copied_label",
+      "label": "Copied label",
+      "default": "Copied!"
+    },
+    {
+      "type": "text",
+      "id": "no_thanks",
+      "label": "Dismiss text",
+      "default": "No thanks"
+    },
+    {
+      "type": "text",
+      "id": "close_label",
+      "label": "Close label (screen readers)",
+      "default": "Close"
+    },
+    {
+      "type": "text",
+      "id": "tags",
+      "label": "Customer tags",
+      "default": "newsletter,popup"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "image_alt",
+      "label": "Image alt text"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image position",
+      "options": [
+        {
+          "value": "top",
+          "label": "Top"
+        },
+        {
+          "value": "start",
+          "label": "Left (desktop)"
+        },
+        {
+          "value": "none",
+          "label": "Hidden"
+        }
+      ],
+      "default": "top"
+    },
+    {
+      "type": "header",
+      "content": "Triggers"
+    },
+    {
+      "type": "checkbox",
+      "id": "trigger_delay",
+      "label": "After a delay",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "delay",
+      "label": "Delay",
+      "min": 3,
+      "max": 60,
+      "step": 1,
+      "default": 12,
+      "unit": "s"
+    },
+    {
+      "type": "checkbox",
+      "id": "trigger_scroll",
+      "label": "After scrolling",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "scroll",
+      "label": "Scroll depth",
+      "min": 10,
+      "max": 90,
+      "step": 5,
+      "default": 50,
+      "unit": "%"
+    },
+    {
+      "type": "checkbox",
+      "id": "trigger_exit",
+      "label": "Exit intent (desktop)",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "trigger_idle",
+      "label": "Idle on mobile",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "idle",
+      "label": "Idle time",
+      "min": 10,
+      "max": 120,
+      "step": 5,
+      "default": 30,
+      "unit": "s"
+    },
+    {
+      "type": "range",
+      "id": "days",
+      "label": "Show again after",
+      "min": 1,
+      "max": 60,
+      "step": 1,
+      "default": 7,
+      "unit": "d"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Minimum gap after another pop-up",
+      "min": 0,
+      "max": 300,
+      "step": 10,
+      "default": 60,
+      "unit": "s"
+    },
+    {
+      "type": "checkbox",
+      "id": "suppress_after_submit",
+      "label": "Never show again after sign-up",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "preview",
+      "label": "Show inside the theme editor",
+      "default": false,
+      "info": "Turn on while designing; turn off afterwards."
+    },
+    {
+      "type": "header",
+      "content": "Pages",
+      "info": "Never shown on cart, checkout, password or account pages."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_home",
+      "label": "Home page",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product",
+      "label": "Product pages",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_collection",
+      "label": "Collection pages",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_other",
+      "label": "Other pages",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "width",
+      "label": "Width",
+      "min": 360,
+      "max": 900,
+      "step": 20,
+      "default": 560,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "align",
+      "label": "Text alignment",
+      "options": [
+        {
+          "value": "start",
+          "label": "Start"
+        },
+        {
+          "value": "center",
+          "label": "Centre"
+        },
+        {
+          "value": "end",
+          "label": "End"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "radius",
+      "label": "Corner radius",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "button_radius",
+      "label": "Button corner radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "default": 10,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "backdrop_opacity",
+      "label": "Backdrop opacity",
+      "min": 20,
+      "max": 90,
+      "step": 5,
+      "default": 70,
+      "unit": "%"
+    },
+    {
+      "type": "range",
+      "id": "heading_size_desktop",
+      "label": "Heading size (desktop)",
+      "min": 18,
+      "max": 48,
+      "step": 2,
+      "default": 30,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "label": "Heading size (mobile)",
+      "min": 18,
+      "max": 40,
+      "step": 2,
+      "default": 24,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "text_size_desktop",
+      "label": "Text size (desktop)",
+      "min": 12,
+      "max": 22,
+      "step": 1,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "text_size_mobile",
+      "label": "Text size (mobile)",
+      "min": 12,
+      "max": 22,
+      "step": 1,
+      "default": 15,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Colours",
+      "info": "Keep text at a 4.5:1 contrast ratio or better against its background (WCAG AA)."
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Background",
+      "default": "#FFFDF8"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "default": "#18231F"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#3F4A45"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#D4623D"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Field border",
+      "default": "#D7CEC1"
+    },
+    {
+      "type": "color",
+      "id": "button_bg",
+      "label": "Button background",
+      "default": "#173F35"
+    },
+    {
+      "type": "color",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "#FFFDF8"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_bg",
+      "label": "Button hover background",
+      "default": "#0F2F27"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_text",
+      "label": "Button hover text",
+      "default": "#FFFFFF"
+    }
+  ],
+  "presets": [
+    {
+      "name": "CRO pop-up"
+    }
+  ]
+}
+{% endschema %}

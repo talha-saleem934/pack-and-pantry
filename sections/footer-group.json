@@ -1,1 +1,52 @@
-{"type":"footer","name":"Footer group","sections":{"footer":{"type":"footer","blocks":{"shop_menu":{"type":"menu","settings":{"heading":"Quick LINKS","menu":"main-menu"}},"newsletter":{"type":"newsletter","settings":{"heading":"Useful ideas, neatly delivered","text":"Get product news and practical pantry inspiration."}}},"block_order":["shop_menu","newsletter"],"custom_css":[".footer__grid {grid-template-columns: 1.35fr 0.7fr 1.2fr; gap: 48px;}",".footer__asset-frame {--logo-width: 190px !important; width: 190px !important; height: 76px !important; margin-bottom: 24px;}",".footer h2 {color: #e8b44a; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase;}",".footer p,.footer a {font-size: 15px; line-height: 1.7;}","@media (max-width: 749px) {.footer__grid {grid-template-columns: 1fr; gap: 32px; } .footer__asset-frame {margin: 0 auto 20px; } .footer__brand {text-align: center; }}"],"settings":{"description":"Practical, attractive storage and packaging solutions for calmer kitchens, organised pantries and growing food businesses.","copyright_note":"All rights reserved."}}},"order":["footer"]}
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "type": "footer",
+  "name": "Footer group",
+  "sections": {
+    "footer": {
+      "type": "footer",
+      "blocks": {
+        "shop_menu": {
+          "type": "menu",
+          "settings": {
+            "heading": "Quick LINKS",
+            "menu": "main-menu"
+          }
+        },
+        "newsletter": {
+          "type": "newsletter",
+          "settings": {
+            "heading": "Useful ideas, neatly delivered",
+            "text": "Get product news and practical pantry inspiration."
+          }
+        }
+      },
+      "block_order": [
+        "shop_menu",
+        "newsletter"
+      ],
+      "custom_css": [
+        ".footer__grid {grid-template-columns: 1.35fr 0.7fr 1.2fr; gap: 48px;}",
+        ".footer__asset-frame {--logo-width: 190px !important; width: 190px !important; height: 76px !important; margin-bottom: 24px;}",
+        ".footer h2 {color: #e8b44a; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase;}",
+        ".footer p,.footer a {font-size: 15px; line-height: 1.7;}",
+        "@media (max-width: 749px) {.footer__grid {grid-template-columns: 1fr; gap: 32px; } .footer__asset-frame {margin: 0 auto 20px; } .footer__brand {text-align: center; }}"
+      ],
+      "settings": {
+        "description": "Practical, attractive storage and packaging solutions for calmer kitchens, organised pantries and growing food businesses.",
+        "copyright_note": "All rights reserved."
+      }
+    }
+  },
+  "order": [
+    "footer"
+  ]
+}

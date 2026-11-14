@@ -72,4 +72,39 @@
       { "type": "url", "id": "social_pinterest", "label": "Pinterest URL" }
     ]
   }
+  ,
+  {
+    "name": "CRO & conversion",
+    "settings": [
+      { "type": "header", "content": "Contact and support", "info": "Defaults for every CRO section. A section can override them in its own settings." },
+      { "type": "text", "id": "cro_whatsapp_number", "label": "WhatsApp number", "info": "International format, digits only, e.g. 923001234567." },
+      { "type": "textarea", "id": "cro_whatsapp_greeting", "label": "Default WhatsApp message", "default": "Hi Pack & Pantry, I have a question about {product}.", "info": "{product} becomes the product title on product pages (shop name elsewhere); {url} becomes the page link." },
+      { "type": "text", "id": "cro_support_phone", "label": "Support phone", "info": "As it should be dialled, e.g. +92 300 1234567." },
+      { "type": "text", "id": "cro_support_email", "label": "Support email" },
+      { "type": "header", "content": "Delivery and dispatch", "info": "Replace these with your verified delivery policy before enabling any section that shows them." },
+      { "type": "number", "id": "cro_free_delivery_threshold", "label": "Free-delivery threshold", "default": 5000, "info": "Plain amount in your store currency, e.g. 5000. 0 turns free-delivery messaging off. Must match your shipping rates." },
+      { "type": "number", "id": "cro_delivery_min_days", "label": "Delivery time: minimum working days", "default": 2 },
+      { "type": "number", "id": "cro_delivery_max_days", "label": "Delivery time: maximum working days", "default": 5 },
+      { "type": "range", "id": "cro_dispatch_cutoff_hour", "label": "Daily dispatch cut-off hour", "min": 0, "max": 23, "step": 1, "default": 14, "info": "24-hour clock in the shop timezone. Used by 'daily dispatch cut-off' countdowns." },
+      { "type": "text", "id": "cro_excluded_weekdays", "label": "Non-dispatch weekdays", "default": "Sun", "info": "Comma separated: Mon, Tue, Wed, Thu, Fri, Sat, Sun." },
+      { "type": "textarea", "id": "cro_holidays", "label": "Non-dispatch dates", "info": "Public holidays and closures. One per line or comma separated, format YYYY-MM-DD." },
+      { "type": "text", "id": "cro_timezone", "label": "Shop timezone", "default": "Asia/Karachi", "info": "IANA timezone name. Countdowns and delivery dates are calculated in this zone." },
+      { "type": "header", "content": "Stock and urgency" },
+      { "type": "range", "id": "cro_low_stock_threshold", "label": "Low-stock threshold", "min": 1, "max": 50, "step": 1, "default": 5, "info": "Only used for variants whose inventory is tracked and cannot be oversold." },
+      { "type": "color", "id": "cro_urgency_color", "label": "Urgency colour", "default": "#C64F32" },
+      { "type": "header", "content": "Payment methods", "info": "Turn on only the methods you actually accept. Used by payment-icon strips." },
+      { "type": "checkbox", "id": "cro_pay_cod", "label": "Cash on delivery", "default": false },
+      { "type": "checkbox", "id": "cro_pay_visa", "label": "Visa", "default": false },
+      { "type": "checkbox", "id": "cro_pay_mastercard", "label": "Mastercard", "default": false },
+      { "type": "checkbox", "id": "cro_pay_jazzcash", "label": "JazzCash", "default": false },
+      { "type": "checkbox", "id": "cro_pay_easypaisa", "label": "Easypaisa", "default": false },
+      { "type": "checkbox", "id": "cro_pay_bank", "label": "Bank transfer", "default": false },
+      { "type": "header", "content": "Policy pages" },
+      { "type": "page", "id": "cro_page_shipping", "label": "Shipping / delivery page" },
+      { "type": "page", "id": "cro_page_returns", "label": "Returns and exchanges page" },
+      { "type": "page", "id": "cro_page_privacy", "label": "Privacy page" },
+      { "type": "header", "content": "Measurement" },
+      { "type": "checkbox", "id": "cro_enable_analytics", "label": "Send CRO events to the data layer", "default": false, "info": "Only pushes events when window.dataLayer already exists. No tracking code is added." }
+    ]
+  }
 ]

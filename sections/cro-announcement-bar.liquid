@@ -1,0 +1,424 @@
+{%- liquid
+  assign s = section.settings
+  assign sid = section.id
+  assign pt = request.page_type
+  assign mode = s.mode
+  assign now_ts = 'now' | date: '%s' | plus: 0
+  assign first_text = section.blocks.first.settings.text | default: sid
+  assign dismiss_key = sid | append: first_text | md5 | slice: 0, 12
+  assign has_slots = false
+  if s.left_text != blank or s.right_text != blank
+    assign has_slots = true
+  endif
+  case s.align
+    when 'start'
+      assign justify = 'flex-start'
+    when 'end'
+      assign justify = 'flex-end'
+    else
+      assign justify = 'center'
+  endcase
+  assign shown = 0
+-%}
+{%- capture cro_items -%}
+  {%- for block in section.blocks -%}
+    {%- liquid
+      assign b = block.settings
+      assign show = true
+      case b.show_on
+        when 'home'
+          unless pt == 'index'
+            assign show = false
+          endunless
+        when 'product'
+          unless pt == 'product'
+            assign show = false
+          endunless
+        when 'collection'
+          unless pt == 'collection'
+            assign show = false
+          endunless
+        when 'cart'
+          unless pt == 'cart'
+            assign show = false
+          endunless
+      endcase
+      if b.text == blank and b.countdown_mode == 'none'
+        assign show = false
+      endif
+      if b.countdown_mode == 'fixed' and b.expire_action == 'hide_block' and b.countdown_end != blank
+        assign end_ts = b.countdown_end | date: '%s' | plus: 0
+        if end_ts > 1000000000 and end_ts < now_ts
+          assign show = false
+        endif
+      endif
+      case b.expire_action
+        when 'message'
+          assign cd_expire = 'message'
+        when 'restart'
+          assign cd_expire = 'restart'
+        else
+          assign cd_expire = 'hide'
+      endcase
+    -%}
+    {%- if show -%}
+      {%- assign shown = shown | plus: 1 -%}
+      <div
+        class="cro-ab__item cro-ab__item--{{ block.id }}{% if mode != 'marquee' and shown == 1 %} is-active{% endif %}"
+        {%- if mode != 'marquee' %} data-cro-slide{% if shown > 1 %} aria-hidden="true"{% endif %}{% endif -%}
+        {%- if b.expire_action == 'hide_block' and b.countdown_mode != 'none' %} data-cro-expire-scope="hide"{% endif %}
+        {{ block.shopify_attributes }}
+      >
+        {%- if b.icon != 'none' or b.icon_image != blank or b.icon_text != blank -%}
+          <span class="cro-ab__icon">{% render 'cro-icon', icon: b.icon, image: b.icon_image, text: b.icon_text, size: s.icon_size %}</span>
+        {%- endif -%}
+        {%- if b.text != blank -%}
+          {%- if b.link != blank and b.link_label == blank -%}
+            <a class="cro-ab__link" href="{{ b.link }}">{{ b.text | escape }}</a>
+          {%- else -%}
+            <span class="cro-ab__text">{{ b.text | escape }}</span>
+          {%- endif -%}
+        {%- endif -%}
+        {%- if b.countdown_mode != 'none' -%}
+          {% render 'cro-countdown',
+            id: block.id,
+            mode: b.countdown_mode,
+            end: b.countdown_end,
+            hours: b.evergreen_hours,
+            prefix: b.countdown_prefix,
+            suffix: b.countdown_suffix,
+            suffix_later: b.countdown_suffix_later,
+            expire_action: cd_expire,
+            expired_message: b.expired_message,
+            style: s.countdown_style,
+            show_days: s.countdown_show_days,
+            pad: s.countdown_pad,
+            separator: s.countdown_separator,
+            label_d: s.label_days,
+            label_h: s.label_hours,
+            label_m: s.label_minutes,
+            label_s: s.label_seconds,
+            urgent: s.countdown_urgent,
+            fallback: b.countdown_fallback
+          %}
+        {%- endif -%}
+        {%- if b.link != blank and b.link_label != blank -%}
+          <a class="cro-ab__cta" href="{{ b.link }}">{{ b.link_label | escape }}</a>
+        {%- endif -%}
+      </div>
+      {%- if mode == 'marquee' and s.marquee_separator != blank -%}<span class="cro-ab__sep" aria-hidden="true">{{ s.marquee_separator | escape }}</span>{%- endif -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endcapture -%}
+
+{%- if shown > 0 or request.design_mode -%}
+{{ 'cro-components.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'cro-core.js' | asset_url }}" defer="defer"></script>
+{% style %}
+  #cro-{{ sid }} {
+    --cro-ab-bg: {{ s.bg_color }};
+    --cro-ab-text: {{ s.text_color }};
+    --cro-ab-link: {{ s.link_color }};
+    --cro-ab-link-hover: {{ s.link_hover_color }};
+    --cro-ab-icon: {{ s.icon_color }};
+    --cro-ab-ctrl: {{ s.control_color }};
+    --cro-ab-cta-bg: {{ s.cta_bg }};
+    --cro-ab-cta-text: {{ s.cta_text }};
+    --cro-ab-cta-hover-bg: {{ s.cta_hover_bg }};
+    --cro-ab-cta-hover-text: {{ s.cta_hover_text }};
+    --cro-cd-box-bg: {{ s.cd_box_bg }};
+    --cro-cd-digit: {{ s.cd_digit }};
+    --cro-cd-label: {{ s.cd_label }};
+    --cro-cd-sep: {{ s.cd_separator }};
+    --cro-cd-urgent: {{ s.cd_urgent }};
+    --cro-cd-radius: 6px;
+    --cro-mq-gap: {{ s.marquee_gap }}px;
+    --cro-mq-align: {{ justify }};
+    position: relative;
+    background: var(--cro-ab-bg);
+    color: var(--cro-ab-text);
+    font-size: {{ s.font_size_mobile }}px;
+    font-weight: {{ s.font_weight }};
+    letter-spacing: {{ s.letter_spacing }}px;
+    line-height: 1.35;
+    {%- if s.uppercase %} text-transform: uppercase;{% endif %}
+    {%- if s.show_border %} border-block-end: 1px solid {{ s.border_color }};{% endif %}
+  }
+  #cro-{{ sid }}[hidden] { display: none; }
+  #cro-{{ sid }} .cro-ab__inner {
+    display: flex; align-items: center; gap: 8px;
+    box-sizing: border-box;
+    min-block-size: {{ s.height_mobile }}px;
+    max-inline-size: {% if s.full_width %}none{% else %}{{ s.container_width }}px{% endif %};
+    margin-inline: auto;
+    padding-block: {{ s.padding_top_mobile }}px {{ s.padding_bottom_mobile }}px;
+    padding-inline: var(--gutter, 16px);
+  }
+  #cro-{{ sid }} .cro-ab__center { flex: 1 1 auto; min-inline-size: 0; text-align: {{ s.align }}; }
+  #cro-{{ sid }} .cro-ab__slot { display: {% if s.slots_on_mobile %}flex{% else %}none{% endif %}; flex: 0 1 auto; align-items: center; gap: 6px; min-inline-size: 0; white-space: nowrap; }
+  #cro-{{ sid }} .cro-ab__slot--end { justify-content: flex-end; }
+  #cro-{{ sid }} .cro-ab__slot a { color: var(--cro-ab-link); text-decoration: none; display: inline-flex; align-items: center; gap: 6px; min-block-size: 40px; }
+  #cro-{{ sid }} .cro-ab__slot a:hover { color: var(--cro-ab-link-hover); text-decoration: underline; }
+  #cro-{{ sid }} .cro-ab__item { display: flex; flex-wrap: wrap; align-items: center; justify-content: {{ justify }}; gap: 6px 10px; }
+  #cro-{{ sid }} .cro-mq .cro-ab__item { flex-wrap: nowrap; white-space: nowrap; }
+  #cro-{{ sid }} .cro-ab__icon, #cro-{{ sid }} .cro-ab__slot .cro-icon { display: inline-flex; color: var(--cro-ab-icon); }
+  #cro-{{ sid }} .cro-ab__link { color: var(--cro-ab-link); text-decoration: underline; text-underline-offset: 3px; }
+  #cro-{{ sid }} .cro-ab__link:hover { color: var(--cro-ab-link-hover); }
+  #cro-{{ sid }} .cro-ab__cta {
+    display: inline-flex; align-items: center; min-block-size: 28px; padding: 2px 12px; border-radius: 999px;
+    background: var(--cro-ab-cta-bg); color: var(--cro-ab-cta-text); text-decoration: none;
+    transition: background-color .2s ease, color .2s ease;
+  }
+  #cro-{{ sid }} .cro-ab__cta:hover { background: var(--cro-ab-cta-hover-bg); color: var(--cro-ab-cta-hover-text); }
+  #cro-{{ sid }} .cro-ab__sep { opacity: .7; }
+  #cro-{{ sid }} .cro-ab__rot { display: flex; align-items: center; gap: 2px; }
+  #cro-{{ sid }} .cro-ab__rot .cro-rot { flex: 1 1 auto; }
+  #cro-{{ sid }} .cro-ab__ctrl {
+    display: inline-flex; flex: none; align-items: center; justify-content: center;
+    inline-size: 48px; min-block-size: 40px; align-self: stretch; padding: 0;
+    background: none; border: 0; color: var(--cro-ab-ctrl); cursor: pointer;
+  }
+  #cro-{{ sid }} .cro-ab__ctrl[hidden] { display: none; }
+  #cro-{{ sid }} .cro-ab__ctrl:hover { color: var(--cro-ab-link-hover); }
+  #cro-{{ sid }} a:focus-visible, #cro-{{ sid }} .cro-ab__ctrl:focus-visible { outline: 2px solid currentColor; outline-offset: -3px; }
+  #cro-{{ sid }}.cro-ab--countdown .cro-cd { font-size: 1.12em; }
+  {%- for block in section.blocks -%}
+    {%- if block.settings.text_color != blank %}
+  #cro-{{ sid }} .cro-ab__item--{{ block.id }} { color: {{ block.settings.text_color }}; --cro-ab-link: {{ block.settings.text_color }}; }
+    {%- endif -%}
+    {%- if block.settings.bg_color != blank %}
+  #cro-{{ sid }}:has(.cro-ab__item--{{ block.id }}.is-active) { background: {{ block.settings.bg_color }}; }
+  #cro-{{ sid }} .cro-mq .cro-ab__item--{{ block.id }} { background: {{ block.settings.bg_color }}; padding: 2px 10px; border-radius: 999px; }
+    {%- endif -%}
+  {%- endfor %}
+  @media (min-width: 750px) {
+    #cro-{{ sid }} { font-size: {{ s.font_size_desktop }}px; }
+    #cro-{{ sid }} .cro-ab__inner { min-block-size: {{ s.height_desktop }}px; padding-block: {{ s.padding_top_desktop }}px {{ s.padding_bottom_desktop }}px; }
+    #cro-{{ sid }} .cro-ab__slot { display: flex; }
+    #cro-{{ sid }}.cro-ab--slots .cro-ab__slot { flex: 1 1 0; }
+  }
+{% endstyle %}
+
+<div
+  id="cro-{{ sid }}"
+  class="cro-ab cro-ab--{{ mode }}{% if has_slots %} cro-ab--slots{% endif %}"
+  role="region"
+  aria-label="{{ s.region_label | escape }}"
+  data-cro-hide-empty
+>
+  <div class="cro-ab__inner" data-cro-rot-wrap>
+    {%- if has_slots -%}
+      <div class="cro-ab__slot cro-ab__slot--start">
+        {%- if s.left_text != blank -%}
+          {%- capture left_inner -%}{% render 'cro-icon', icon: s.left_icon, image: s.left_icon_image, text: s.left_icon_text, size: s.icon_size %}<span>{{ s.left_text | escape }}</span>{%- endcapture -%}
+          {%- if s.left_link != blank -%}<a href="{{ s.left_link }}">{{ left_inner }}</a>{%- else -%}<span class="cro-ab__slot-text">{{ left_inner }}</span>{%- endif -%}
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="cro-ab__center">
+      {%- if shown == 0 -%}
+        <p class="cro-ab__text">{{ s.empty_editor_note | escape }}</p>
+      {%- elsif mode == 'marquee' -%}
+        <div class="cro-mq{% if s.edge_fade %} cro-mq--fade{% endif %}" data-cro-marquee data-speed="{{ s.marquee_speed }}" data-direction="{{ s.marquee_direction }}" data-pause="{{ s.pause_on_hover }}">
+          <div class="cro-mq__track" data-cro-mq-track>
+            <div class="cro-mq__group" data-cro-mq-group>{{ cro_items }}</div>
+            <div class="cro-mq__group" data-cro-mq-clone aria-hidden="true" inert>{{ cro_items | replace: 'id="CroCountdown-', 'data-cro-clone-of="' }}</div>
+          </div>
+        </div>
+      {%- else -%}
+        <div class="cro-ab__rot">
+          {%- if mode == 'slider' and s.show_arrows and shown > 1 -%}
+            <button type="button" class="cro-ab__ctrl" data-cro-prev aria-label="{{ s.prev_label | escape }}">{% render 'cro-icon', icon: 'chevron-left', size: 18 %}</button>
+          {%- endif -%}
+          <div
+            class="cro-rot"
+            data-cro-rotator
+            data-autoplay="{% if mode == 'slider' %}true{% else %}false{% endif %}"
+            data-speed="{{ s.slider_speed }}"
+            data-transition="{{ s.slider_transition }}"
+            data-pause="{{ s.pause_on_hover }}"
+          >{{ cro_items }}</div>
+          {%- if mode == 'slider' and s.show_arrows and shown > 1 -%}
+            <button type="button" class="cro-ab__ctrl" data-cro-next aria-label="{{ s.next_label | escape }}">{% render 'cro-icon', icon: 'chevron-right', size: 18 %}</button>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
+
+    {%- if has_slots -%}
+      <div class="cro-ab__slot cro-ab__slot--end">
+        {%- if s.right_text != blank -%}
+          {%- capture right_inner -%}{% render 'cro-icon', icon: s.right_icon, image: s.right_icon_image, text: s.right_icon_text, size: s.icon_size %}<span>{{ s.right_text | escape }}</span>{%- endcapture -%}
+          {%- if s.right_link != blank -%}<a href="{{ s.right_link }}">{{ right_inner }}</a>{%- else -%}<span class="cro-ab__slot-text">{{ right_inner }}</span>{%- endif -%}
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- if s.dismissible -%}
+      <button type="button" class="cro-ab__ctrl cro-ab__close" data-cro-dismiss="cro-{{ sid }}" data-key="{{ dismiss_key }}" data-days="{{ s.dismiss_days }}" aria-label="{{ s.dismiss_label | escape }}">{% render 'cro-icon', icon: 'close', size: 16 %}</button>
+    {%- endif -%}
+  </div>
+</div>
+{%- if s.dismissible -%}
+  {%- unless request.design_mode -%}
+    <script>(function(){try{var t=+localStorage.getItem('cro-dismiss-{{ dismiss_key }}');if(t&&t>Date.now()){var e=document.getElementById('cro-{{ sid }}');if(e)e.hidden=true;}}catch(e){}})();</script>
+  {%- endunless -%}
+{%- endif -%}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "CRO announcement bar",
+  "tag": "div",
+  "class": "cro-section cro-section--announcement",
+  "enabled_on": { "groups": ["header"] },
+  "max_blocks": 8,
+  "settings": [
+    { "type": "header", "content": "Content" },
+    {
+      "type": "select", "id": "mode", "label": "Display mode", "default": "static",
+      "options": [
+        { "value": "static", "label": "Static (first message)" },
+        { "value": "slider", "label": "Rotating slider" },
+        { "value": "marquee", "label": "Scrolling marquee" },
+        { "value": "countdown", "label": "Countdown strip" }
+      ],
+      "info": "Static and countdown strip show the first message that applies to the current page."
+    },
+    { "type": "text", "id": "region_label", "label": "Screen-reader label", "default": "Announcement" },
+    { "type": "text", "id": "empty_editor_note", "label": "Theme editor note when no message applies", "default": "Add a message block, or check its 'Show on' setting.", "info": "Only visible inside the theme editor." },
+
+    { "type": "header", "content": "Slider" },
+    { "type": "range", "id": "slider_speed", "label": "Time per message", "min": 2, "max": 15, "step": 1, "unit": "s", "default": 5 },
+    { "type": "select", "id": "slider_transition", "label": "Transition", "default": "fade", "options": [ { "value": "fade", "label": "Fade" }, { "value": "slide", "label": "Slide" } ] },
+    { "type": "checkbox", "id": "show_arrows", "label": "Show previous / next arrows", "default": true },
+    { "type": "checkbox", "id": "pause_on_hover", "label": "Pause on hover", "default": true, "info": "The slider and marquee always pause while a link inside them has keyboard focus, and stop entirely for visitors who prefer reduced motion." },
+    { "type": "text", "id": "prev_label", "label": "Previous button label (screen readers)", "default": "Previous message" },
+    { "type": "text", "id": "next_label", "label": "Next button label (screen readers)", "default": "Next message" },
+
+    { "type": "header", "content": "Marquee" },
+    { "type": "range", "id": "marquee_speed", "label": "Speed", "min": 10, "max": 200, "step": 5, "unit": "px", "default": 40, "info": "Pixels per second." },
+    { "type": "select", "id": "marquee_direction", "label": "Direction", "default": "left", "options": [ { "value": "left", "label": "Left" }, { "value": "right", "label": "Right" } ] },
+    { "type": "range", "id": "marquee_gap", "label": "Gap between messages", "min": 8, "max": 96, "step": 4, "unit": "px", "default": 40 },
+    { "type": "text", "id": "marquee_separator", "label": "Separator character", "default": "•" },
+    { "type": "checkbox", "id": "edge_fade", "label": "Fade the edges", "default": true },
+
+    { "type": "header", "content": "Countdown style", "info": "Countdowns are set per message block." },
+    { "type": "select", "id": "countdown_style", "label": "Style", "default": "inline", "options": [ { "value": "inline", "label": "Inline" }, { "value": "minimal", "label": "Minimal (00:00:00)" }, { "value": "boxes", "label": "Boxes" }, { "value": "circular", "label": "Circular" } ] },
+    { "type": "checkbox", "id": "countdown_show_days", "label": "Show days", "default": true },
+    { "type": "checkbox", "id": "countdown_pad", "label": "Leading zeros", "default": true },
+    { "type": "text", "id": "countdown_separator", "label": "Separator", "default": ":" },
+    { "type": "text", "id": "label_days", "label": "Days label", "default": "d" },
+    { "type": "text", "id": "label_hours", "label": "Hours label", "default": "h" },
+    { "type": "text", "id": "label_minutes", "label": "Minutes label", "default": "m" },
+    { "type": "text", "id": "label_seconds", "label": "Seconds label", "default": "s" },
+    { "type": "range", "id": "countdown_urgent", "label": "Urgent colour when under", "min": 0, "max": 120, "step": 5, "unit": "min", "default": 0, "info": "0 turns the urgent colour off." },
+
+    { "type": "header", "content": "Side slots", "info": "Optional text on the left and right, e.g. a WhatsApp number or a shipping note. Hidden on mobile unless enabled below." },
+    { "type": "text", "id": "left_text", "label": "Left text" },
+    { "type": "url", "id": "left_link", "label": "Left link" },
+    { "type": "select", "id": "left_icon", "label": "Left icon", "default": "none", "options": [{"value":"none","label":"None"},{"value":"truck","label":"Truck"},{"value":"shield","label":"Shield"},{"value":"cash","label":"Cash"},{"value":"refresh","label":"Refresh / returns"},{"value":"lock","label":"Lock"},{"value":"star","label":"Star"},{"value":"whatsapp","label":"WhatsApp"},{"value":"gift","label":"Gift"},{"value":"clock","label":"Clock"},{"value":"tag","label":"Tag"},{"value":"heart","label":"Heart"},{"value":"check","label":"Check"},{"value":"phone","label":"Phone"},{"value":"box","label":"Box"},{"value":"leaf","label":"Leaf"},{"value":"award","label":"Award"},{"value":"sparkle","label":"Sparkle"},{"value":"percent","label":"Percent"},{"value":"mail","label":"Mail"},{"value":"map-pin","label":"Map pin"},{"value":"thumbs-up","label":"Thumbs up"},{"value":"package","label":"Package"},{"value":"camera","label":"Camera"},{"value":"play","label":"Play"},{"value":"flame","label":"Flame"}] },
+    { "type": "text", "id": "left_icon_text", "label": "Left icon emoji / text", "info": "Overrides the built-in icon." },
+    { "type": "image_picker", "id": "left_icon_image", "label": "Left icon image", "info": "Overrides emoji and built-in icon." },
+    { "type": "text", "id": "right_text", "label": "Right text" },
+    { "type": "url", "id": "right_link", "label": "Right link" },
+    { "type": "select", "id": "right_icon", "label": "Right icon", "default": "none", "options": [{"value":"none","label":"None"},{"value":"truck","label":"Truck"},{"value":"shield","label":"Shield"},{"value":"cash","label":"Cash"},{"value":"refresh","label":"Refresh / returns"},{"value":"lock","label":"Lock"},{"value":"star","label":"Star"},{"value":"whatsapp","label":"WhatsApp"},{"value":"gift","label":"Gift"},{"value":"clock","label":"Clock"},{"value":"tag","label":"Tag"},{"value":"heart","label":"Heart"},{"value":"check","label":"Check"},{"value":"phone","label":"Phone"},{"value":"box","label":"Box"},{"value":"leaf","label":"Leaf"},{"value":"award","label":"Award"},{"value":"sparkle","label":"Sparkle"},{"value":"percent","label":"Percent"},{"value":"mail","label":"Mail"},{"value":"map-pin","label":"Map pin"},{"value":"thumbs-up","label":"Thumbs up"},{"value":"package","label":"Package"},{"value":"camera","label":"Camera"},{"value":"play","label":"Play"},{"value":"flame","label":"Flame"}] },
+    { "type": "text", "id": "right_icon_text", "label": "Right icon emoji / text" },
+    { "type": "image_picker", "id": "right_icon_image", "label": "Right icon image" },
+    { "type": "checkbox", "id": "slots_on_mobile", "label": "Show side slots on mobile", "default": false },
+
+    { "type": "header", "content": "Dismiss" },
+    { "type": "checkbox", "id": "dismissible", "label": "Allow visitors to close the bar", "default": false },
+    { "type": "range", "id": "dismiss_days", "label": "Keep closed for", "min": 1, "max": 60, "step": 1, "unit": "d", "default": 3, "info": "Changing the first message's text shows the bar again to everyone." },
+    { "type": "text", "id": "dismiss_label", "label": "Close button label (screen readers)", "default": "Close announcement" },
+
+    { "type": "header", "content": "Layout" },
+    { "type": "checkbox", "id": "full_width", "label": "Full width", "default": false },
+    { "type": "range", "id": "container_width", "label": "Container width", "min": 800, "max": 1800, "step": 50, "unit": "px", "default": 1300 },
+    { "type": "select", "id": "align", "label": "Text alignment", "default": "center", "options": [ { "value": "start", "label": "Start" }, { "value": "center", "label": "Centre" }, { "value": "end", "label": "End" } ] },
+    { "type": "range", "id": "height_desktop", "label": "Minimum height (desktop)", "min": 28, "max": 80, "step": 2, "unit": "px", "default": 40 },
+    { "type": "range", "id": "height_mobile", "label": "Minimum height (mobile)", "min": 28, "max": 80, "step": 2, "unit": "px", "default": 48, "info": "48px keeps arrows and the close button at a comfortable tap size." },
+    { "type": "range", "id": "padding_top_desktop", "label": "Padding top (desktop)", "min": 0, "max": 24, "step": 2, "unit": "px", "default": 4 },
+    { "type": "range", "id": "padding_bottom_desktop", "label": "Padding bottom (desktop)", "min": 0, "max": 24, "step": 2, "unit": "px", "default": 4 },
+    { "type": "range", "id": "padding_top_mobile", "label": "Padding top (mobile)", "min": 0, "max": 24, "step": 2, "unit": "px", "default": 4 },
+    { "type": "range", "id": "padding_bottom_mobile", "label": "Padding bottom (mobile)", "min": 0, "max": 24, "step": 2, "unit": "px", "default": 4 },
+
+    { "type": "header", "content": "Typography" },
+    { "type": "range", "id": "font_size_desktop", "label": "Text size (desktop)", "min": 10, "max": 22, "step": 1, "unit": "px", "default": 14 },
+    { "type": "range", "id": "font_size_mobile", "label": "Text size (mobile)", "min": 10, "max": 22, "step": 1, "unit": "px", "default": 13 },
+    { "type": "select", "id": "font_weight", "label": "Font weight", "default": "700", "options": [ { "value": "400", "label": "Regular" }, { "value": "700", "label": "Bold" } ] },
+    { "type": "range", "id": "letter_spacing", "label": "Letter spacing", "min": 0, "max": 3, "step": 0.5, "unit": "px", "default": 0.5 },
+    { "type": "checkbox", "id": "uppercase", "label": "Uppercase", "default": false },
+    { "type": "range", "id": "icon_size", "label": "Icon size", "min": 12, "max": 32, "step": 2, "unit": "px", "default": 18 },
+
+    { "type": "header", "content": "Colours", "info": "Keep text at a 4.5:1 contrast ratio or better against the background (WCAG AA). Dark green on golden oat passes." },
+    { "type": "color", "id": "bg_color", "label": "Background", "default": "#E8B44A" },
+    { "type": "color", "id": "text_color", "label": "Text", "default": "#18231F" },
+    { "type": "color", "id": "link_color", "label": "Links", "default": "#18231F" },
+    { "type": "color", "id": "link_hover_color", "label": "Link hover", "default": "#173F35" },
+    { "type": "color", "id": "icon_color", "label": "Icons", "default": "#173F35" },
+    { "type": "color", "id": "control_color", "label": "Arrows and close button", "default": "#18231F" },
+    { "type": "color", "id": "cta_bg", "label": "Link-label button background", "default": "#173F35" },
+    { "type": "color", "id": "cta_text", "label": "Link-label button text", "default": "#FFFDF8" },
+    { "type": "color", "id": "cta_hover_bg", "label": "Link-label button hover background", "default": "#0F2F27" },
+    { "type": "color", "id": "cta_hover_text", "label": "Link-label button hover text", "default": "#FFFFFF" },
+    { "type": "checkbox", "id": "show_border", "label": "Bottom border", "default": false },
+    { "type": "color", "id": "border_color", "label": "Border", "default": "#D7CEC1" },
+    { "type": "color", "id": "cd_box_bg", "label": "Countdown box background", "default": "#FFFDF8" },
+    { "type": "color", "id": "cd_digit", "label": "Countdown digits", "default": "#173F35" },
+    { "type": "color", "id": "cd_label", "label": "Countdown labels", "default": "#3F4A45" },
+    { "type": "color", "id": "cd_separator", "label": "Countdown separator", "default": "#18231F" },
+    { "type": "color", "id": "cd_urgent", "label": "Countdown urgent colour", "default": "#C64F32" }
+  ],
+  "blocks": [
+    {
+      "type": "message",
+      "name": "Message",
+      "settings": [
+        { "type": "header", "content": "Content" },
+        { "type": "text", "id": "text", "label": "Message", "default": "Practical storage for calmer kitchens and organised pantries", "info": "If the message states a delivery, payment or returns promise, make sure it matches your verified policy." },
+        { "type": "url", "id": "link", "label": "Link" },
+        { "type": "text", "id": "link_label", "label": "Link label", "info": "Shown as a small button. Leave empty to make the whole message the link." },
+        { "type": "select", "id": "icon", "label": "Icon", "default": "none", "options": [{"value":"none","label":"None"},{"value":"truck","label":"Truck"},{"value":"shield","label":"Shield"},{"value":"cash","label":"Cash"},{"value":"refresh","label":"Refresh / returns"},{"value":"lock","label":"Lock"},{"value":"star","label":"Star"},{"value":"whatsapp","label":"WhatsApp"},{"value":"gift","label":"Gift"},{"value":"clock","label":"Clock"},{"value":"tag","label":"Tag"},{"value":"heart","label":"Heart"},{"value":"check","label":"Check"},{"value":"phone","label":"Phone"},{"value":"box","label":"Box"},{"value":"leaf","label":"Leaf"},{"value":"award","label":"Award"},{"value":"sparkle","label":"Sparkle"},{"value":"percent","label":"Percent"},{"value":"mail","label":"Mail"},{"value":"map-pin","label":"Map pin"},{"value":"thumbs-up","label":"Thumbs up"},{"value":"package","label":"Package"},{"value":"camera","label":"Camera"},{"value":"play","label":"Play"},{"value":"flame","label":"Flame"}] },
+        { "type": "text", "id": "icon_text", "label": "Icon emoji / text", "info": "Overrides the built-in icon." },
+        { "type": "image_picker", "id": "icon_image", "label": "Icon image", "info": "Overrides emoji and built-in icon." },
+        {
+          "type": "select", "id": "show_on", "label": "Show on", "default": "all",
+          "options": [ { "value": "all", "label": "All pages" }, { "value": "home", "label": "Home page" }, { "value": "product", "label": "Product pages" }, { "value": "collection", "label": "Collection pages" }, { "value": "cart", "label": "Cart page" } ]
+        },
+        { "type": "header", "content": "Colour override", "info": "Leave empty to use the section colours." },
+        { "type": "color", "id": "text_color", "label": "Text" },
+        { "type": "color", "id": "bg_color", "label": "Background" },
+        { "type": "header", "content": "Countdown" },
+        {
+          "type": "select", "id": "countdown_mode", "label": "Countdown", "default": "none",
+          "options": [ { "value": "none", "label": "None" }, { "value": "fixed", "label": "Offer ends at a date and time" }, { "value": "daily", "label": "Daily dispatch cut-off" }, { "value": "evergreen", "label": "Per-visitor timer" } ],
+          "info": "Daily cut-off uses the hour, non-dispatch days and timezone in Theme settings → CRO & conversion."
+        },
+        { "type": "text", "id": "countdown_end", "label": "End date and time", "placeholder": "2026-12-31 23:59", "info": "Format YYYY-MM-DD HH:MM in the shop timezone (Pakistan time by default). Only for an offer that really ends then." },
+        { "type": "range", "id": "evergreen_hours", "label": "Per-visitor timer length", "min": 1, "max": 72, "step": 1, "unit": "h", "default": 24, "info": "Each visitor gets their own timer, saved in their browser. Only use it for an offer that is genuinely available to each visitor for this long." },
+        { "type": "text", "id": "countdown_prefix", "label": "Text before timer", "default": "Ends in" },
+        { "type": "text", "id": "countdown_suffix", "label": "Text after timer", "info": "Daily cut-off: shown when the cut-off is today, e.g. 'for same-day dispatch'. Replace with your verified dispatch promise." },
+        { "type": "text", "id": "countdown_suffix_later", "label": "Text after timer (cut-off on another day)", "default": "for dispatch on {day}", "info": "Daily cut-off only. {day} becomes the weekday name." },
+        { "type": "text", "id": "countdown_fallback", "label": "Text shown before the timer loads", "info": "Also shown to visitors without JavaScript. Leave empty to use the text before timer plus the end date." },
+        {
+          "type": "select", "id": "expire_action", "label": "When the countdown ends", "default": "hide_block",
+          "options": [ { "value": "hide_block", "label": "Hide this message" }, { "value": "hide_timer", "label": "Hide only the timer" }, { "value": "message", "label": "Show the expired message" }, { "value": "restart", "label": "Restart (per-visitor timer only)" } ]
+        },
+        { "type": "text", "id": "expired_message", "label": "Expired message", "default": "This offer has ended" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "CRO announcement bar",
+      "settings": { "mode": "slider" },
+      "blocks": [
+        { "type": "message", "settings": { "text": "Practical storage for calmer kitchens and organised pantries" } },
+        { "type": "message", "settings": { "text": "Browse jars, bottles and storage organisers", "link": "/collections/all", "link_label": "Shop now" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

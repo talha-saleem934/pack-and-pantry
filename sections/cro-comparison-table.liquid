@@ -1,0 +1,539 @@
+{%- liquid
+  assign s = section.settings
+  assign sid = section.id
+-%}
+{{ 'cro-components.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'cro-core.js' | asset_url }}" defer="defer"></script>
+{%- liquid
+  case s.align
+    when 'start'
+      assign cro_justify = 'flex-start'
+    when 'end'
+      assign cro_justify = 'flex-end'
+    else
+      assign cro_justify = 'center'
+  endcase
+  assign cro_radius = s.radius | default: 16
+  assign cro_btn_radius = s.button_radius | default: 10
+-%}
+{% style %}
+#cro-{{ sid }} {
+  --cro-bg: {{ s.bg_color | default: '#F7F1E7' }};
+  --cro-heading: {{ s.heading_color | default: '#18231F' }};
+  --cro-text: {{ s.text_color | default: '#3F4A45' }};
+  --cro-accent: {{ s.accent_color | default: '#D4623D' }};
+  --cro-btn-bg: {{ s.button_bg | default: '#173F35' }};
+  --cro-btn-text: {{ s.button_text | default: '#FFFDF8' }};
+  --cro-btn-hover-bg: {{ s.button_hover_bg | default: '#0F2F27' }};
+  --cro-btn-hover-text: {{ s.button_hover_text | default: '#FFFFFF' }};
+  --cro-link-hover: {{ s.link_hover_color | default: '#D4623D' }};
+  --cro-border: {{ s.border_color | default: '#D7CEC1' }};
+  --cro-card-bg: {{ s.card_bg | default: '#FFFDF8' }};
+  --cro-icon: {{ s.icon_color | default: '#173F35' }};
+  --cro-badge-bg: {{ s.badge_bg | default: '#C64F32' }};
+  --cro-badge-text: {{ s.badge_text | default: '#FFFFFF' }};
+  --cro-radius: {{ cro_radius }}px;
+  --cro-justify: {{ cro_justify }};
+  background: var(--cro-bg);
+  color: var(--cro-text);
+  padding-block: {{ s.padding_top_mobile | default: 40 }}px {{ s.padding_bottom_mobile | default: 40 }}px;
+}
+#cro-{{ sid }}[hidden] { display: none; }
+#cro-{{ sid }} .cro-wrap { box-sizing: border-box; max-inline-size: {% if s.full_width %}none{% else %}{{ s.container_width | default: 1300 }}px{% endif %}; margin-inline: auto; padding-inline: var(--gutter, 16px); }
+#cro-{{ sid }} .cro-head { display: flex; flex-direction: column; align-items: {{ cro_justify }}; gap: 8px; margin-block-end: 28px; text-align: {{ s.align | default: 'center' }}; }
+#cro-{{ sid }} .cro-head--row { flex-direction: row; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; text-align: start; }
+#cro-{{ sid }} .cro-eyebrow { margin: 0; color: var(--cro-accent); font-weight: 700; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; }
+#cro-{{ sid }} .cro-h { margin: 0; color: var(--cro-heading); font-family: var(--font-heading); font-weight: var(--font-heading-weight, 700); font-size: {{ s.heading_size_mobile | default: 28 }}px; line-height: 1.15; }
+#cro-{{ sid }} .cro-sub { margin: 0; max-inline-size: 680px; font-size: {{ s.text_size_mobile | default: 15 }}px; line-height: 1.55; }
+#cro-{{ sid }} .cro-body { font-size: {{ s.text_size_mobile | default: 15 }}px; line-height: 1.55; }
+#cro-{{ sid }} .cro-body > :first-child { margin-block-start: 0; }
+#cro-{{ sid }} .cro-body > :last-child { margin-block-end: 0; }
+#cro-{{ sid }} .cro-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-sizing: border-box;
+  min-block-size: 48px; padding: 0 24px; border: 0; border-radius: {{ cro_btn_radius }}px;
+  background: var(--cro-btn-bg); color: var(--cro-btn-text); font: inherit; font-weight: 700; line-height: 1.2;
+  text-decoration: none; cursor: pointer; transition: background-color .2s ease, color .2s ease, transform .2s ease;
+}
+#cro-{{ sid }} .cro-btn:hover { background: var(--cro-btn-hover-bg); color: var(--cro-btn-hover-text); }
+#cro-{{ sid }} .cro-btn[disabled] { opacity: .55; cursor: not-allowed; }
+#cro-{{ sid }} .cro-btn--ghost { background: transparent; color: var(--cro-heading); box-shadow: inset 0 0 0 2px currentColor; }
+#cro-{{ sid }} .cro-btn--ghost:hover { background: var(--cro-btn-bg); color: var(--cro-btn-text); box-shadow: none; }
+#cro-{{ sid }} .cro-link { color: var(--cro-heading); text-decoration: underline; text-underline-offset: 4px; }
+#cro-{{ sid }} .cro-link:hover { color: var(--cro-link-hover); }
+#cro-{{ sid }} .cro-card { background: var(--cro-card-bg); border: 1px solid var(--cro-border); border-radius: var(--cro-radius); }
+#cro-{{ sid }} .cro-ico { display: inline-flex; flex: none; align-items: center; justify-content: center; color: var(--cro-icon); }
+#cro-{{ sid }} .cro-badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 999px; background: var(--cro-badge-bg); color: var(--cro-badge-text); font-size: 12px; font-weight: 700; letter-spacing: .03em; }
+#cro-{{ sid }} a:focus-visible, #cro-{{ sid }} button:focus-visible, #cro-{{ sid }} summary:focus-visible, #cro-{{ sid }} input:focus-visible, #cro-{{ sid }} select:focus-visible { outline: 2px solid var(--cro-accent); outline-offset: 2px; }
+@media (min-width: 750px) {
+  #cro-{{ sid }} { padding-block: {{ s.padding_top_desktop | default: 64 }}px {{ s.padding_bottom_desktop | default: 64 }}px; }
+  #cro-{{ sid }} .cro-h { font-size: {{ s.heading_size_desktop | default: 38 }}px; }
+  #cro-{{ sid }} .cro-sub, #cro-{{ sid }} .cro-body { font-size: {{ s.text_size_desktop | default: 17 }}px; }
+}
+
+
+
+#cro-{{ sid }} .cro-cmp { overflow-x: auto; max-inline-size: {{ s.table_width }}px; margin-inline: auto; }
+#cro-{{ sid }} table { inline-size: 100%; min-inline-size: 420px; border-collapse: separate; border-spacing: 0; background: var(--cro-card-bg); border: 1px solid var(--cro-border); border-radius: var(--cro-radius); overflow: hidden; }
+#cro-{{ sid }} th, #cro-{{ sid }} td { padding: 14px 16px; border-block-end: 1px solid var(--cro-border); text-align: center; }
+#cro-{{ sid }} tr:last-child > * { border-block-end: 0; }
+#cro-{{ sid }} th[scope="row"] { text-align: start; color: var(--cro-heading); font-weight: 700; }
+#cro-{{ sid }} thead th { color: var(--cro-heading); font-size: 15px; }
+#cro-{{ sid }} .cro-cmp__us { background: {{ s.us_bg }}; color: {{ s.us_text }}; }
+#cro-{{ sid }} thead .cro-cmp__us { color: {{ s.us_text }}; }
+#cro-{{ sid }} .cro-cmp__yes { color: {{ s.yes_color }}; }
+#cro-{{ sid }} .cro-cmp__no { color: {{ s.no_color }}; }
+
+{% endstyle %}
+
+{%- if section.blocks.size > 0 -%}
+<section id="cro-{{ sid }}" class="cro-comparison" aria-labelledby="CroHeading-{{ sid }}">
+  <div class="cro-wrap">
+    {%- if s.eyebrow != blank or s.heading != blank or s.subheading != blank -%}
+      <div class="cro-head">
+        {%- if s.eyebrow != blank -%}<p class="cro-eyebrow">{{ s.eyebrow | escape }}</p>{%- endif -%}
+        {%- if s.heading != blank -%}<h2 class="cro-h" id="CroHeading-{{ sid }}">{{ s.heading | escape }}</h2>{%- endif -%}
+        {%- if s.subheading != blank -%}<p class="cro-sub">{{ s.subheading | escape }}</p>{%- endif -%}
+      </div>
+    {%- endif -%}
+    <div class="cro-cmp" role="region" tabindex="0" aria-label="{{ s.heading | default: s.us_label | escape }}">
+      <table>
+        <thead><tr><th scope="col"><span class="cro-vh">{{ s.feature_label | escape }}</span></th><th scope="col" class="cro-cmp__us">{{ s.us_label | escape }}</th><th scope="col">{{ s.them_label | escape }}</th></tr></thead>
+        <tbody>
+          {%- for block in section.blocks -%}
+            {%- assign b = block.settings -%}
+            <tr {{ block.shopify_attributes }}>
+              <th scope="row">{{ b.feature | escape }}</th>
+              {%- for col in (1..2) -%}
+                {%- if col == 1 -%}{%- assign val = b.us -%}{%- assign custom = b.us_text -%}{%- else -%}{%- assign val = b.them -%}{%- assign custom = b.them_text -%}{%- endif -%}
+                <td{% if col == 1 %} class="cro-cmp__us"{% endif %}>
+                  {%- case val -%}
+                    {%- when 'yes' -%}<span class="cro-cmp__yes">{% render 'cro-icon', icon: 'check', size: 22 %}</span><span class="cro-vh">{{ s.yes_label | escape }}</span>
+                    {%- when 'no' -%}<span class="cro-cmp__no">{% render 'cro-icon', icon: 'close', size: 20 %}</span><span class="cro-vh">{{ s.no_label | escape }}</span>
+                    {%- else -%}{{ custom | escape }}
+                  {%- endcase -%}
+                </td>
+              {%- endfor -%}
+            </tr>
+          {%- endfor -%}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "CRO comparison table",
+  "tag": "div",
+  "class": "cro-section",
+  "max_blocks": 12,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Why choose Pack & Pantry"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading"
+    },
+    {
+      "type": "header",
+      "content": "Comparison claims must be accurate and verifiable."
+    },
+    {
+      "type": "text",
+      "id": "feature_label",
+      "label": "Feature column label (screen readers)",
+      "default": "Feature"
+    },
+    {
+      "type": "text",
+      "id": "us_label",
+      "label": "Your column",
+      "default": "Pack & Pantry"
+    },
+    {
+      "type": "text",
+      "id": "them_label",
+      "label": "Comparison column",
+      "default": "Typical alternative"
+    },
+    {
+      "type": "text",
+      "id": "yes_label",
+      "label": "Yes label (screen readers)",
+      "default": "Yes"
+    },
+    {
+      "type": "text",
+      "id": "no_label",
+      "label": "No label (screen readers)",
+      "default": "No"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "Full width",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "container_width",
+      "label": "Container width",
+      "min": 800,
+      "max": 1800,
+      "step": 50,
+      "default": 1300,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "align",
+      "label": "Heading alignment",
+      "options": [
+        {
+          "value": "start",
+          "label": "Start"
+        },
+        {
+          "value": "center",
+          "label": "Centre"
+        },
+        {
+          "value": "end",
+          "label": "End"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "radius",
+      "label": "Card corner radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "button_radius",
+      "label": "Button corner radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "default": 10,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "table_width",
+      "label": "Table max width",
+      "min": 480,
+      "max": 1200,
+      "step": 20,
+      "default": 860,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "heading_size_desktop",
+      "label": "Heading size (desktop)",
+      "min": 16,
+      "max": 72,
+      "step": 2,
+      "default": 38,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "label": "Heading size (mobile)",
+      "min": 16,
+      "max": 56,
+      "step": 2,
+      "default": 28,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "text_size_desktop",
+      "label": "Body text size (desktop)",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "default": 17,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "text_size_mobile",
+      "label": "Body text size (mobile)",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "default": 15,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "label": "Padding top (desktop)",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 64,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "label": "Padding bottom (desktop)",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 64,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Padding top (mobile)",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Padding bottom (mobile)",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Colours",
+      "info": "Keep text at a 4.5:1 contrast ratio or better against its background (WCAG AA)."
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#FFFDF8"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "default": "#18231F"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#3F4A45"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent (eyebrow, focus ring)",
+      "default": "#D4623D"
+    },
+    {
+      "type": "color",
+      "id": "button_bg",
+      "label": "Button background",
+      "default": "#173F35"
+    },
+    {
+      "type": "color",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "#FFFDF8"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_bg",
+      "label": "Button hover background",
+      "default": "#0F2F27"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_text",
+      "label": "Button hover text",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "link_hover_color",
+      "label": "Link hover",
+      "default": "#D4623D"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border",
+      "default": "#D7CEC1"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card background",
+      "default": "#FFFDF8"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon",
+      "default": "#173F35"
+    },
+    {
+      "type": "color",
+      "id": "badge_bg",
+      "label": "Badge background",
+      "default": "#C64F32"
+    },
+    {
+      "type": "color",
+      "id": "badge_text",
+      "label": "Badge text",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "us_bg",
+      "label": "Your column background",
+      "default": "#DCE8D8"
+    },
+    {
+      "type": "color",
+      "id": "us_text",
+      "label": "Your column text",
+      "default": "#173F35"
+    },
+    {
+      "type": "color",
+      "id": "yes_color",
+      "label": "Tick",
+      "default": "#2F6F4E"
+    },
+    {
+      "type": "color",
+      "id": "no_color",
+      "label": "Cross",
+      "default": "#A72C2C"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "row",
+      "name": "Row",
+      "settings": [
+        {
+          "type": "text",
+          "id": "feature",
+          "label": "Feature",
+          "default": "Feature"
+        },
+        {
+          "type": "select",
+          "id": "us",
+          "label": "Your value",
+          "options": [
+            {
+              "value": "yes",
+              "label": "Tick"
+            },
+            {
+              "value": "no",
+              "label": "Cross"
+            },
+            {
+              "value": "text",
+              "label": "Text"
+            }
+          ],
+          "default": "yes"
+        },
+        {
+          "type": "text",
+          "id": "us_text",
+          "label": "Your text"
+        },
+        {
+          "type": "select",
+          "id": "them",
+          "label": "Comparison value",
+          "options": [
+            {
+              "value": "yes",
+              "label": "Tick"
+            },
+            {
+              "value": "no",
+              "label": "Cross"
+            },
+            {
+              "value": "text",
+              "label": "Text"
+            }
+          ],
+          "default": "no"
+        },
+        {
+          "type": "text",
+          "id": "them_text",
+          "label": "Comparison text"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "CRO comparison table",
+      "blocks": [
+        {
+          "type": "row"
+        },
+        {
+          "type": "row"
+        },
+        {
+          "type": "row"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

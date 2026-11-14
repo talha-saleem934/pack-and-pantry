@@ -1,0 +1,201 @@
+{%- liquid
+  assign s = section.settings
+  assign sid = section.id
+  case request.page_type
+    when 'index'
+      assign show_here = s.show_home
+    when 'product'
+      assign show_here = s.show_product
+    when 'collection', 'list-collections'
+      assign show_here = s.show_collection
+    when 'cart'
+      assign show_here = s.show_cart
+    when 'page'
+      assign show_here = s.show_pages
+    when 'blog', 'article'
+      assign show_here = s.show_blog
+    when 'search'
+      assign show_here = s.show_search
+    else
+      assign show_here = s.show_other
+  endcase
+
+  assign wa_number = s.wa_number | default: settings.cro_whatsapp_number | remove: '+' | remove: ' ' | remove: '-' | remove: '(' | remove: ')'
+  assign wa_msg = s.wa_message | default: settings.cro_whatsapp_greeting
+  if request.page_type == 'product'
+    assign wa_msg = wa_msg | replace: '{product}', product.title
+  else
+    assign wa_msg = wa_msg | replace: '{product}', shop.name
+  endif
+  assign wa_msg = wa_msg | replace: '{url}', canonical_url
+  assign call_number = s.call_number | default: settings.cro_support_phone
+  assign call_href = call_number | remove: ' ' | remove: '-' | remove: '(' | remove: ')'
+
+  assign show_wa = false
+  if s.wa_enable and wa_number != blank
+    assign show_wa = true
+  endif
+  assign show_call = false
+  if s.call_enable and call_href != blank
+    assign show_call = true
+  endif
+-%}
+{%- if show_here -%}
+{%- if show_wa or show_call or s.top_enable -%}
+{{ 'cro-components.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'cro-core.js' | asset_url }}" defer="defer"></script>
+{% style %}
+  #cro-{{ sid }} {
+    --cro-fw-wa-bg: {{ s.wa_bg }};
+    --cro-fw-wa-icon: {{ s.wa_icon_color }};
+    --cro-fw-wa-hover-bg: {{ s.wa_hover_bg }};
+    --cro-fw-call-bg: {{ s.call_bg }};
+    --cro-fw-call-icon: {{ s.call_icon_color }};
+    --cro-fw-call-hover-bg: {{ s.call_hover_bg }};
+    --cro-fw-top-bg: {{ s.top_bg }};
+    --cro-fw-top-icon: {{ s.top_icon_color }};
+    --cro-fw-top-border: {{ s.top_border }};
+    --cro-fw-top-hover-bg: {{ s.top_hover_bg }};
+    --cro-pulse-color: {{ s.wa_bg | color_modify: 'alpha', 0.55 }};
+    position: fixed;
+    z-index: 44;
+    inset-block-end: calc({{ s.offset_bottom_mobile }}px + env(safe-area-inset-bottom, 0px));
+    {% if s.side == 'start' %}inset-inline-start{% else %}inset-inline-end{% endif %}: {{ s.offset_side_mobile }}px;
+    display: flex;
+    flex-direction: column;
+    align-items: {% if s.side == 'start' %}flex-start{% else %}flex-end{% endif %};
+    gap: 10px;
+    pointer-events: none;
+    transition: opacity .2s ease, visibility .2s ease;
+  }
+  #cro-{{ sid }} > * { pointer-events: auto; }
+  #cro-{{ sid }} .cro-fw__btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    box-sizing: border-box; min-inline-size: {{ s.secondary_size }}px; block-size: {{ s.secondary_size }}px; padding: 0;
+    border: 0; border-radius: 999px; cursor: pointer; text-decoration: none;
+    box-shadow: 0 8px 24px rgba(15, 47, 39, .18);
+    transition: background-color .2s ease, transform .2s ease, opacity .2s ease, visibility .2s ease;
+  }
+  #cro-{{ sid }} .cro-fw__btn:focus-visible { outline: 3px solid {{ s.focus_color }}; outline-offset: 3px; }
+  #cro-{{ sid }} .cro-fw__wa { min-inline-size: {{ s.wa_size }}px; block-size: {{ s.wa_size }}px; background: var(--cro-fw-wa-bg); color: var(--cro-fw-wa-icon); }
+  #cro-{{ sid }} .cro-fw__wa:hover { background: var(--cro-fw-wa-hover-bg); transform: translateY(-2px); }
+  #cro-{{ sid }} .cro-fw__wa--pulse { animation: cro-pulse 2.4s ease-out infinite; }
+  #cro-{{ sid }} .cro-fw__label { display: none; padding-inline-start: 18px; color: var(--cro-fw-wa-icon); font-weight: 700; font-size: {{ s.label_size }}px; white-space: nowrap; }
+  #cro-{{ sid }} .cro-fw__call { background: var(--cro-fw-call-bg); color: var(--cro-fw-call-icon); }
+  #cro-{{ sid }} .cro-fw__call:hover { background: var(--cro-fw-call-hover-bg); }
+  #cro-{{ sid }} .cro-fw__top { background: var(--cro-fw-top-bg); color: var(--cro-fw-top-icon); border: 1px solid var(--cro-fw-top-border); opacity: 0; visibility: hidden; transform: translateY(8px); }
+  #cro-{{ sid }} .cro-fw__top.is-visible { opacity: 1; visibility: visible; transform: none; }
+  #cro-{{ sid }} .cro-fw__top:hover { background: var(--cro-fw-top-hover-bg); }
+  {%- if s.hide_when_overlay %}
+  body:has(cart-drawer.is-open) #cro-{{ sid }},
+  body:has(.mobile-drawer.is-open) #cro-{{ sid }},
+  body:has(dialog[open]) #cro-{{ sid }} { opacity: 0; visibility: hidden; }
+  {%- endif %}
+  @media (max-width: 749px) {
+    body:has(.sticky-atc) #cro-{{ sid }},
+    body:has(.cro-satc.is-visible) #cro-{{ sid }} { inset-block-end: calc({{ s.offset_bottom_mobile | plus: s.sticky_atc_offset }}px + env(safe-area-inset-bottom, 0px)); }
+  }
+  @media (min-width: 750px) {
+    body:has(.cro-satc.is-visible) #cro-{{ sid }} { inset-block-end: calc({{ s.offset_bottom_desktop | plus: s.sticky_atc_offset }}px + env(safe-area-inset-bottom, 0px)); }
+    #cro-{{ sid }} {
+      inset-block-end: calc({{ s.offset_bottom_desktop }}px + env(safe-area-inset-bottom, 0px));
+      {% if s.side == 'start' %}inset-inline-start{% else %}inset-inline-end{% endif %}: {{ s.offset_side_desktop }}px;
+    }
+    {%- if s.wa_label != blank and s.wa_show_label %}
+    #cro-{{ sid }} .cro-fw__label { display: inline; }
+    #cro-{{ sid }} .cro-fw__wa--labelled { padding-inline-end: {{ s.wa_size | minus: 24 | divided_by: 2 }}px; }
+    {%- endif %}
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #cro-{{ sid }} .cro-fw__wa--pulse { animation: none; }
+    #cro-{{ sid }} .cro-fw__btn { transition: none; }
+  }
+{% endstyle %}
+<div id="cro-{{ sid }}" class="cro-fw" data-cro-floating data-top-after="{{ s.top_after }}">
+  {%- if s.top_enable -%}
+    <button type="button" class="cro-fw__btn cro-fw__top" data-cro-top aria-label="{{ s.top_label | escape }}">{% render 'cro-icon', icon: 'chevron-up', size: 22 %}</button>
+  {%- endif -%}
+  {%- if show_call -%}
+    <a class="cro-fw__btn cro-fw__call" href="tel:{{ call_href | escape }}" data-cro-call aria-label="{{ s.call_label | escape }}">{% render 'cro-icon', icon: 'phone', size: 22 %}</a>
+  {%- endif -%}
+  {%- if show_wa -%}
+    <a
+      class="cro-fw__btn cro-fw__wa{% if s.wa_pulse %} cro-fw__wa--pulse cro-motion{% endif %}{% if s.wa_label != blank and s.wa_show_label %} cro-fw__wa--labelled{% endif %}"
+      href="https://wa.me/{{ wa_number | escape }}?text={{ wa_msg | url_encode }}"
+      target="_blank"
+      rel="noopener"
+      data-cro-wa="floating"
+      aria-label="{{ s.wa_aria_label | escape }}"
+    >
+      {%- if s.wa_label != blank and s.wa_show_label -%}<span class="cro-fw__label" aria-hidden="true">{{ s.wa_label | escape }}</span>{%- endif -%}
+      {% render 'cro-icon', icon: 'whatsapp', image: s.wa_icon_image, size: s.wa_icon_size %}
+    </a>
+  {%- endif -%}
+</div>
+{%- endif -%}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "CRO floating buttons",
+  "tag": "div",
+  "class": "cro-section cro-section--floating",
+  "enabled_on": { "groups": ["header", "footer"] },
+  "settings": [
+    { "type": "header", "content": "WhatsApp" },
+    { "type": "checkbox", "id": "wa_enable", "label": "Show WhatsApp button", "default": true },
+    { "type": "text", "id": "wa_number", "label": "WhatsApp number", "info": "International format, digits only, e.g. 923001234567. Leave empty to use Theme settings → CRO & conversion. The button stays hidden until a number is set." },
+    { "type": "textarea", "id": "wa_message", "label": "Prefilled message", "info": "Leave empty to use the default greeting in Theme settings. {product} becomes the product title on product pages (shop name elsewhere) and {url} the page link." },
+    { "type": "text", "id": "wa_aria_label", "label": "Button label (screen readers)", "default": "Chat with us on WhatsApp", "info": "If you show a visible label, start this text with the same words." },
+    { "type": "text", "id": "wa_label", "label": "Visible label (desktop)", "default": "Chat with us" },
+    { "type": "checkbox", "id": "wa_show_label", "label": "Show visible label on desktop", "default": false },
+    { "type": "range", "id": "label_size", "label": "Label text size", "min": 12, "max": 20, "step": 1, "unit": "px", "default": 15 },
+    { "type": "image_picker", "id": "wa_icon_image", "label": "Custom icon image", "info": "Optional. Replaces the built-in WhatsApp icon." },
+    { "type": "range", "id": "wa_size", "label": "Button size", "min": 48, "max": 72, "step": 4, "unit": "px", "default": 56 },
+    { "type": "range", "id": "wa_icon_size", "label": "Icon size", "min": 20, "max": 40, "step": 2, "unit": "px", "default": 28 },
+    { "type": "checkbox", "id": "wa_pulse", "label": "Pulse animation", "default": false, "info": "Turned off automatically for visitors who prefer reduced motion." },
+    { "type": "color", "id": "wa_bg", "label": "Background", "default": "#1A7F45", "info": "WhatsApp's bright green (#25D366) with white text is below 4.5:1 contrast; this darker green passes WCAG AA." },
+    { "type": "color", "id": "wa_icon_color", "label": "Icon and label", "default": "#FFFFFF" },
+    { "type": "color", "id": "wa_hover_bg", "label": "Hover background", "default": "#146536" },
+
+    { "type": "header", "content": "Call button" },
+    { "type": "checkbox", "id": "call_enable", "label": "Show call button", "default": false },
+    { "type": "text", "id": "call_number", "label": "Phone number", "info": "Leave empty to use the support phone in Theme settings → CRO & conversion." },
+    { "type": "text", "id": "call_label", "label": "Button label (screen readers)", "default": "Call us" },
+    { "type": "color", "id": "call_bg", "label": "Background", "default": "#173F35" },
+    { "type": "color", "id": "call_icon_color", "label": "Icon", "default": "#FFFDF8" },
+    { "type": "color", "id": "call_hover_bg", "label": "Hover background", "default": "#0F2F27" },
+
+    { "type": "header", "content": "Back to top" },
+    { "type": "checkbox", "id": "top_enable", "label": "Show back-to-top button", "default": true },
+    { "type": "range", "id": "top_after", "label": "Show after scrolling", "min": 200, "max": 2000, "step": 100, "unit": "px", "default": 800 },
+    { "type": "text", "id": "top_label", "label": "Button label (screen readers)", "default": "Back to top" },
+    { "type": "color", "id": "top_bg", "label": "Background", "default": "#FFFDF8" },
+    { "type": "color", "id": "top_icon_color", "label": "Icon", "default": "#173F35" },
+    { "type": "color", "id": "top_border", "label": "Border", "default": "#D7CEC1" },
+    { "type": "color", "id": "top_hover_bg", "label": "Hover background", "default": "#DCE8D8" },
+
+    { "type": "header", "content": "Position" },
+    { "type": "select", "id": "side", "label": "Side", "default": "end", "options": [ { "value": "end", "label": "Right" }, { "value": "start", "label": "Left" } ] },
+    { "type": "range", "id": "offset_side_desktop", "label": "Side offset (desktop)", "min": 8, "max": 64, "step": 4, "unit": "px", "default": 24 },
+    { "type": "range", "id": "offset_side_mobile", "label": "Side offset (mobile)", "min": 8, "max": 64, "step": 4, "unit": "px", "default": 16 },
+    { "type": "range", "id": "offset_bottom_desktop", "label": "Bottom offset (desktop)", "min": 8, "max": 160, "step": 4, "unit": "px", "default": 24 },
+    { "type": "range", "id": "offset_bottom_mobile", "label": "Bottom offset (mobile)", "min": 8, "max": 160, "step": 4, "unit": "px", "default": 16 },
+    { "type": "range", "id": "sticky_atc_offset", "label": "Extra lift above the mobile sticky add-to-cart bar", "min": 0, "max": 160, "step": 4, "unit": "px", "default": 80, "info": "Applied on mobile product pages where the sticky add-to-cart bar is shown." },
+    { "type": "range", "id": "secondary_size", "label": "Call and back-to-top size", "min": 48, "max": 64, "step": 4, "unit": "px", "default": 48 },
+    { "type": "color", "id": "focus_color", "label": "Keyboard focus ring", "default": "#E8B44A" },
+
+    { "type": "header", "content": "Visibility" },
+    { "type": "checkbox", "id": "show_home", "label": "Home page", "default": true },
+    { "type": "checkbox", "id": "show_product", "label": "Product pages", "default": true },
+    { "type": "checkbox", "id": "show_collection", "label": "Collection pages", "default": true },
+    { "type": "checkbox", "id": "show_cart", "label": "Cart page", "default": false },
+    { "type": "checkbox", "id": "show_pages", "label": "Content pages (About, Contact…)", "default": true },
+    { "type": "checkbox", "id": "show_blog", "label": "Blog and articles", "default": true },
+    { "type": "checkbox", "id": "show_search", "label": "Search results", "default": true },
+    { "type": "checkbox", "id": "show_other", "label": "Other pages (404, account…)", "default": true },
+    { "type": "checkbox", "id": "hide_when_overlay", "label": "Hide while the cart drawer, menu or a pop-up is open", "default": true }
+  ],
+  "presets": [ { "name": "CRO floating buttons" } ]
+}
+{% endschema %}

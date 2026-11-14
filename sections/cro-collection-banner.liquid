@@ -1,0 +1,622 @@
+{%- liquid
+  assign s = section.settings
+  assign sid = section.id
+-%}
+{%- liquid
+  assign img = s.image
+  if img == blank and s.use_collection_image and collection.image
+    assign img = collection.image
+  endif
+  assign title = s.heading | default: collection.title
+  assign server_expired = false
+  if s.countdown_mode == 'fixed' and s.countdown_end != blank and s.on_expire == 'hide'
+    assign end_ts = s.countdown_end | date: '%s' | plus: 0
+    assign now_ts = 'now' | date: '%s' | plus: 0
+    if end_ts > 1000000000 and end_ts < now_ts
+      assign server_expired = true
+    endif
+  endif
+-%}
+{%- unless server_expired -%}
+{{ 'cro-components.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'cro-core.js' | asset_url }}" defer="defer"></script>
+{%- liquid
+  case s.align
+    when 'start'
+      assign cro_justify = 'flex-start'
+    when 'end'
+      assign cro_justify = 'flex-end'
+    else
+      assign cro_justify = 'center'
+  endcase
+  assign cro_radius = s.radius | default: 16
+  assign cro_btn_radius = s.button_radius | default: 10
+-%}
+{% style %}
+#cro-{{ sid }} {
+  --cro-bg: {{ s.bg_color | default: '#F7F1E7' }};
+  --cro-heading: {{ s.heading_color | default: '#18231F' }};
+  --cro-text: {{ s.text_color | default: '#3F4A45' }};
+  --cro-accent: {{ s.accent_color | default: '#D4623D' }};
+  --cro-btn-bg: {{ s.button_bg | default: '#173F35' }};
+  --cro-btn-text: {{ s.button_text | default: '#FFFDF8' }};
+  --cro-btn-hover-bg: {{ s.button_hover_bg | default: '#0F2F27' }};
+  --cro-btn-hover-text: {{ s.button_hover_text | default: '#FFFFFF' }};
+  --cro-link-hover: {{ s.link_hover_color | default: '#D4623D' }};
+  --cro-border: {{ s.border_color | default: '#D7CEC1' }};
+  --cro-card-bg: {{ s.card_bg | default: '#FFFDF8' }};
+  --cro-icon: {{ s.icon_color | default: '#173F35' }};
+  --cro-badge-bg: {{ s.badge_bg | default: '#C64F32' }};
+  --cro-badge-text: {{ s.badge_text | default: '#FFFFFF' }};
+  --cro-radius: {{ cro_radius }}px;
+  --cro-justify: {{ cro_justify }};
+  background: var(--cro-bg);
+  color: var(--cro-text);
+  padding-block: {{ s.padding_top_mobile | default: 40 }}px {{ s.padding_bottom_mobile | default: 40 }}px;
+}
+#cro-{{ sid }}[hidden] { display: none; }
+#cro-{{ sid }} .cro-wrap { box-sizing: border-box; max-inline-size: {% if s.full_width %}none{% else %}{{ s.container_width | default: 1300 }}px{% endif %}; margin-inline: auto; padding-inline: var(--gutter, 16px); }
+#cro-{{ sid }} .cro-head { display: flex; flex-direction: column; align-items: {{ cro_justify }}; gap: 8px; margin-block-end: 28px; text-align: {{ s.align | default: 'center' }}; }
+#cro-{{ sid }} .cro-head--row { flex-direction: row; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; text-align: start; }
+#cro-{{ sid }} .cro-eyebrow { margin: 0; color: var(--cro-accent); font-weight: 700; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; }
+#cro-{{ sid }} .cro-h { margin: 0; color: var(--cro-heading); font-family: var(--font-heading); font-weight: var(--font-heading-weight, 700); font-size: {{ s.heading_size_mobile | default: 28 }}px; line-height: 1.15; }
+#cro-{{ sid }} .cro-sub { margin: 0; max-inline-size: 680px; font-size: {{ s.text_size_mobile | default: 15 }}px; line-height: 1.55; }
+#cro-{{ sid }} .cro-body { font-size: {{ s.text_size_mobile | default: 15 }}px; line-height: 1.55; }
+#cro-{{ sid }} .cro-body > :first-child { margin-block-start: 0; }
+#cro-{{ sid }} .cro-body > :last-child { margin-block-end: 0; }
+#cro-{{ sid }} .cro-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-sizing: border-box;
+  min-block-size: 48px; padding: 0 24px; border: 0; border-radius: {{ cro_btn_radius }}px;
+  background: var(--cro-btn-bg); color: var(--cro-btn-text); font: inherit; font-weight: 700; line-height: 1.2;
+  text-decoration: none; cursor: pointer; transition: background-color .2s ease, color .2s ease, transform .2s ease;
+}
+#cro-{{ sid }} .cro-btn:hover { background: var(--cro-btn-hover-bg); color: var(--cro-btn-hover-text); }
+#cro-{{ sid }} .cro-btn[disabled] { opacity: .55; cursor: not-allowed; }
+#cro-{{ sid }} .cro-btn--ghost { background: transparent; color: var(--cro-heading); box-shadow: inset 0 0 0 2px currentColor; }
+#cro-{{ sid }} .cro-btn--ghost:hover { background: var(--cro-btn-bg); color: var(--cro-btn-text); box-shadow: none; }
+#cro-{{ sid }} .cro-link { color: var(--cro-heading); text-decoration: underline; text-underline-offset: 4px; }
+#cro-{{ sid }} .cro-link:hover { color: var(--cro-link-hover); }
+#cro-{{ sid }} .cro-card { background: var(--cro-card-bg); border: 1px solid var(--cro-border); border-radius: var(--cro-radius); }
+#cro-{{ sid }} .cro-ico { display: inline-flex; flex: none; align-items: center; justify-content: center; color: var(--cro-icon); }
+#cro-{{ sid }} .cro-badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 999px; background: var(--cro-badge-bg); color: var(--cro-badge-text); font-size: 12px; font-weight: 700; letter-spacing: .03em; }
+#cro-{{ sid }} a:focus-visible, #cro-{{ sid }} button:focus-visible, #cro-{{ sid }} summary:focus-visible, #cro-{{ sid }} input:focus-visible, #cro-{{ sid }} select:focus-visible { outline: 2px solid var(--cro-accent); outline-offset: 2px; }
+@media (min-width: 750px) {
+  #cro-{{ sid }} { padding-block: {{ s.padding_top_desktop | default: 64 }}px {{ s.padding_bottom_desktop | default: 64 }}px; }
+  #cro-{{ sid }} .cro-h { font-size: {{ s.heading_size_desktop | default: 38 }}px; }
+  #cro-{{ sid }} .cro-sub, #cro-{{ sid }} .cro-body { font-size: {{ s.text_size_desktop | default: 17 }}px; }
+}
+
+
+
+#cro-{{ sid }} { --cro-cd-box-bg: {{ s.cd_box_bg }}; --cro-cd-digit: {{ s.cd_digit }}; --cro-cd-label: {{ s.cd_label }}; --cro-cd-sep: {{ s.cd_digit }}; --cro-cd-urgent: {{ s.cd_urgent }}; }
+#cro-{{ sid }} .cro-cb { position: relative; display: grid; overflow: hidden; border-radius: var(--cro-radius); background: {{ s.panel_bg }}; color: {{ s.panel_text }}; isolation: isolate; min-block-size: {{ s.min_height_mobile }}px; }
+#cro-{{ sid }} .cro-cb__media { position: absolute; inset: 0; z-index: -1; }
+#cro-{{ sid }} .cro-cb__media img { inline-size: 100%; block-size: 100%; object-fit: cover; }
+#cro-{{ sid }} .cro-cb__media::after { content: ""; position: absolute; inset: 0; background: {{ s.overlay_color }}; opacity: {{ s.overlay_opacity | divided_by: 100.0 }}; }
+#cro-{{ sid }} .cro-cb__content { display: flex; flex-direction: column; justify-content: center; align-items: var(--cro-justify); gap: 12px; padding: 24px 20px; text-align: {{ s.align }}; }
+#cro-{{ sid }} .cro-cb .cro-h { color: {{ s.panel_heading }}; }
+#cro-{{ sid }} .cro-cb__count { margin: 0; font-size: 14px; opacity: .9; }
+#cro-{{ sid }} .cro-cb__cd { font-size: 16px; font-weight: 700; display: flex; flex-wrap: wrap; align-items: center; justify-content: var(--cro-justify); gap: 10px; }
+@media (min-width: 750px) { #cro-{{ sid }} .cro-cb { min-block-size: {{ s.min_height_desktop }}px; } #cro-{{ sid }} .cro-cb__content { padding: 36px 44px; } }
+
+{% endstyle %}
+
+<section id="cro-{{ sid }}" class="cro-collection-banner" aria-labelledby="CroHeading-{{ sid }}"{% if s.countdown_mode != 'none' and s.on_expire == 'hide' %} data-cro-expire-scope="hide"{% endif %}>
+  <div class="cro-wrap">
+    <div class="cro-cb">
+      {%- if img != blank -%}<div class="cro-cb__media">{{ img | image_url: width: 1800 | image_tag: widths: '750, 1100, 1500, 1800', sizes: '100vw', loading: 'eager', fetchpriority: 'high', alt: '' }}</div>{%- endif -%}
+      <div class="cro-cb__content">
+        {%- if s.eyebrow != blank -%}<p class="cro-eyebrow">{{ s.eyebrow | escape }}</p>{%- endif -%}
+        {%- if s.badge != blank -%}<span class="cro-badge">{{ s.badge | escape }}</span>{%- endif -%}
+        <h2 class="cro-h" id="CroHeading-{{ sid }}">{{ title | escape }}</h2>
+        {%- if s.text != blank -%}<p class="cro-sub">{{ s.text | escape }}</p>{%- elsif s.show_description and collection.description != blank -%}<div class="cro-sub">{{ collection.description | strip_html | truncatewords: 40 }}</div>{%- endif -%}
+        {%- if s.show_count and collection.products_count > 0 -%}<p class="cro-cb__count">{{ s.count_label | replace: '{count}', collection.products_count | escape }}</p>{%- endif -%}
+        {%- if s.countdown_mode != 'none' -%}
+          <div class="cro-cb__cd">{% render 'cro-countdown', id: sid, mode: s.countdown_mode, end: s.countdown_end, prefix: s.countdown_prefix, style: s.countdown_style, show_days: true, separator: ':', label_d: s.label_days, label_h: s.label_hours, label_m: s.label_minutes, label_s: s.label_seconds, urgent: 60, expire_action: 'hide', fallback: s.countdown_fallback %}</div>
+        {%- endif -%}
+        {%- if s.button_label != blank -%}<a class="cro-btn" href="{{ s.button_link | default: routes.all_products_collection_url }}">{{ s.button_label | escape }}</a>{%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+{%- endunless -%}
+
+{% schema %}
+{
+  "name": "CRO collection banner",
+  "tag": "div",
+  "class": "cro-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow"
+    },
+    {
+      "type": "text",
+      "id": "badge",
+      "label": "Badge"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "info": "Empty uses the collection title."
+    },
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Text"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Use collection description when text is empty",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_count",
+      "label": "Show product count",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "count_label",
+      "label": "Product count text",
+      "default": "{count} products"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_collection_image",
+      "label": "Use the collection image when no image is set",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Image overlay",
+      "default": "#0F2F27"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay opacity",
+      "min": 0,
+      "max": 90,
+      "step": 5,
+      "default": 50,
+      "unit": "%"
+    },
+    {
+      "type": "header",
+      "content": "Countdown"
+    },
+    {
+      "type": "select",
+      "id": "countdown_mode",
+      "label": "Countdown",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "fixed",
+          "label": "Offer ends at a date and time"
+        },
+        {
+          "value": "daily",
+          "label": "Daily dispatch cut-off"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "text",
+      "id": "countdown_end",
+      "label": "End date and time",
+      "info": "YYYY-MM-DD HH:MM in the shop timezone.",
+      "placeholder": "2026-12-02 23:59"
+    },
+    {
+      "type": "text",
+      "id": "countdown_prefix",
+      "label": "Text before timer",
+      "default": "Ends in"
+    },
+    {
+      "type": "text",
+      "id": "countdown_fallback",
+      "label": "Text before the timer loads"
+    },
+    {
+      "type": "select",
+      "id": "countdown_style",
+      "label": "Style",
+      "options": [
+        {
+          "value": "inline",
+          "label": "Inline"
+        },
+        {
+          "value": "boxes",
+          "label": "Boxes"
+        },
+        {
+          "value": "minimal",
+          "label": "Minimal"
+        },
+        {
+          "value": "circular",
+          "label": "Circular"
+        }
+      ],
+      "default": "inline"
+    },
+    {
+      "type": "text",
+      "id": "label_days",
+      "label": "Days label",
+      "default": "d"
+    },
+    {
+      "type": "text",
+      "id": "label_hours",
+      "label": "Hours label",
+      "default": "h"
+    },
+    {
+      "type": "text",
+      "id": "label_minutes",
+      "label": "Minutes label",
+      "default": "m"
+    },
+    {
+      "type": "text",
+      "id": "label_seconds",
+      "label": "Seconds label",
+      "default": "s"
+    },
+    {
+      "type": "select",
+      "id": "on_expire",
+      "label": "When the countdown ends",
+      "options": [
+        {
+          "value": "hide",
+          "label": "Hide the banner"
+        },
+        {
+          "value": "keep",
+          "label": "Keep the banner, hide the timer"
+        }
+      ],
+      "default": "hide"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "Full width",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "container_width",
+      "label": "Container width",
+      "min": 800,
+      "max": 1800,
+      "step": 50,
+      "default": 1300,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "align",
+      "label": "Heading alignment",
+      "options": [
+        {
+          "value": "start",
+          "label": "Start"
+        },
+        {
+          "value": "center",
+          "label": "Centre"
+        },
+        {
+          "value": "end",
+          "label": "End"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "radius",
+      "label": "Card corner radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "button_radius",
+      "label": "Button corner radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "default": 10,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "min_height_desktop",
+      "label": "Minimum height (desktop)",
+      "min": 80,
+      "max": 600,
+      "step": 20,
+      "default": 200,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "min_height_mobile",
+      "label": "Minimum height (mobile)",
+      "min": 80,
+      "max": 600,
+      "step": 20,
+      "default": 180,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "heading_size_desktop",
+      "label": "Heading size (desktop)",
+      "min": 16,
+      "max": 72,
+      "step": 2,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "label": "Heading size (mobile)",
+      "min": 16,
+      "max": 56,
+      "step": 2,
+      "default": 28,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "text_size_desktop",
+      "label": "Body text size (desktop)",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "default": 17,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "text_size_mobile",
+      "label": "Body text size (mobile)",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "default": 15,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "label": "Padding top (desktop)",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "label": "Padding bottom (desktop)",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 8,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Padding top (mobile)",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Padding bottom (mobile)",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 4,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Colours",
+      "info": "Keep text at a 4.5:1 contrast ratio or better against its background (WCAG AA)."
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#F7F1E7"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "default": "#18231F"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#3F4A45"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent (eyebrow, focus ring)",
+      "default": "#E8B44A"
+    },
+    {
+      "type": "color",
+      "id": "button_bg",
+      "label": "Button background",
+      "default": "#E8B44A"
+    },
+    {
+      "type": "color",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "#173F35"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_bg",
+      "label": "Button hover background",
+      "default": "#D4623D"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_text",
+      "label": "Button hover text",
+      "default": "#FFFDF8"
+    },
+    {
+      "type": "color",
+      "id": "link_hover_color",
+      "label": "Link hover",
+      "default": "#D4623D"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border",
+      "default": "#D7CEC1"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card background",
+      "default": "#FFFDF8"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon",
+      "default": "#173F35"
+    },
+    {
+      "type": "color",
+      "id": "badge_bg",
+      "label": "Badge background",
+      "default": "#C64F32"
+    },
+    {
+      "type": "color",
+      "id": "badge_text",
+      "label": "Badge text",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "panel_bg",
+      "label": "Banner background",
+      "default": "#173F35"
+    },
+    {
+      "type": "color",
+      "id": "panel_text",
+      "label": "Banner text",
+      "default": "#F7F1E7"
+    },
+    {
+      "type": "color",
+      "id": "panel_heading",
+      "label": "Banner heading",
+      "default": "#FFFDF8"
+    },
+    {
+      "type": "color",
+      "id": "cd_box_bg",
+      "label": "Countdown box",
+      "default": "#0F2F27"
+    },
+    {
+      "type": "color",
+      "id": "cd_digit",
+      "label": "Countdown digits",
+      "default": "#FFFDF8"
+    },
+    {
+      "type": "color",
+      "id": "cd_label",
+      "label": "Countdown labels",
+      "default": "#E8B44A"
+    },
+    {
+      "type": "color",
+      "id": "cd_urgent",
+      "label": "Countdown urgent",
+      "default": "#F2A38A"
+    }
+  ],
+  "presets": [
+    {
+      "name": "CRO collection banner"
+    }
+  ]
+}
+{% endschema %}

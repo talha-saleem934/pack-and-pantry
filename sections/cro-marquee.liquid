@@ -1,0 +1,195 @@
+{%- liquid
+  assign s = section.settings
+  assign sid = section.id
+  case s.align
+    when 'start'
+      assign justify = 'flex-start'
+    when 'end'
+      assign justify = 'flex-end'
+    else
+      assign justify = 'center'
+  endcase
+-%}
+{%- capture mq_items -%}
+  {%- for block in section.blocks -%}
+    {%- assign b = block.settings -%}
+    {%- capture item_inner -%}
+      {%- if block.type == 'image' -%}
+        {%- if b.image != blank -%}
+          {%- assign img_h2 = b.image_height | times: 2 -%}
+          {{- b.image | image_url: height: img_h2 | image_tag: height: b.image_height, loading: 'lazy', alt: b.alt, class: 'cro-mq-item__img' -}}
+        {%- endif -%}
+      {%- else -%}
+        {%- if b.icon != 'none' or b.icon_image != blank or b.icon_text != blank -%}
+          <span class="cro-mq-item__icon">{% render 'cro-icon', icon: b.icon, image: b.icon_image, text: b.icon_text, size: s.icon_size %}</span>
+        {%- endif -%}
+        <span>{{ b.text | escape }}</span>
+      {%- endif -%}
+    {%- endcapture -%}
+    {%- if item_inner != blank -%}
+      {%- if b.link != blank -%}
+        <a class="cro-mq-item cro-mq-item--{{ block.type }}" href="{{ b.link }}" {{ block.shopify_attributes }}>{{ item_inner }}</a>
+      {%- else -%}
+        <span class="cro-mq-item cro-mq-item--{{ block.type }}" {{ block.shopify_attributes }}>{{ item_inner }}</span>
+      {%- endif -%}
+      {%- case s.separator_type -%}
+        {%- when 'text' -%}
+          {%- if s.separator_text != blank -%}<span class="cro-mq-sep" aria-hidden="true">{{ s.separator_text | escape }}</span>{%- endif -%}
+        {%- when 'icon' -%}
+          <span class="cro-mq-sep" aria-hidden="true">{% render 'cro-icon', icon: s.separator_icon, size: s.icon_size %}</span>
+        {%- when 'image' -%}
+          {%- if s.separator_image != blank -%}<span class="cro-mq-sep" aria-hidden="true">{% render 'cro-icon', image: s.separator_image, size: s.icon_size %}</span>{%- endif -%}
+      {%- endcase -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endcapture -%}
+
+{%- if mq_items != blank -%}
+{{ 'cro-components.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'cro-core.js' | asset_url }}" defer="defer"></script>
+{% style %}
+  #cro-{{ sid }} {
+    --cro-mq-gap: {{ s.gap }}px;
+    --cro-mq-align: {{ justify }};
+    --cro-mq-text: {{ s.text_color }};
+    --cro-mq-icon: {{ s.icon_color }};
+    --cro-mq-sep: {{ s.separator_color }};
+    --cro-mq-link-hover: {{ s.link_hover_color }};
+    background: {{ s.bg_color }};
+    color: var(--cro-mq-text);
+    padding-block: {{ s.padding_top_mobile }}px {{ s.padding_bottom_mobile }}px;
+    {%- if s.border_top %} border-block-start: 1px solid {{ s.border_color }};{% endif %}
+    {%- if s.border_bottom %} border-block-end: 1px solid {{ s.border_color }};{% endif %}
+  }
+  #cro-{{ sid }} .cro-mqs__inner {
+    max-inline-size: {% if s.full_width %}none{% else %}{{ s.container_width }}px{% endif %};
+    margin-inline: auto;
+    {%- unless s.full_width %} padding-inline: var(--gutter, 16px);{% endunless %}
+  }
+  #cro-{{ sid }} .cro-mq { min-block-size: {{ s.height_mobile }}px; display: flex; align-items: center; }
+  #cro-{{ sid }} .cro-mq__track { align-items: center; }
+  #cro-{{ sid }} .cro-mq-item {
+    display: inline-flex; align-items: center; gap: 8px; white-space: nowrap;
+    color: inherit; text-decoration: none;
+    font-family: {% if s.font_family == 'heading' %}var(--font-heading){% else %}var(--font-body){% endif %};
+    font-size: {{ s.font_size_mobile }}px;
+    font-weight: {{ s.font_weight }};
+    letter-spacing: {{ s.letter_spacing }}px;
+    {%- if s.uppercase %} text-transform: uppercase;{% endif %}
+  }
+  #cro-{{ sid }} a.cro-mq-item { min-block-size: 40px; }
+  #cro-{{ sid }} a.cro-mq-item:hover { color: var(--cro-mq-link-hover); }
+  #cro-{{ sid }} a.cro-mq-item:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+  #cro-{{ sid }} .cro-mq-item__icon { display: inline-flex; color: var(--cro-mq-icon); }
+  #cro-{{ sid }} .cro-mq-item__img { display: block; inline-size: auto; max-block-size: 100%; object-fit: contain; }
+  #cro-{{ sid }} .cro-mq-sep { display: inline-flex; align-items: center; color: var(--cro-mq-sep); }
+  @media (min-width: 750px) {
+    #cro-{{ sid }} { padding-block: {{ s.padding_top_desktop }}px {{ s.padding_bottom_desktop }}px; }
+    #cro-{{ sid }} .cro-mq { min-block-size: {{ s.height_desktop }}px; }
+    #cro-{{ sid }} .cro-mq-item { font-size: {{ s.font_size_desktop }}px; }
+  }
+{% endstyle %}
+<div id="cro-{{ sid }}" class="cro-mqs" role="region" aria-label="{{ s.region_label | escape }}">
+  <div class="cro-mqs__inner">
+    <div class="cro-mq{% if s.edge_fade %} cro-mq--fade{% endif %}" data-cro-marquee data-speed="{{ s.speed }}" data-direction="{{ s.direction }}" data-pause="{{ s.pause_on_hover }}">
+      <div class="cro-mq__track" data-cro-mq-track>
+        <div class="cro-mq__group" data-cro-mq-group>{{ mq_items }}</div>
+        <div class="cro-mq__group" data-cro-mq-clone aria-hidden="true" inert>{{ mq_items }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+{%- elsif request.design_mode -%}
+  <div class="page-width" style="padding:16px">{{ s.empty_editor_note | escape }}</div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "CRO marquee",
+  "tag": "section",
+  "class": "cro-section cro-section--marquee",
+  "max_blocks": 12,
+  "settings": [
+    { "type": "header", "content": "Content" },
+    { "type": "text", "id": "region_label", "label": "Screen-reader label", "default": "Highlights" },
+    { "type": "text", "id": "empty_editor_note", "label": "Theme editor note when empty", "default": "Add text or image blocks to this marquee.", "info": "Only visible inside the theme editor." },
+
+    { "type": "header", "content": "Behaviour" },
+    { "type": "range", "id": "speed", "label": "Speed", "min": 10, "max": 200, "step": 5, "unit": "px", "default": 40, "info": "Pixels per second. Movement stops for visitors who prefer reduced motion; items wrap into a static row instead." },
+    { "type": "select", "id": "direction", "label": "Direction", "default": "left", "options": [ { "value": "left", "label": "Left" }, { "value": "right", "label": "Right" } ] },
+    { "type": "checkbox", "id": "pause_on_hover", "label": "Pause on hover", "default": true },
+    { "type": "checkbox", "id": "edge_fade", "label": "Fade the edges", "default": true },
+
+    { "type": "header", "content": "Separator" },
+    { "type": "select", "id": "separator_type", "label": "Separator", "default": "text", "options": [ { "value": "none", "label": "None" }, { "value": "text", "label": "Character" }, { "value": "icon", "label": "Icon" }, { "value": "image", "label": "Image" } ] },
+    { "type": "text", "id": "separator_text", "label": "Separator character", "default": "✦" },
+    { "type": "select", "id": "separator_icon", "label": "Separator icon", "default": "sparkle", "options": [{"value":"none","label":"None"},{"value":"truck","label":"Truck"},{"value":"shield","label":"Shield"},{"value":"cash","label":"Cash"},{"value":"refresh","label":"Refresh / returns"},{"value":"lock","label":"Lock"},{"value":"star","label":"Star"},{"value":"whatsapp","label":"WhatsApp"},{"value":"gift","label":"Gift"},{"value":"clock","label":"Clock"},{"value":"tag","label":"Tag"},{"value":"heart","label":"Heart"},{"value":"check","label":"Check"},{"value":"phone","label":"Phone"},{"value":"box","label":"Box"},{"value":"leaf","label":"Leaf"},{"value":"award","label":"Award"},{"value":"sparkle","label":"Sparkle"},{"value":"percent","label":"Percent"},{"value":"mail","label":"Mail"},{"value":"map-pin","label":"Map pin"},{"value":"thumbs-up","label":"Thumbs up"},{"value":"package","label":"Package"},{"value":"camera","label":"Camera"},{"value":"play","label":"Play"},{"value":"flame","label":"Flame"}] },
+    { "type": "image_picker", "id": "separator_image", "label": "Separator image" },
+
+    { "type": "header", "content": "Layout" },
+    { "type": "checkbox", "id": "full_width", "label": "Full width", "default": true },
+    { "type": "range", "id": "container_width", "label": "Container width", "min": 800, "max": 1800, "step": 50, "unit": "px", "default": 1300 },
+    { "type": "select", "id": "align", "label": "Alignment when motion is reduced", "default": "center", "options": [ { "value": "start", "label": "Start" }, { "value": "center", "label": "Centre" }, { "value": "end", "label": "End" } ] },
+    { "type": "range", "id": "gap", "label": "Gap between items", "min": 8, "max": 96, "step": 4, "unit": "px", "default": 32 },
+    { "type": "range", "id": "height_desktop", "label": "Minimum height (desktop)", "min": 24, "max": 160, "step": 4, "unit": "px", "default": 56 },
+    { "type": "range", "id": "height_mobile", "label": "Minimum height (mobile)", "min": 24, "max": 160, "step": 4, "unit": "px", "default": 48 },
+    { "type": "range", "id": "padding_top_desktop", "label": "Padding top (desktop)", "min": 0, "max": 80, "step": 4, "unit": "px", "default": 8 },
+    { "type": "range", "id": "padding_bottom_desktop", "label": "Padding bottom (desktop)", "min": 0, "max": 80, "step": 4, "unit": "px", "default": 8 },
+    { "type": "range", "id": "padding_top_mobile", "label": "Padding top (mobile)", "min": 0, "max": 80, "step": 4, "unit": "px", "default": 4 },
+    { "type": "range", "id": "padding_bottom_mobile", "label": "Padding bottom (mobile)", "min": 0, "max": 80, "step": 4, "unit": "px", "default": 4 },
+
+    { "type": "header", "content": "Typography" },
+    { "type": "select", "id": "font_family", "label": "Font", "default": "body", "options": [ { "value": "body", "label": "Body font" }, { "value": "heading", "label": "Heading font" } ] },
+    { "type": "range", "id": "font_size_desktop", "label": "Text size (desktop)", "min": 10, "max": 48, "step": 1, "unit": "px", "default": 18 },
+    { "type": "range", "id": "font_size_mobile", "label": "Text size (mobile)", "min": 10, "max": 48, "step": 1, "unit": "px", "default": 15 },
+    { "type": "select", "id": "font_weight", "label": "Font weight", "default": "700", "options": [ { "value": "400", "label": "Regular" }, { "value": "700", "label": "Bold" } ] },
+    { "type": "range", "id": "letter_spacing", "label": "Letter spacing", "min": 0, "max": 4, "step": 0.5, "unit": "px", "default": 0.5 },
+    { "type": "checkbox", "id": "uppercase", "label": "Uppercase", "default": true },
+    { "type": "range", "id": "icon_size", "label": "Icon and separator size", "min": 12, "max": 48, "step": 2, "unit": "px", "default": 20 },
+
+    { "type": "header", "content": "Colours", "info": "Keep text at a 4.5:1 contrast ratio or better against the background (WCAG AA)." },
+    { "type": "color", "id": "bg_color", "label": "Background", "default": "#173F35" },
+    { "type": "color", "id": "text_color", "label": "Text", "default": "#F7F1E7" },
+    { "type": "color", "id": "icon_color", "label": "Icons", "default": "#E8B44A" },
+    { "type": "color", "id": "separator_color", "label": "Separator", "default": "#E8B44A" },
+    { "type": "color", "id": "link_hover_color", "label": "Link hover", "default": "#E8B44A" },
+    { "type": "checkbox", "id": "border_top", "label": "Top border", "default": false },
+    { "type": "checkbox", "id": "border_bottom", "label": "Bottom border", "default": false },
+    { "type": "color", "id": "border_color", "label": "Border", "default": "#D7CEC1" }
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "name": "Text",
+      "settings": [
+        { "type": "text", "id": "text", "label": "Text", "default": "Glass jars" },
+        { "type": "url", "id": "link", "label": "Link" },
+        { "type": "select", "id": "icon", "label": "Icon", "default": "none", "options": [{"value":"none","label":"None"},{"value":"truck","label":"Truck"},{"value":"shield","label":"Shield"},{"value":"cash","label":"Cash"},{"value":"refresh","label":"Refresh / returns"},{"value":"lock","label":"Lock"},{"value":"star","label":"Star"},{"value":"whatsapp","label":"WhatsApp"},{"value":"gift","label":"Gift"},{"value":"clock","label":"Clock"},{"value":"tag","label":"Tag"},{"value":"heart","label":"Heart"},{"value":"check","label":"Check"},{"value":"phone","label":"Phone"},{"value":"box","label":"Box"},{"value":"leaf","label":"Leaf"},{"value":"award","label":"Award"},{"value":"sparkle","label":"Sparkle"},{"value":"percent","label":"Percent"},{"value":"mail","label":"Mail"},{"value":"map-pin","label":"Map pin"},{"value":"thumbs-up","label":"Thumbs up"},{"value":"package","label":"Package"},{"value":"camera","label":"Camera"},{"value":"play","label":"Play"},{"value":"flame","label":"Flame"}] },
+        { "type": "text", "id": "icon_text", "label": "Icon emoji / text", "info": "Overrides the built-in icon." },
+        { "type": "image_picker", "id": "icon_image", "label": "Icon image", "info": "Overrides emoji and built-in icon." }
+      ]
+    },
+    {
+      "type": "image",
+      "name": "Image / logo",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "text", "id": "alt", "label": "Alt text", "info": "Describe the logo or badge, e.g. the brand name." },
+        { "type": "range", "id": "image_height", "label": "Image height", "min": 16, "max": 120, "step": 4, "unit": "px", "default": 32 },
+        { "type": "url", "id": "link", "label": "Link" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "CRO marquee",
+      "blocks": [
+        { "type": "text", "settings": { "text": "Glass jars" } },
+        { "type": "text", "settings": { "text": "Bottles" } },
+        { "type": "text", "settings": { "text": "Storage organisers" } },
+        { "type": "text", "settings": { "text": "Pantry essentials" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

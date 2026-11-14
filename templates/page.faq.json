@@ -1,1 +1,61 @@
-{"sections":{"main":{"type":"main-page","settings":{}},"faq":{"type":"faq","blocks":{"size":{"type":"question","settings":{"question":"How do I choose a size?","answer":"<p>Use the capacity and dimensions shown on each product page, then contact us if you need help comparing options.</p>"}},"material":{"type":"question","settings":{"question":"Which materials are available?","answer":"<p>Materials vary by product. Check the verified product details on the item you are considering.</p>"}},"care":{"type":"question","settings":{"question":"How should I care for my products?","answer":"<p>Follow the care information supplied on each product page or with the product.</p>"}},"business":{"type":"question","settings":{"question":"Can I enquire about a larger order?","answer":"<p>Use the business enquiry form to share the products and quantities you are considering.</p>"}}},"block_order":["size","material","care","business"],"settings":{}}},"order":["main","faq"]}
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "settings": {}
+    },
+    "faq": {
+      "type": "faq",
+      "blocks": {
+        "size": {
+          "type": "question",
+          "settings": {
+            "question": "How do I choose a size?",
+            "answer": "<p>Use the capacity and dimensions shown on each product page, then contact us if you need help comparing options.</p>"
+          }
+        },
+        "material": {
+          "type": "question",
+          "settings": {
+            "question": "Which materials are available?",
+            "answer": "<p>Materials vary by product. Check the verified product details on the item you are considering.</p>"
+          }
+        },
+        "care": {
+          "type": "question",
+          "settings": {
+            "question": "How should I care for my products?",
+            "answer": "<p>Follow the care information supplied on each product page or with the product.</p>"
+          }
+        },
+        "business": {
+          "type": "question",
+          "settings": {
+            "question": "Can I enquire about a larger order?",
+            "answer": "<p>Use the business enquiry form to share the products and quantities you are considering.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "size",
+        "material",
+        "care",
+        "business"
+      ],
+      "settings": {}
+    }
+  },
+  "order": [
+    "main",
+    "faq"
+  ]
+}

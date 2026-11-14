@@ -1,1 +1,41 @@
-{"sections":{"main":{"type":"main-page","disabled":true,"settings":{}},"form":{"type":"contact-form","settings":{"eyebrow":"Contact Pack & Pantry","heading":"How can we help?","text":"Ask about products, sizing, availability or your storage requirements."}}},"order":["main","form"]}
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "disabled": true,
+      "settings": {}
+    },
+    "form": {
+      "type": "contact-form",
+      "settings": {
+        "eyebrow": "Contact Pack & Pantry",
+        "heading": "How can we help?",
+        "text": "Ask about products, sizing, availability or your storage requirements."
+      }
+    },
+    "cro_contact": {
+      "type": "cro-page-contact-boost",
+      "settings": {
+        "heading": "Talk to us",
+        "subheading": "Choose the quickest way to reach us, or use the form below.",
+        "form_label": "Ordering in bulk?",
+        "form_text": "Request a quote for cafés, bakeries and shops",
+        "form_link": "shopify://pages/bulk-orders"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "cro_contact",
+    "form"
+  ]
+}
