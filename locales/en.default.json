@@ -1,0 +1,12 @@
+{
+  "accessibility": { "skip_to_content": "Skip to content", "close": "Close", "menu": "Menu", "loading": "Loading", "remove": "Remove {{ title }}" },
+  "general": {
+    "search": { "title": "Search", "placeholder": "Search jars, containers and storage", "submit": "Search", "no_results": "No results found for “{{ terms }}”. Try a broader search.", "results_for": "Search results for “{{ terms }}”" },
+    "pagination": { "page": "Page {{ number }}", "previous": "Previous page", "next": "Next page" },
+    "breadcrumbs": { "home": "Home" },
+    "newsletter": { "email": "Email address", "submit": "Join the pantry list", "success": "Thanks for joining us." }
+  },
+  "products": { "product": { "add_to_cart": "Add to cart", "sold_out": "Sold out", "unavailable": "Unavailable", "quantity": "Quantity", "choose_options": "Choose options", "sale": "Sale", "sku": "SKU", "vendor": "Vendor", "view_details": "View product details" } },
+  "collections": { "general": { "items_with_count": { "one": "{{ count }} product", "other": "{{ count }} products" }, "filter": "Filter", "sort": "Sort", "apply": "Apply filters", "clear": "Clear", "clear_all": "Clear all", "empty": "No products match these filters." } },
+  "cart": { "general": { "title": "Your cart", "empty": "Your cart is ready for something useful.", "continue_shopping": "Continue shopping", "subtotal": "Subtotal", "checkout": "Checkout", "note": "Order note", "update": "Update cart", "shipping_at_checkout": "Taxes, discounts and shipping calculated at checkout." } }
+}

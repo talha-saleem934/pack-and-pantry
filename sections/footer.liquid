@@ -1,0 +1,31 @@
+<footer class="footer" style="--logo-width:{{ settings.logo_width }}px">
+  <div class="page-width">
+    <div class="footer__grid">
+      <div class="footer__brand">
+        {%- if settings.logo_light != blank -%}{{ settings.logo_light | image_url: width: 400 | image_tag: widths: '180, 260, 400', loading: 'lazy', alt: settings.logo_alt }}{%- else -%}<span class="asset-logo-frame footer__asset-frame"><img class="footer__asset-logo" src="{{ 'pack-and-pantry-logo.png' | asset_url }}" width="500" height="500" loading="lazy" alt="Pack & Pantry"></span>{%- endif -%}
+        <p>{{ section.settings.description }}</p>
+        <ul class="social-list">{%- if settings.social_instagram != blank -%}<li><a href="{{ settings.social_instagram }}" rel="noopener" target="_blank">Instagram</a></li>{%- endif -%}{%- if settings.social_facebook != blank -%}<li><a href="{{ settings.social_facebook }}" rel="noopener" target="_blank">Facebook</a></li>{%- endif -%}{%- if settings.social_tiktok != blank -%}<li><a href="{{ settings.social_tiktok }}" rel="noopener" target="_blank">TikTok</a></li>{%- endif -%}</ul>
+      </div>
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+          {%- when 'menu' -%}<div {{ block.shopify_attributes }}><h2>{{ block.settings.heading }}</h2><ul>{%- for link in block.settings.menu.links -%}<li><a href="{{ link.url }}">{{ link.title }}</a></li>{%- endfor -%}</ul></div>
+          {%- when 'contact' -%}
+            {%- if block.settings.text != blank or request.design_mode -%}
+              <div {{ block.shopify_attributes }}><h2>{{ block.settings.heading }}</h2>{%- if block.settings.text != blank -%}<div class="rte">{{ block.settings.text }}</div>{%- else -%}<p class="muted">Add verified contact details in this block.</p>{%- endif -%}</div>
+            {%- endif -%}
+          {%- when 'newsletter' -%}<div {{ block.shopify_attributes }}><h2>{{ block.settings.heading }}</h2><p>{{ block.settings.text }}</p>{%- form 'customer', class: 'newsletter-form' -%}<input type="hidden" name="contact[tags]" value="newsletter"><label class="visually-hidden" for="FooterEmail">{{ 'general.newsletter.email' | t }}</label><input class="input" id="FooterEmail" type="email" name="contact[email]" placeholder="{{ 'general.newsletter.email' | t }}" required><button class="button button--accent" type="submit">Join</button>{%- if form.posted_successfully? -%}<p class="form-message">{{ 'general.newsletter.success' | t }}</p>{%- endif -%}{%- endform -%}</div>
+        {%- endcase -%}
+      {%- endfor -%}
+    </div>
+    <div class="footer__bottom">
+      <div><p>&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. {{ section.settings.copyright_note }}</p></div>
+      <div>
+        {%- if shop.enabled_payment_types.size > 0 -%}<ul class="payment-icons" aria-label="Accepted payment methods">{%- for type in shop.enabled_payment_types -%}<li>{{ type | payment_type_svg_tag }}</li>{%- endfor -%}</ul>{%- endif -%}
+        {%- if localization.available_countries.size > 1 -%}{%- form 'localization', id: 'FooterCountryForm' -%}<label for="FooterCountry">Country / region</label><select id="FooterCountry" name="country_code" onchange="this.form.submit()">{%- for country in localization.available_countries -%}<option value="{{ country.iso_code }}"{% if country.iso_code == localization.country.iso_code %} selected{% endif %}>{{ country.name }} ({{ country.currency.iso_code }})</option>{%- endfor -%}</select>{%- endform -%}{%- endif -%}
+      </div>
+    </div>
+  </div>
+</footer>
+{% schema %}
+{"name":"Footer","max_blocks":4,"settings":[{"type":"textarea","id":"description","label":"Brand description","default":"Practical, attractive storage and packaging solutions for calmer kitchens, organised pantries and growing food businesses."},{"type":"text","id":"copyright_note","label":"Copyright note","default":"All rights reserved."}],"blocks":[{"type":"menu","name":"Menu","settings":[{"type":"text","id":"heading","label":"Heading","default":"Shop"},{"type":"link_list","id":"menu","label":"Menu"}]},{"type":"contact","name":"Contact details","settings":[{"type":"text","id":"heading","label":"Heading","default":"Contact"},{"type":"richtext","id":"text","label":"Verified details"}]},{"type":"newsletter","name":"Newsletter","settings":[{"type":"text","id":"heading","label":"Heading","default":"Useful ideas, neatly delivered"},{"type":"textarea","id":"text","label":"Text","default":"Get product news and practical pantry inspiration."}]}],"presets":[{"name":"Footer","blocks":[{"type":"menu"},{"type":"newsletter"}]}]}
+{% endschema %}

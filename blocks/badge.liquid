@@ -1,0 +1,2 @@
+{%- if block.settings.text != blank -%}<span class="badge theme-block" {{ block.shopify_attributes }}>{{ block.settings.text }}</span>{%- endif -%}
+{% schema %}{"name":"Badge","settings":[{"type":"text","id":"text","label":"Text","default":"Storage made simple"}],"presets":[{"name":"Badge"}]}{% endschema %}

@@ -1,0 +1,37 @@
+<!doctype html>
+<html class="no-js" lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="{{ settings.color_primary }}">
+    <link rel="canonical" href="{{ canonical_url }}">
+    {%- if settings.favicon != blank -%}<link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">{%- endif -%}
+    <title>{{ page_title }}{%- if current_tags %} &ndash; {{ current_tags | join: ', ' }}{% endif -%}{%- if current_page != 1 %} &ndash; {{ 'general.pagination.page' | t: number: current_page }}{% endif -%}{%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}</title>
+    {%- if page_description -%}<meta name="description" content="{{ page_description | escape }}">{%- endif -%}
+    {% render 'social-meta-tags' %}
+    {{ content_for_header }}
+    {{ 'base.css' | asset_url | stylesheet_tag: preload: true }}
+    {{ 'components.css' | asset_url | stylesheet_tag }}
+    {{ 'design-system.css' | asset_url | stylesheet_tag }}
+    {{ 'global-shell.css' | asset_url | stylesheet_tag }}
+    {{ 'merchandising.css' | asset_url | stylesheet_tag }}
+    {{ 'editorial.css' | asset_url | stylesheet_tag }}
+    <script>document.documentElement.classList.remove('no-js');</script>
+    <script src="{{ 'theme.js' | asset_url }}" defer="defer"></script>
+    <style>
+      {{ settings.body_font | font_face: font_display: 'swap' }}
+      {{ settings.heading_font | font_face: font_display: 'swap' }}
+      {%- assign body_bold = settings.body_font | font_modify: 'weight', '700' -%}
+      {{ body_bold | font_face: font_display: 'swap' }}
+      :root{--color-primary:{{ settings.color_primary }};--color-primary-hover:{{ settings.color_primary_hover }};--color-secondary:{{ settings.color_secondary }};--color-accent:{{ settings.color_accent }};--color-promotion:{{ settings.color_promotion }};--color-background:{{ settings.color_background }};--color-alternate:{{ settings.color_alternate }};--color-surface:{{ settings.color_surface }};--color-heading:{{ settings.color_heading }};--color-text:{{ settings.color_text }};--color-muted:{{ settings.color_muted }};--color-border:{{ settings.color_border }};--color-success:{{ settings.color_success }};--color-warning:{{ settings.color_warning }};--color-error:{{ settings.color_error }};--page-width:{{ settings.page_width }}px;--radius:{{ settings.card_radius }}px;--section-space:{{ settings.section_spacing }}px;--font-body:{{ settings.body_font.family }},{{ settings.body_font.fallback_families }};--font-heading:{{ settings.heading_font.family }},{{ settings.heading_font.fallback_families }};--font-body-weight:{{ settings.body_font.weight }};--font-heading-weight:{{ settings.heading_font.weight }}}
+    </style>
+  </head>
+  <body class="template-{{ template.name | handle }} motion-{{ settings.motion_level }}{% if settings.enable_reveal %} reveal-enabled{% endif %}">
+    <a class="skip-link" href="#MainContent">{{ 'accessibility.skip_to_content' | t }}</a>
+    {% sections 'header-group' %}
+    <main id="MainContent" class="site-main" tabindex="-1">{{ content_for_layout }}</main>
+    {% sections 'footer-group' %}
+    <div class="visually-hidden" aria-live="polite" aria-atomic="true" id="LiveRegion"></div>
+    {% render 'structured-data' %}
+  </body>
+</html>

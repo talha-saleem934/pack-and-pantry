@@ -1,0 +1,32 @@
+{%- liquid
+  assign capacity = product.metafields.custom.capacity
+  assign material = product.metafields.custom.material
+  assign dimensions = product.metafields.custom.dimensions
+  assign usage = product.metafields.custom.usage
+  assign care = product.metafields.custom.care_instructions
+  assign packaging = product.metafields.custom.packaging_information
+  assign has_specs = false
+  if capacity != blank or material != blank or dimensions != blank or usage != blank or care != blank or packaging != blank
+    assign has_specs = true
+  endif
+-%}
+{%- if has_specs or request.design_mode -%}
+  <section class="section section--compact" data-reveal>
+    <div class="page-width">
+      <div class="section-heading"><div><p class="eyebrow">Product details</p><h2>{{ section.settings.heading }}</h2><p>{{ section.settings.text }}</p></div></div>
+      {%- if has_specs -%}
+        <dl class="specifications">
+          {%- if capacity != blank -%}<div><dt>Capacity / size</dt><dd>{{ capacity | metafield_tag }}</dd></div>{%- endif -%}
+          {%- if material != blank -%}<div><dt>Material</dt><dd>{{ material | metafield_tag }}</dd></div>{%- endif -%}
+          {%- if dimensions != blank -%}<div><dt>Dimensions</dt><dd>{{ dimensions | metafield_tag }}</dd></div>{%- endif -%}
+          {%- if usage != blank -%}<div><dt>Suggested use</dt><dd>{{ usage | metafield_tag }}</dd></div>{%- endif -%}
+          {%- if care != blank -%}<div><dt>Care instructions</dt><dd>{{ care | metafield_tag }}</dd></div>{%- endif -%}
+          {%- if packaging != blank -%}<div><dt>Packaging information</dt><dd>{{ packaging | metafield_tag }}</dd></div>{%- endif -%}
+        </dl>
+      {%- else -%}
+        <p class="muted">Add product metafields for capacity, material, dimensions, usage, care instructions and packaging information.</p>
+      {%- endif -%}
+    </div>
+  </section>
+{%- endif -%}
+{% schema %}{"name":"Product specifications","settings":[{"type":"text","id":"heading","label":"Heading","default":"Specifications at a glance"},{"type":"textarea","id":"text","label":"Text","default":"Verified product information from Shopify metafields."}],"presets":[{"name":"Product specifications"}]}{% endschema %}

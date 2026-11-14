@@ -1,0 +1,25 @@
+{%- liquid
+  assign image_class = 'media--square'
+  if settings.product_image_ratio == 'portrait'
+    assign image_class = 'media--portrait'
+  elsif settings.product_image_ratio == 'adapt'
+    assign image_class = 'media--adapt'
+  endif
+-%}
+<article class="product-card card">
+  <a class="product-card__media media {{ image_class }}" href="{{ card_product.url }}">
+    {%- if card_product.featured_media -%}
+      {{ card_product.featured_media | image_url: width: 900 | image_tag: widths: '240, 360, 480, 720, 900', sizes: '(min-width: 990px) 25vw, 50vw', loading: 'lazy', class: 'product-card__image', alt: card_product.featured_media.alt | default: card_product.title }}
+      {%- if settings.show_second_image and card_product.media[1] != blank -%}{{ card_product.media[1] | image_url: width: 900 | image_tag: widths: '240, 360, 480, 720, 900', sizes: '(min-width: 990px) 25vw, 50vw', loading: 'lazy', class: 'product-card__image product-card__image--secondary', alt: card_product.media[1].alt | default: card_product.title }}{%- endif -%}
+    {%- else -%}<div class="placeholder-media">{{ 'product-1' | placeholder_svg_tag }}<span>Product image unavailable</span></div>{%- endif -%}
+    <div class="product-card__badges">{%- unless card_product.available -%}<span class="badge badge--muted">{{ 'products.product.sold_out' | t }}</span>{%- endunless -%}{%- if card_product.compare_at_price_max > card_product.price -%}<span class="badge">{{ 'products.product.sale' | t }}</span>{%- endif -%}{%- if card_product.metafields.custom.new_arrival.value == true -%}<span class="badge badge--new">New</span>{%- endif -%}</div>
+  </a>
+  <div class="product-card__content">
+    <div class="product-card__meta">{%- if settings.show_vendor_cards and card_product.vendor != blank -%}<span>{{ card_product.vendor }}</span>{%- elsif card_product.type != blank -%}<span>{{ card_product.type }}</span>{%- endif -%}{%- if card_product.metafields.custom.capacity != blank -%}<span>{{ card_product.metafields.custom.capacity.value }}</span>{%- endif -%}</div>
+    <h3 class="product-card__title"><a href="{{ card_product.url }}">{{ card_product.title }}</a></h3>
+    {% render 'price', product: card_product %}
+    {%- if card_product.has_only_default_variant and card_product.available -%}
+      {%- form 'product', card_product, class: 'product-card__form', data-product-form: '' -%}<input type="hidden" name="id" value="{{ card_product.selected_or_first_available_variant.id }}"><button class="button button--secondary button--small" type="submit">{{ 'products.product.add_to_cart' | t }} <span class="button__icon" aria-hidden="true">+</span></button>{%- endform -%}
+    {%- else -%}<button class="button button--secondary button--small" type="button" data-quick-add data-url="{{ card_product.url }}?section_id=quick-add-product">{{ 'products.product.choose_options' | t }} <span class="button__icon" aria-hidden="true">→</span></button>{%- endif -%}
+  </div>
+</article>

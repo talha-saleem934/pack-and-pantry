@@ -1,0 +1,8 @@
+<section class="section scheme--{{ section.settings.scheme }}" data-reveal>
+  <div class="page-width editorial-layout editorial-layout--{{ section.settings.width }} editorial-layout--{{ section.settings.alignment }}">
+    {% content_for 'blocks' %}
+  </div>
+</section>
+{% schema %}
+{"name":"Editorial layout","settings":[{"type":"select","id":"scheme","label":"Colour scheme","default":"cream","options":[{"value":"cream","label":"Cream"},{"value":"white","label":"White"},{"value":"sage","label":"Sage"},{"value":"dark","label":"Dark green"}]},{"type":"select","id":"width","label":"Content width","default":"standard","options":[{"value":"narrow","label":"Narrow"},{"value":"standard","label":"Standard"},{"value":"wide","label":"Wide"}]},{"type":"select","id":"alignment","label":"Alignment","default":"left","options":[{"value":"left","label":"Left"},{"value":"center","label":"Centre"}]}],"blocks":[{"type":"@theme"},{"type":"@app"}],"presets":[{"name":"Editorial layout","blocks":[{"type":"eyebrow"},{"type":"heading"},{"type":"text"},{"type":"button"}]}]}
+{% endschema %}

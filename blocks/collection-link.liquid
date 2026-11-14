@@ -1,0 +1,2 @@
+{%- assign linked_collection = block.settings.collection -%}{%- if linked_collection != blank -%}<a class="theme-block theme-block--link-card" href="{{ linked_collection.url }}" {{ block.shopify_attributes }}><span>{{ linked_collection.title }}</span><span aria-hidden="true">→</span></a>{%- endif -%}
+{% schema %}{"name":"Collection link","settings":[{"type":"collection","id":"collection","label":"Collection"}],"presets":[{"name":"Collection link"}]}{% endschema %}

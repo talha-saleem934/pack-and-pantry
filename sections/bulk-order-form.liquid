@@ -1,0 +1,18 @@
+<section class="section page-width narrow">
+  <p class="eyebrow">{{ section.settings.eyebrow }}</p><h1>{{ section.settings.heading }}</h1><p>{{ section.settings.text }}</p>
+  {%- form 'contact' -%}
+    <input type="hidden" name="contact[Enquiry type]" value="Bulk or wholesale"><input type="hidden" name="contact[tags]" value="bulk-order">
+    {%- if form.posted_successfully? -%}<p class="form-message" role="status">Thank you. Your bulk-order enquiry has been sent.</p>{%- endif -%}
+    {%- if form.errors -%}<div class="form-message form-message--error" role="alert">{{ form.errors | default_errors }}</div>{%- endif -%}
+    <div class="grid grid--2">
+      <div class="field"><label for="BulkName">Name</label><input class="input" id="BulkName" name="contact[name]" autocomplete="name" required></div>
+      <div class="field"><label for="BulkBusiness">Business name</label><input class="input" id="BulkBusiness" name="contact[Business name]" autocomplete="organization"></div>
+      <div class="field"><label for="BulkEmail">Email</label><input class="input" id="BulkEmail" type="email" name="contact[email]" autocomplete="email" required></div>
+      <div class="field"><label for="BulkPhone">Phone / WhatsApp</label><input class="input" id="BulkPhone" type="tel" name="contact[phone]" autocomplete="tel"></div>
+    </div>
+    <div class="field"><label for="BulkProducts">Products and quantities required</label><textarea id="BulkProducts" name="contact[Products and quantities]" required placeholder="Product names, sizes and estimated quantities"></textarea></div>
+    <div class="field"><label for="BulkDetails">Business use and other details</label><textarea id="BulkDetails" name="contact[body]" placeholder="Café, bakery, catering, retail, gifting or another use"></textarea></div>
+    <button class="button" type="submit">Request Bulk Information</button>
+  {%- endform -%}
+</section>
+{% schema %}{"name":"Bulk order form","settings":[{"type":"text","id":"eyebrow","label":"Eyebrow","default":"Business and bulk orders"},{"type":"text","id":"heading","label":"Heading","default":"Tell us what you need"},{"type":"textarea","id":"text","label":"Text","default":"Share the products, estimated quantities and intended use so your requirements can be reviewed."}],"presets":[{"name":"Bulk order form"}]}{% endschema %}

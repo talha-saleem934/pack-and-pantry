@@ -1,0 +1,1 @@
+{"type":"header","name":"Header group","sections":{"announcement":{"type":"announcement-bar","settings":{"text":"Practical storage for calmer kitchens and organised pantries","link":""}},"header":{"type":"header","custom_css":[],"settings":{"menu":"main-menu","sticky":true}},"cart_drawer":{"type":"cart-drawer","settings":{}}},"order":["announcement","header","cart_drawer"]}

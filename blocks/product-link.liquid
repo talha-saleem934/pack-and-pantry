@@ -1,0 +1,2 @@
+{%- assign linked_product = block.settings.product -%}{%- if linked_product != blank -%}<a class="theme-block theme-block--link-card" href="{{ linked_product.url }}" {{ block.shopify_attributes }}><span>{{ linked_product.title }}</span><span>{{ linked_product.price | money }}</span></a>{%- endif -%}
+{% schema %}{"name":"Product link","settings":[{"type":"product","id":"product","label":"Product"}],"presets":[{"name":"Product link"}]}{% endschema %}

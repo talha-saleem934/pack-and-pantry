@@ -1,0 +1,15 @@
+<section class="section scheme--{{ section.settings.scheme }}" data-reveal>
+  <div class="page-width">
+    <div class="section-heading"><div class="section-heading__text"><p class="eyebrow">{{ section.settings.eyebrow }}</p><h2>{{ section.settings.heading }}</h2><p>{{ section.settings.text }}</p></div></div>
+    <div class="purpose-mosaic">
+      {%- for block in section.blocks -%}
+        <a class="purpose-card" href="{{ block.settings.link | default: routes.collections_url }}" {{ block.shopify_attributes }}>
+          <div class="purpose-card__content"><p class="eyebrow">{{ block.settings.label }}</p><h3>{{ block.settings.heading }}</h3><p>{{ block.settings.text }}</p></div>
+        </a>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+{% schema %}
+{"name":"Shop by purpose","settings":[{"type":"text","id":"eyebrow","label":"Eyebrow","default":"Shop by purpose"},{"type":"text","id":"heading","label":"Heading","default":"Made for the way you work"},{"type":"textarea","id":"text","label":"Text","default":"Start with what you need to organise, store or prepare, then explore the products that fit."},{"type":"select","id":"scheme","label":"Colour scheme","default":"white","options":[{"value":"cream","label":"Oat cream"},{"value":"white","label":"Warm white"},{"value":"sage","label":"Sage"}]}],"blocks":[{"type":"purpose","name":"Purpose","settings":[{"type":"text","id":"label","label":"Short label","default":"At home"},{"type":"text","id":"heading","label":"Heading","default":"A calmer pantry"},{"type":"textarea","id":"text","label":"Text","default":"Make ingredients easier to see, group and reach."},{"type":"url","id":"link","label":"Link"}]}],"max_blocks":5,"presets":[{"name":"Shop by purpose","blocks":[{"type":"purpose","settings":{"label":"At home","heading":"A calmer pantry","text":"Make ingredients easier to see, group and reach."}},{"type":"purpose","settings":{"label":"For bakers","heading":"Ingredients at hand","text":"Find containers for everyday preparation and display."}},{"type":"purpose","settings":{"label":"For cafés","heading":"Storage that keeps up","text":"Explore practical containers for busy workspaces."}},{"type":"purpose","settings":{"label":"For gifting","heading":"Present it thoughtfully","text":"Browse packaging ideas for products and occasions."}}]}]}
+{% endschema %}

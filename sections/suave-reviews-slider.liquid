@@ -1,0 +1,1733 @@
+{%- liquid
+  assign sid = section.id
+  assign accent = section.settings.accent_color | default: '#9FE870'
+  assign bg = section.settings.background_color | default: '#1a1a1a'
+  assign text_color = section.settings.text_color | default: '#ffffff'
+  assign name_color = section.settings.name_color | default: text_color
+  assign review_text_color = section.settings.review_text_color | default: text_color
+  assign star_color = section.settings.star_color | default: accent
+  assign verified_color = section.settings.verified_color | default: accent
+  assign play_bg = section.settings.play_button_color | default: accent
+  assign play_icon = section.settings.play_icon_color | default: '#ffffff'
+  assign shop_color = section.settings.shop_link_color | default: accent
+  assign arrow_bg = section.settings.arrow_bg | default: 'rgba(40,55,40,0.85)'
+  assign arrow_color = section.settings.arrow_color | default: '#ffffff'
+  assign card_radius = section.settings.card_radius | default: 28
+  assign autoplay_slider = section.settings.autoplay_slider
+  assign autoplay_delay = section.settings.autoplay_delay | default: 5 | times: 1000
+  assign autoplay_videos = section.settings.autoplay_videos
+  assign show_arrows = section.settings.show_arrows
+  assign start_from_third = section.settings.start_from_third
+  assign card_width = section.settings.card_width | default: 320
+  assign overlay_color = section.settings.overlay_color | default: '#000000'
+  assign overlay_opacity_pct = section.settings.overlay_opacity | default: 80
+  assign overlay_a = overlay_opacity_pct | divided_by: 100.0
+  assign overlay_a_mid = overlay_opacity_pct | times: 0.55 | divided_by: 100.0
+  assign overlay_height = section.settings.overlay_height | default: 55
+  assign overlay_bottom = overlay_color | color_modify: 'alpha', overlay_a
+  assign overlay_mid = overlay_color | color_modify: 'alpha', overlay_a_mid
+  assign overlay_top = overlay_color | color_modify: 'alpha', 0.0
+
+  comment
+    Only render anything (heading, arrows, padding, CSS, JS) if at least one
+    block actually has a video (Shopify video / metafield) or a YouTube URL.
+  endcomment
+  assign has_any_media = false
+  for block in section.blocks
+    assign chk_video = block.settings.video
+    assign chk_yt = block.settings.youtube_url | strip
+    if chk_video != blank and chk_video.sources != blank
+      assign has_any_media = true
+    elsif chk_yt != blank
+      if chk_yt contains 'youtu.be/' or chk_yt contains 'youtube.com/shorts/' or chk_yt contains 'watch?v=' or chk_yt contains 'embed/'
+        assign has_any_media = true
+      endif
+    endif
+    if has_any_media
+      break
+    endif
+  endfor
+-%}
+
+
+{%- if has_any_media -%}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css"/>
+
+
+<style>
+  /*
+    NO-HORIZONTAL-SCROLL FIX
+    The slider renders 3 copies of every slide inside .swiper-wrapper and the
+    wrapper is translated sideways. Because overflow must stay visible (so the
+    side cards can peek out), those extra slides pushed the page wider than the
+    viewport. `overflow-x: clip` cuts anything past the section's left/right
+    edges WITHOUT creating a scroll container and WITHOUT clipping vertically
+    (shadows stay visible). `overflow: hidden` is only a fallback for very old
+    browsers that don't support `clip`.
+  */
+  #shopify-section-{{ sid }} {
+    overflow: hidden;
+    max-width: 100%;
+  }
+
+
+  #shopify-section-{{ sid }} .svr {
+    overflow: hidden;
+    max-width: 100%;
+  }
+
+
+  @supports (overflow: clip) {
+    #shopify-section-{{ sid }} {
+      overflow-x: clip;
+      overflow-y: visible;
+    }
+
+
+    #shopify-section-{{ sid }} .svr {
+      overflow-x: clip;
+      overflow-y: visible;
+    }
+  }
+
+
+  #shopify-section-{{ sid }} .svr {
+    --svr-accent: {{ accent }};
+    --svr-bg: {{ bg }};
+    --svr-text: {{ text_color }};
+    --svr-name: {{ name_color }};
+    --svr-quote: {{ review_text_color }};
+    --svr-star: {{ star_color }};
+    --svr-verified: {{ verified_color }};
+    --svr-play-bg: {{ play_bg }};
+    --svr-play-icon: {{ play_icon }};
+    --svr-shop: {{ shop_color }};
+    --svr-arrow-bg: {{ arrow_bg }};
+    --svr-arrow-color: {{ arrow_color }};
+    --svr-radius: {{ card_radius }}px;
+    --svr-card-w: min(58vw, 240px);
+    position: relative;
+    background: var(--svr-bg);
+    color: var(--svr-text);
+    padding: {{ section.settings.padding_top_mobile }}px 0 {{ section.settings.padding_bottom_mobile }}px;
+  }
+
+
+  #shopify-section-{{ sid }} .svr__inner,
+  #shopify-section-{{ sid }} .svr__stage {
+    max-width: var(--page-width);
+    margin: 0 auto;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    width: 100%;
+    box-sizing: border-box;
+    position: relative;
+    overflow: visible;
+  }
+
+
+  #shopify-section-{{ sid }} .svr__inner {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+
+  #shopify-section-{{ sid }} .svr__heading {
+    text-align: {{ section.settings.heading_align }};
+    margin: 0 0 20px;
+    font-size: {{ section.settings.heading_size_mobile }}px;
+    line-height: 1.2;
+    color: var(--svr-text);
+  }
+
+
+  #shopify-section-{{ sid }} .svr__heading * {
+    margin: 0;
+    color: inherit;
+    font-family: inherit;
+  }
+
+
+  /* Stage — page width; cards keep a fixed width */
+  #shopify-section-{{ sid }} .svr__stage {
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+
+
+  #shopify-section-{{ sid }} .svr__slider {
+    overflow: visible;
+    padding: 28px 0 36px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+
+  /* Keep stacked side cards visible on narrow screens */
+  @media (max-width: 767px) {
+    #shopify-section-{{ sid }} .svr__stage {
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+
+    #shopify-section-{{ sid }} .svr__slider {
+      overflow: visible;
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+
+    #shopify-section-{{ sid }} .svr__nav--prev {
+      left: 4px;
+    }
+
+
+    #shopify-section-{{ sid }} .svr__nav--next {
+      right: 4px;
+    }
+  }
+
+
+  #shopify-section-{{ sid }} .svr__slider .swiper-wrapper {
+    align-items: center;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+
+  #shopify-section-{{ sid }} .svr__slide {
+    width: var(--svr-card-w) !important;
+    max-width: var(--svr-card-w);
+    flex-shrink: 0;
+    height: auto;
+    transition: opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity: 0.62;
+    box-sizing: border-box;
+    will-change: opacity, transform;
+  }
+
+
+  #shopify-section-{{ sid }} .svr__slide.swiper-slide-prev,
+  #shopify-section-{{ sid }} .svr__slide.swiper-slide-next {
+    opacity: 0.85;
+  }
+
+
+  #shopify-section-{{ sid }} .svr__slide.swiper-slide-active {
+    opacity: 1;
+    z-index: 6;
+  }
+
+
+  #shopify-section-{{ sid }} .svr__card {
+    position: relative;
+    aspect-ratio: 9 / 16;
+    border-radius: var(--svr-radius);
+    overflow: hidden;
+    background: #111;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+    transform-origin: center center;
+    transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.85s ease;
+    will-change: transform;
+  }
+
+
+  #shopify-section-{{ sid }} .svr__slide.swiper-slide-active .svr__card {
+    box-shadow: 0 28px 60px rgba(0, 0, 0, 0.55);
+  }
+
+
+  /* Instant loop remap — no animated jump when wrapping sets */
+  #shopify-section-{{ sid }} .svr.svr--wrapping .swiper-wrapper,
+  #shopify-section-{{ sid }} .svr.svr--wrapping .svr__slide,
+  #shopify-section-{{ sid }} .svr.svr--wrapping .svr__card {
+    transition: none !important;
+  }
+
+
+  #shopify-section-{{ sid }} .svr__media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    /* Keep video on its own layer under the overlay */
+    transform: translateZ(0);
+  }
+
+
+  #shopify-section-{{ sid }} .svr__media video,
+  #shopify-section-{{ sid }} .svr__media iframe,
+  #shopify-section-{{ sid }} .svr__media img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border: 0;
+    display: block;
+    background: #000;
+    z-index: 0;
+  }
+
+
+  #shopify-section-{{ sid }} .svr__media iframe {
+    pointer-events: none;
+  }
+
+
+  /* Bottom → top content overlay (real element so it paints above <video>) */
+  #shopify-section-{{ sid }} .svr__gradient {
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: {{ overlay_height }}%;
+    background: linear-gradient(
+      to top,
+      {{ overlay_bottom }} 0%,
+      {{ overlay_mid }} 45%,
+      {{ overlay_top }} 100%
+    );
+    pointer-events: none;
+    z-index: 2;
+    transform: translateZ(1px);
+  }
+
+
+  #shopify-section-{{ sid }} .svr__meta {
+    position: absolute;
+    left: 14px;
+    right: 62px;
+    bottom: 14px;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    pointer-events: none;
+  }
+
+
+  #shopify-section-{{ sid }} .svr__meta a {
+    pointer-events: auto;
+  }
+
+
+  #shopify-section-{{ sid }} .svr__name-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+
+  #shopify-section-{{ sid }} .svr__name {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--svr-name);
+  }
+
+
+  #shopify-section-{{ sid }} .svr__verified {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--svr-verified);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+
+  #shopify-section-{{ sid }} .svr__verified svg {
+    width: 10px;
+    height: 10px;
+    fill: #fff;
+  }
+
+
+  #shopify-section-{{ sid }} .svr__quote {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.35;
+    color: var(--svr-quote);
+  }
+
+
+  #shopify-section-{{ sid }} .svr__shop {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 2px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--svr-shop);
+    text-decoration: none;
+    line-height: 1.3;
+  }
+
+
+  #shopify-section-{{ sid }} .svr__shop:hover {
+    text-decoration: underline;
+  }
+
+
+  #shopify-section-{{ sid }} .svr__shop svg {
+    width: 14px;
+    height: 14px;
+    fill: currentColor;
+  }
+
+
+  #shopify-section-{{ sid }} .svr__stars {
+    display: flex;
+    gap: 2px;
+    margin-top: 4px;
+  }
+
+
+  #shopify-section-{{ sid }} .svr__stars svg {
+    width: 12px;
+    height: 12px;
+    fill: var(--svr-star);
+  }
+
+
+  #shopify-section-{{ sid }} .svr__play {
+    position: absolute;
+    right: 12px;
+    bottom: 14px;
+    z-index: 4;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    background: var(--svr-play-bg);
+    color: var(--svr-play-icon);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35), 0 0 0 3px rgba(159, 232, 112, 0.15);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+
+  #shopify-section-{{ sid }} .svr__play:hover {
+    transform: scale(1.06);
+  }
+
+
+  #shopify-section-{{ sid }} .svr__play svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+  }
+
+
+  #shopify-section-{{ sid }} .svr__play .svr__icon-pause {
+    display: none;
+  }
+
+
+  #shopify-section-{{ sid }} .svr__play.is-playing .svr__icon-play {
+    display: none;
+  }
+
+
+  #shopify-section-{{ sid }} .svr__play.is-playing .svr__icon-pause {
+    display: block;
+  }
+
+
+  #shopify-section-{{ sid }} .svr__mute {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 4;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.55);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease, background 0.2s ease;
+  }
+
+
+  #shopify-section-{{ sid }} .svr__mute:hover {
+    transform: scale(1.06);
+    background: rgba(0, 0, 0, 0.7);
+  }
+
+
+  #shopify-section-{{ sid }} .svr__mute svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+  }
+
+
+  #shopify-section-{{ sid }} .svr__mute .svr__icon-unmuted {
+    display: none;
+  }
+
+
+  #shopify-section-{{ sid }} .svr__mute:not(.is-muted) .svr__icon-muted {
+    display: none;
+  }
+
+
+  #shopify-section-{{ sid }} .svr__mute:not(.is-muted) .svr__icon-unmuted {
+    display: block;
+  }
+
+
+  #shopify-section-{{ sid }} .svr__nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 40;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    background: var(--svr-arrow-bg);
+    color: var(--svr-arrow-color);
+    display: {% if show_arrows %}flex{% else %}none{% endif %};
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+
+  #shopify-section-{{ sid }} .svr__nav:hover {
+    transform: translateY(-50%) scale(1.06);
+  }
+
+
+  #shopify-section-{{ sid }} .svr__nav svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+  }
+
+
+  /* Sit on top of the outer videos (like the reference) */
+  #shopify-section-{{ sid }} .svr__nav--prev {
+    left: 12px;
+  }
+
+
+  #shopify-section-{{ sid }} .svr__nav--next {
+    right: 12px;
+  }
+
+
+  #shopify-section-{{ sid }} .svr__nav.swiper-button-disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+
+  @media (min-width: 768px) {
+    #shopify-section-{{ sid }} .svr {
+      padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;
+    }
+
+
+    #shopify-section-{{ sid }} .svr__inner,
+    #shopify-section-{{ sid }} .svr__stage {
+      padding-left: 5rem;
+      padding-right: 5rem;
+    }
+
+
+    #shopify-section-{{ sid }} .svr__heading {
+      font-size: {{ section.settings.heading_size }}px;
+      margin-bottom: 8px;
+    }
+
+
+    #shopify-section-{{ sid }} .svr__stage {
+      padding-top: 20px;
+      padding-bottom: 20px;
+    }
+
+
+    #shopify-section-{{ sid }} .svr {
+      --svr-card-w: {{ card_width }}px;
+    }
+
+
+    #shopify-section-{{ sid }} .svr__slider {
+      padding-top: 20px;
+      padding-bottom: 20px;
+    }
+
+
+    #shopify-section-{{ sid }} .svr__nav {
+      width: 48px;
+      height: 48px;
+    }
+
+
+    #shopify-section-{{ sid }} .svr__nav--prev {
+      left: 20px;
+    }
+
+
+    #shopify-section-{{ sid }} .svr__nav--next {
+      right: 20px;
+    }
+
+
+    #shopify-section-{{ sid }} .svr__name {
+      font-size: 16px;
+    }
+
+
+    #shopify-section-{{ sid }} .svr__play {
+      width: 48px;
+      height: 48px;
+    }
+
+
+    #shopify-section-{{ sid }} .svr__mute {
+      width: 44px;
+      height: 44px;
+    }
+  }
+</style>
+
+
+<section class="svr font-sans" data-svr-section="{{ sid }}">
+  <div class="svr__inner">
+    {%- if section.settings.heading != blank -%}
+      <div class="svr__heading font-serif">{{ section.settings.heading }}</div>
+    {%- endif -%}
+  </div>
+
+
+  <div class="svr__stage">
+    <div class="svr__slider swiper" id="SuaveVideoReviews-{{ sid }}">
+      <div class="swiper-wrapper">
+        {%- for block in section.blocks -%}
+          {%- liquid
+            assign video = block.settings.video
+            assign yt_url = block.settings.youtube_url | strip
+            assign yt_id = ''
+            if yt_url != blank
+              if yt_url contains 'youtu.be/'
+                assign yt_id = yt_url | split: 'youtu.be/' | last | split: '?' | first | split: '/' | first
+              elsif yt_url contains 'youtube.com/shorts/'
+                assign yt_id = yt_url | split: 'youtube.com/shorts/' | last | split: '?' | first | split: '/' | first
+              elsif yt_url contains 'watch?v='
+                assign yt_id = yt_url | split: 'watch?v=' | last | split: '&' | first
+              elsif yt_url contains 'embed/'
+                assign yt_id = yt_url | split: 'embed/' | last | split: '?' | first | split: '/' | first
+              endif
+            endif
+
+
+            assign media_src = ''
+            if video != blank and video.sources != blank
+              for source in video.sources
+                if source.format == 'mp4' or source.mime_type == 'video/mp4'
+                  assign media_src = source.url
+                  break
+                endif
+              endfor
+              if media_src == blank and video.sources.size > 1
+                assign media_src = video.sources[1].url
+              endif
+              if media_src == blank and video.sources.first.url != blank
+                assign media_src = video.sources.first.url
+              endif
+            endif
+
+
+            assign poster = block.settings.poster
+            if poster == blank and video != blank and video.preview_image != blank
+              assign poster = video.preview_image
+            endif
+
+
+            assign stars = block.settings.stars | default: 5
+            assign show_verified = block.settings.show_verified
+            assign has_media = false
+            if media_src != blank or yt_id != blank
+              assign has_media = true
+            endif
+          -%}
+
+
+          {%- if has_media -%}
+          <div class="svr__slide swiper-slide" {{ block.shopify_attributes }} data-svr-slide>
+            <div
+              class="svr__card"
+              data-svr-card
+              data-media-type="{% if media_src != blank %}video{% elsif yt_id != blank %}youtube{% else %}none{% endif %}"
+              data-yt-id="{{ yt_id }}"
+            >
+              <div class="svr__media">
+                {%- if media_src != blank -%}
+                  <video
+                    src="{{ media_src }}"
+                    {% if poster != blank %}poster="{{ poster | image_url: width: 800 }}"{% endif %}
+                    playsinline
+                    muted
+                    loop
+                    preload="metadata"
+                    data-svr-video
+                  ></video>
+                {%- elsif yt_id != blank -%}
+                  <iframe
+                    data-svr-yt
+                    data-src="https://www.youtube.com/embed/{{ yt_id }}?enablejsapi=1&playsinline=1&rel=0&modestbranding=1&controls=0&loop=1&playlist={{ yt_id }}&mute=1"
+                    title="{{ block.settings.name | escape }}"
+                    allow="autoplay; encrypted-media; picture-in-picture"
+                    allowfullscreen
+                    loading="lazy"
+                  ></iframe>
+                  {%- if poster != blank -%}
+                    <img
+                      class="svr__poster"
+                      src="{{ poster | image_url: width: 800 }}"
+                      alt="{{ block.settings.name | escape }}"
+                      width="{{ poster.width | default: 800 }}"
+                      height="{{ poster.height | default: 1422 }}"
+                      loading="lazy"
+                      style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;"
+                      data-svr-poster
+                    >
+                  {%- endif -%}
+                {%- elsif poster != blank -%}
+                  {{ poster | image_url: width: 800 | image_tag: loading: 'lazy', class: 'svr__poster', widths: '400,600,800' }}
+                {%- endif -%}
+              </div>
+
+
+              <div class="svr__gradient" aria-hidden="true"></div>
+
+
+              <div class="svr__meta">
+                {%- if block.settings.name != blank -%}
+                  <div class="svr__name-row">
+                    <p class="svr__name font-serif">{{ block.settings.name }}</p>
+                    {%- if show_verified -%}
+                      <span class="svr__verified" title="Verified" aria-label="Verified">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.2 4.8 12l1.4-1.4L9 13.4l8.6-8.6L19 6.2z"/></svg>
+                      </span>
+                    {%- endif -%}
+                  </div>
+                {%- endif -%}
+
+
+                {%- if block.settings.review_text != blank -%}
+                  <p class="svr__quote font-sans">{{ block.settings.review_text }}</p>
+                {%- endif -%}
+
+
+                {%- if block.settings.shop_label != blank -%}
+                  {%- if block.settings.shop_link != blank -%}
+                    <a class="svr__shop font-sans" href="{{ block.settings.shop_link }}" {% if block.settings.shop_new_tab %}target="_blank" rel="noopener"{% endif %}>
+                      {{ block.settings.shop_label }}
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                    </a>
+                  {%- else -%}
+                    <span class="svr__shop font-sans">
+                      {{ block.settings.shop_label }}
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                    </span>
+                  {%- endif -%}
+                {%- endif -%}
+
+
+                <div class="svr__stars" aria-label="{{ stars }} out of 5 stars">
+                  {%- for i in (1..5) -%}
+                    {%- if i <= stars -%}
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                    {%- endif -%}
+                  {%- endfor -%}
+                </div>
+              </div>
+
+
+              <button type="button" class="svr__mute is-muted" data-svr-mute aria-label="Unmute video">
+                <svg class="svr__icon-muted" viewBox="0 0 24 24" aria-hidden="true"><path d="M16.5 12a4.5 4.5 0 0 0-2.25-3.89v2.17l2.2 2.2c.03-.16.05-.32.05-.48zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51A8.8 8.8 0 0 0 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3 3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06a8.99 8.99 0 0 0 3.58-1.55L19.73 21 21 19.73 4.27 3zM12 4 9.91 6.09 12 8.18V4z"/></svg>
+                <svg class="svr__icon-unmuted" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14.25 8.1v7.8A4.5 4.5 0 0 0 16.5 12zM14.5 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+              </button>
+
+
+              <button type="button" class="svr__play" data-svr-play aria-label="Play video">
+                <svg class="svr__icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+                <svg class="svr__icon-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>
+              </button>
+            </div>
+          </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </div>
+
+
+    {%- if show_arrows -%}
+      <button type="button" class="svr__nav svr__nav--prev" id="svr-prev-{{ sid }}" aria-label="Previous video">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+      </button>
+      <button type="button" class="svr__nav svr__nav--next" id="svr-next-{{ sid }}" aria-label="Next video">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+      </button>
+    {%- endif -%}
+  </div>
+</section>
+
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js" defer></script>
+<script>
+(function () {
+  var sid = {{ sid | json }};
+  var AUTO_SLIDER = {{ autoplay_slider | json }};
+  var AUTO_DELAY = {{ autoplay_delay | json }};
+  var AUTO_VIDEOS = {{ autoplay_videos | json }};
+  var START_FROM_THIRD = {{ start_from_third | json }};
+  var FORCE_LOOP = {{ section.settings.loop | json }};
+  var CARD_WIDTH = {{ card_width | json }};
+  var soundOn = false;
+
+
+  function ready(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  }
+
+
+  function ytCommand(iframe, func) {
+    if (!iframe || !iframe.contentWindow) return;
+    iframe.contentWindow.postMessage(
+      JSON.stringify({ event: 'command', func: func, args: [] }),
+      '*'
+    );
+  }
+
+
+  function ensureYtSrc(iframe) {
+    if (!iframe) return;
+    var src = iframe.getAttribute('src');
+    var dataSrc = iframe.getAttribute('data-src');
+    if ((!src || src === '') && dataSrc) {
+      iframe.setAttribute('src', dataSrc);
+    }
+  }
+
+
+  function syncMuteButtons(root) {
+    root.querySelectorAll('[data-svr-mute]').forEach(function (btn) {
+      if (soundOn) {
+        btn.classList.remove('is-muted');
+        btn.setAttribute('aria-label', 'Mute video');
+      } else {
+        btn.classList.add('is-muted');
+        btn.setAttribute('aria-label', 'Unmute video');
+      }
+    });
+  }
+
+
+  function applySoundToActive(root) {
+    root.querySelectorAll('[data-svr-video]').forEach(function (v) {
+      try { v.muted = true; } catch (e) {}
+    });
+    root.querySelectorAll('[data-svr-yt]').forEach(function (f) {
+      ytCommand(f, 'mute');
+    });
+
+
+    var active = root.querySelector('.swiper-slide-active [data-svr-card]');
+    if (!active || !soundOn) {
+      syncMuteButtons(root);
+      return;
+    }
+
+
+    var type = active.getAttribute('data-media-type');
+    if (type === 'video') {
+      var video = active.querySelector('[data-svr-video]');
+      if (video) video.muted = false;
+    } else if (type === 'youtube') {
+      ytCommand(active.querySelector('[data-svr-yt]'), 'unMute');
+    }
+    syncMuteButtons(root);
+  }
+
+
+  function pauseAll(root) {
+    root.querySelectorAll('[data-svr-video]').forEach(function (v) {
+      try {
+        v.pause();
+        v.muted = true;
+      } catch (e) {}
+    });
+    root.querySelectorAll('[data-svr-yt]').forEach(function (f) {
+      ytCommand(f, 'pauseVideo');
+      ytCommand(f, 'mute');
+    });
+    root.querySelectorAll('[data-svr-play]').forEach(function (btn) {
+      btn.classList.remove('is-playing');
+      btn.setAttribute('aria-label', 'Play video');
+    });
+  }
+
+
+  function playActive(root) {
+    var active = root.querySelector('.swiper-slide-active [data-svr-card]');
+    if (!active) return;
+    var playBtn = active.querySelector('[data-svr-play]');
+    var type = active.getAttribute('data-media-type');
+
+
+    if (type === 'video') {
+      var video = active.querySelector('[data-svr-video]');
+      if (!video) return;
+      video.muted = !soundOn;
+      var p = video.play();
+      if (p && p.catch) {
+        p.catch(function () {
+          // Autoplay with sound blocked — fall back to muted
+          soundOn = false;
+          video.muted = true;
+          syncMuteButtons(root);
+          video.play().catch(function () {});
+        });
+      }
+      if (playBtn) {
+        playBtn.classList.add('is-playing');
+        playBtn.setAttribute('aria-label', 'Pause video');
+      }
+    } else if (type === 'youtube') {
+      var iframe = active.querySelector('[data-svr-yt]');
+      var poster = active.querySelector('[data-svr-poster]');
+      ensureYtSrc(iframe);
+      if (poster) poster.style.display = 'none';
+      setTimeout(function () {
+        ytCommand(iframe, 'mute');
+        ytCommand(iframe, 'playVideo');
+        if (soundOn) ytCommand(iframe, 'unMute');
+      }, 120);
+      if (playBtn) {
+        playBtn.classList.add('is-playing');
+        playBtn.setAttribute('aria-label', 'Pause video');
+      }
+    }
+    syncMuteButtons(root);
+  }
+
+
+  function toggleActive(root) {
+    var active = root.querySelector('.swiper-slide-active [data-svr-card]');
+    if (!active) return;
+    var playBtn = active.querySelector('[data-svr-play]');
+    var type = active.getAttribute('data-media-type');
+    var isPlaying = playBtn && playBtn.classList.contains('is-playing');
+
+
+    if (isPlaying) {
+      if (type === 'video') {
+        var video = active.querySelector('[data-svr-video]');
+        if (video) video.pause();
+      } else if (type === 'youtube') {
+        ytCommand(active.querySelector('[data-svr-yt]'), 'pauseVideo');
+      }
+      if (playBtn) {
+        playBtn.classList.remove('is-playing');
+        playBtn.setAttribute('aria-label', 'Play video');
+      }
+      return;
+    }
+
+
+    pauseAll(root);
+    playActive(root);
+  }
+
+
+  function toggleMute(root) {
+    soundOn = !soundOn;
+    applySoundToActive(root);
+  }
+
+
+  function updateDepth(swiper) {
+    if (!swiper || !swiper.slides) return;
+    var isMobile = (window.innerWidth || 0) < 768;
+    for (var i = 0; i < swiper.slides.length; i++) {
+      var slide = swiper.slides[i];
+      var card = slide.querySelector('.svr__card');
+      var media = slide.querySelector('.svr__media');
+      var p = typeof slide.progress === 'number' ? slide.progress : 0;
+      var abs = Math.abs(p);
+
+
+      // On mobile keep more side cards in the stack (match reference)
+      var hideAt = isMobile ? 3.2 : 2.6;
+      if (abs > hideAt) {
+        slide.style.opacity = '0';
+        slide.style.visibility = 'hidden';
+        slide.style.pointerEvents = 'none';
+        slide.style.zIndex = '0';
+        if (card) card.style.transform = '';
+        if (media) media.style.filter = 'none';
+        continue;
+      }
+
+
+      var scale = abs < 0.08
+        ? 1
+        : Math.max(isMobile ? 0.78 : 0.8, 1 - abs * (isMobile ? 0.075 : 0.085));
+      var ty = abs * (isMobile ? 8 : 10);
+
+
+      slide.style.visibility = 'visible';
+      slide.style.opacity = String(
+        abs < 0.08 ? 1 : Math.max(isMobile ? 0.5 : 0.58, 1 - abs * (isMobile ? 0.12 : 0.14))
+      );
+      slide.style.pointerEvents = abs < 1.25 ? 'auto' : 'none';
+      slide.style.zIndex = String(Math.max(1, Math.round(60 - abs * 16)));
+
+
+      if (card) {
+        card.style.transform = 'translate3d(0, ' + ty + 'px, 0) scale(' + scale + ')';
+      }
+      // Dim only the video layer — keep the overlay gradient full strength
+      if (media) {
+        media.style.filter = abs > 0.15 ? 'brightness(' + (1 - abs * 0.06) + ')' : 'none';
+      }
+    }
+  }
+
+
+  function calcOverlap(el) {
+    var sample = el.querySelector('.svr__slide');
+    var cardW = CARD_WIDTH || 320;
+    // Always prefer the real rendered width (mobile CSS often differs from the desktop setting)
+    if (sample && sample.offsetWidth > 0) {
+      cardW = sample.offsetWidth;
+    }
+    var stageW = el.clientWidth || window.innerWidth || 1200;
+    var isMobile = (window.innerWidth || stageW) < 768;
+    var peek;
+    if (isMobile) {
+      // Enough peek so ~2 cards show on each side of the center card
+      peek = Math.max(32, Math.min(stageW * 0.14, cardW * 0.28));
+    } else {
+      peek = (stageW - cardW) / 4;
+      peek = Math.max(48, Math.min(peek, cardW * 0.95));
+    }
+    return {
+      cardW: cardW,
+      peek: peek,
+      overlap: -(cardW - peek)
+    };
+  }
+
+
+  // Build 3 identical sets so we can wrap forever without Swiper's broken loop+auto mode
+  function buildInfiniteSets(wrapper) {
+    var originals = Array.prototype.slice.call(wrapper.querySelectorAll('.svr__slide'));
+    var n = originals.length;
+    if (n < 2) return n;
+
+
+    originals.forEach(function (slide, i) {
+      slide.setAttribute('data-svr-real-index', String(i));
+    });
+
+
+    // Append two full copies: [set0][set1][set2]
+    for (var copy = 0; copy < 2; copy++) {
+      originals.forEach(function (slide, i) {
+        var clone = slide.cloneNode(true);
+        clone.setAttribute('data-svr-real-index', String(i));
+        clone.setAttribute('data-svr-clone', 'true');
+        wrapper.appendChild(clone);
+      });
+    }
+    return n;
+  }
+
+
+  function realIndexFromSlide(slide, n) {
+    if (!slide || !n) return 0;
+    var attr = slide.getAttribute('data-svr-real-index');
+    if (attr != null && attr !== '') return parseInt(attr, 10) % n;
+    var slides = slide.parentNode
+      ? Array.prototype.slice.call(slide.parentNode.querySelectorAll('.svr__slide'))
+      : [];
+    var idx = slides.indexOf(slide);
+    return idx >= 0 ? idx % n : 0;
+  }
+
+
+  function wrapInfinite(swiper, n, onDone) {
+    if (!swiper || n < 2 || swiper._svrWrapping) {
+      if (typeof onDone === 'function') onDone();
+      return;
+    }
+    var i = swiper.activeIndex;
+    var target = null;
+    if (i < n) target = i + n;
+    else if (i >= n * 2) target = i - n;
+    if (target == null || target === i) {
+      if (typeof onDone === 'function') onDone();
+      return;
+    }
+
+
+    swiper._svrWrapping = true;
+    var rootEl = (swiper.el && swiper.el.closest('[data-svr-section]')) || swiper.el;
+    if (rootEl) rootEl.classList.add('svr--wrapping');
+
+
+    // Kill transitions so the index remap is invisible
+    if (swiper.wrapperEl) {
+      swiper.wrapperEl.style.transitionDuration = '0ms';
+      swiper.wrapperEl.style.transitionProperty = 'none';
+    }
+    for (var s = 0; s < swiper.slides.length; s++) {
+      var slide = swiper.slides[s];
+      var card = slide.querySelector('.svr__card');
+      slide.style.transitionDuration = '0ms';
+      slide.style.transitionProperty = 'none';
+      if (card) {
+        card.style.transitionDuration = '0ms';
+        card.style.transitionProperty = 'none';
+      }
+    }
+
+
+    swiper.slideTo(target, 0, false);
+    updateDepth(swiper);
+
+
+    // Re-enable transitions on the next frames after layout settles
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        if (swiper.wrapperEl) {
+          swiper.wrapperEl.style.transitionDuration = '';
+          swiper.wrapperEl.style.transitionProperty = '';
+        }
+        for (var s = 0; s < swiper.slides.length; s++) {
+          var slide = swiper.slides[s];
+          var card = slide.querySelector('.svr__card');
+          slide.style.transitionDuration = '';
+          slide.style.transitionProperty = '';
+          slide.style.transitionTimingFunction = '';
+          if (card) {
+            card.style.transitionDuration = '';
+            card.style.transitionProperty = '';
+            card.style.transitionTimingFunction = '';
+          }
+        }
+        if (rootEl) rootEl.classList.remove('svr--wrapping');
+        swiper._svrWrapping = false;
+        updateDepth(swiper);
+        if (typeof onDone === 'function') onDone();
+      });
+    });
+  }
+
+
+  function init() {
+    var root = document.querySelector('[data-svr-section="' + sid + '"]');
+    if (!root || typeof Swiper === 'undefined') {
+      if (typeof Swiper === 'undefined') setTimeout(init, 100);
+      return;
+    }
+
+
+    var el = root.querySelector('#SuaveVideoReviews-' + sid);
+    if (!el) return;
+    if (el.swiper) {
+      try {
+        el.swiper.destroy(true, true);
+      } catch (err) {}
+    }
+
+
+    var wrapper = el.querySelector('.swiper-wrapper');
+    if (!wrapper) return;
+
+
+    // Remove prior clones if section re-inits
+    Array.prototype.slice
+      .call(wrapper.querySelectorAll('[data-svr-clone="true"]'))
+      .forEach(function (node) {
+        node.parentNode.removeChild(node);
+      });
+
+
+    var realSlides = wrapper.querySelectorAll('.svr__slide').length;
+    if (!realSlides) return;
+
+
+    var useLoop = FORCE_LOOP !== false && realSlides >= 2;
+    var n = realSlides;
+    if (useLoop) {
+      n = buildInfiniteSets(wrapper);
+    }
+
+
+    var startIndex = 0;
+    if (START_FROM_THIRD && n >= 3) {
+      startIndex = 2;
+    }
+    // Begin in the middle copy so left + right both have content
+    var bootIndex = useLoop ? n + startIndex : startIndex;
+    var metrics = calcOverlap(el);
+
+
+    var swiper = new Swiper(el, {
+      slidesPerView: 'auto',
+      centeredSlides: true,
+      initialSlide: bootIndex,
+      spaceBetween: metrics.overlap,
+      loop: false,
+      speed: 850,
+      grabCursor: true,
+      watchSlidesProgress: true,
+      watchOverflow: false,
+      resistanceRatio: 0.72,
+      navigation: {
+        nextEl: '#svr-next-' + sid,
+        prevEl: '#svr-prev-' + sid
+      },
+      autoplay: AUTO_SLIDER
+        ? {
+            delay: AUTO_DELAY,
+            disableOnInteraction: false,
+            pauseOnMouseEnter: true
+          }
+        : false,
+      on: {
+        init: function () {
+          var self = this;
+          var m = calcOverlap(el);
+          self.params.spaceBetween = m.overlap;
+          self.update();
+          self.slideTo(bootIndex, 0, false);
+          updateDepth(self);
+          pauseAll(root);
+          if (AUTO_VIDEOS) playActive(root);
+        },
+        progress: function () {
+          updateDepth(this);
+        },
+        setTransition: function (duration) {
+          var ease = 'cubic-bezier(0.22, 1, 0.36, 1)';
+          if (this.wrapperEl) {
+            this.wrapperEl.style.transitionTimingFunction = ease;
+          }
+          for (var i = 0; i < this.slides.length; i++) {
+            var slide = this.slides[i];
+            var card = slide.querySelector('.svr__card');
+            slide.style.transitionDuration = duration + 'ms';
+            slide.style.transitionTimingFunction = ease;
+            if (card) {
+              card.style.transitionDuration = duration + 'ms';
+              card.style.transitionTimingFunction = ease;
+            }
+          }
+        },
+        slideChangeTransitionStart: function () {
+          pauseAll(root);
+        },
+        slideChangeTransitionEnd: function () {
+          var self = this;
+          if (useLoop) {
+            wrapInfinite(self, n, function () {
+              updateDepth(self);
+              if (AUTO_VIDEOS) playActive(root);
+            });
+            return;
+          }
+          updateDepth(self);
+          if (AUTO_VIDEOS) playActive(root);
+        },
+        // Also wrap during free drag / nav so we never hit an empty edge
+        touchEnd: function () {
+          var self = this;
+          setTimeout(function () {
+            if (useLoop) wrapInfinite(self, n);
+            else updateDepth(self);
+          }, 0);
+        },
+        resize: function () {
+          var m = calcOverlap(el);
+          this.params.spaceBetween = m.overlap;
+          this.update();
+          if (useLoop) wrapInfinite(this, n);
+          updateDepth(this);
+        }
+      }
+    });
+
+
+    root.addEventListener('click', function (e) {
+      var muteBtn = e.target.closest('[data-svr-mute]');
+      if (muteBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleMute(root);
+        return;
+      }
+
+
+      var playBtn = e.target.closest('[data-svr-play]');
+      var card = e.target.closest('[data-svr-card]');
+      if (playBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        var slide = playBtn.closest('.svr__slide');
+        if (slide && !slide.classList.contains('swiper-slide-active')) {
+          var realIdx = realIndexFromSlide(slide, n);
+          // Jump within the middle set
+          var target = useLoop ? n + realIdx : realIdx;
+          swiper.slideTo(target);
+          setTimeout(function () {
+            pauseAll(root);
+            playActive(root);
+          }, 520);
+          return;
+        }
+        toggleActive(root);
+        return;
+      }
+      if (card && !e.target.closest('.svr__shop') && !e.target.closest('[data-svr-mute]')) {
+        var slide2 = card.closest('.svr__slide');
+        if (slide2 && !slide2.classList.contains('swiper-slide-active')) {
+          var realIdx2 = realIndexFromSlide(slide2, n);
+          var target2 = useLoop ? n + realIdx2 : realIdx2;
+          swiper.slideTo(target2);
+        }
+      }
+    });
+    syncMuteButtons(root);
+  }
+
+
+  ready(function () {
+    if (window.Shopify && Shopify.designMode) {
+      document.addEventListener('shopify:section:load', function (e) {
+        if (e.detail && String(e.detail.sectionId) === String(sid)) init();
+      });
+    }
+    init();
+  });
+})();
+</script>
+{%- endif -%}
+
+
+{% schema %}
+{
+  "name": "Suave Video Reviews",
+  "tag": "section",
+  "class": "section-suave-video-reviews",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "<p>Customer video reviews</p>"
+    },
+    {
+      "type": "select",
+      "id": "heading_align",
+      "label": "Heading alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size (desktop)",
+      "min": 16,
+      "max": 56,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "label": "Heading size (mobile)",
+      "min": 14,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "Slider"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay_slider",
+      "label": "Auto-slide carousel",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_delay",
+      "label": "Auto-slide delay",
+      "min": 3,
+      "max": 12,
+      "step": 1,
+      "unit": "s",
+      "default": 5
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay_videos",
+      "label": "Autoplay active video",
+      "info": "Center video plays automatically (muted). Use the mute button to unmute.",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "loop",
+      "label": "Infinite loop",
+      "info": "When the last video ends, the slider continues from the first with no empty cards.",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "start_from_third",
+      "label": "Start from 3rd video",
+      "info": "On load, centers video 3. Videos 1–2 appear on the left; 4+ on the right. Requires infinite loop.",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Show previous / next buttons",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "card_width",
+      "label": "Card width (desktop)",
+      "min": 220,
+      "max": 420,
+      "step": 10,
+      "unit": "px",
+      "default": 320,
+      "info": "Fixed width for every video card. Side cards do not change size."
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card corner radius",
+      "min": 8,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "header",
+      "content": "Content overlay"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 80,
+      "info": "Darkens the bottom of each video behind the name, text, shop link, and stars."
+    },
+    {
+      "type": "range",
+      "id": "overlay_height",
+      "label": "Overlay height",
+      "min": 30,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "default": 55
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Heading text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "name_color",
+      "label": "Name",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "review_text_color",
+      "label": "Review text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent (default green)",
+      "default": "#9FE870"
+    },
+    {
+      "type": "color",
+      "id": "verified_color",
+      "label": "Verified badge",
+      "default": "#9FE870"
+    },
+    {
+      "type": "color",
+      "id": "star_color",
+      "label": "Stars",
+      "default": "#9FE870"
+    },
+    {
+      "type": "color",
+      "id": "shop_link_color",
+      "label": "Shop link",
+      "default": "#9FE870"
+    },
+    {
+      "type": "color",
+      "id": "play_button_color",
+      "label": "Play button background",
+      "default": "#9FE870"
+    },
+    {
+      "type": "color",
+      "id": "play_icon_color",
+      "label": "Play button icon",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "arrow_bg",
+      "label": "Arrow button background",
+      "default": "#2a3a2a"
+    },
+    {
+      "type": "color",
+      "id": "arrow_color",
+      "label": "Arrow icon",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top (desktop)",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 96
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom (desktop)",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 96
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Padding top (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Padding bottom (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 56
+    }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Video review",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Video"
+        },
+        {
+          "type": "video",
+          "id": "video",
+          "label": "Shopify video",
+          "info": "Upload a portrait video in Shopify Files / Content."
+        },
+        {
+          "type": "text",
+          "id": "youtube_url",
+          "label": "YouTube / Shorts URL",
+          "info": "Used if no Shopify video is set. Supports youtube.com, youtu.be, and Shorts."
+        },
+        {
+          "type": "image_picker",
+          "id": "poster",
+          "label": "Poster image (optional)",
+          "info": "Shown before YouTube loads, or as fallback."
+        },
+        {
+          "type": "header",
+          "content": "Overlay (bottom left)"
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Name",
+          "default": "Maya R."
+        },
+        {
+          "type": "checkbox",
+          "id": "show_verified",
+          "label": "Show verified tick",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "review_text",
+          "label": "Review text",
+          "default": "Felt instantly calmer."
+        },
+        {
+          "type": "text",
+          "id": "shop_label",
+          "label": "Shop button label",
+          "default": "Shop Lunar Rest"
+        },
+        {
+          "type": "url",
+          "id": "shop_link",
+          "label": "Shop button link"
+        },
+        {
+          "type": "checkbox",
+          "id": "shop_new_tab",
+          "label": "Open shop link in new tab",
+          "default": false
+        },
+        {
+          "type": "range",
+          "id": "stars",
+          "label": "Star rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "default": 5
+        }
+      ]
+    }
+  ],
+  "max_blocks": 20,
+  "presets": [
+    {
+      "name": "Suave Video Reviews",
+      "blocks": [
+        {
+          "type": "review",
+          "settings": {
+            "name": "Maya R.",
+            "review_text": "Felt instantly calmer.",
+            "shop_label": "Shop Lunar Rest",
+            "stars": 5,
+            "show_verified": true
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "name": "Jordan K.",
+            "review_text": "Best sleep in years.",
+            "shop_label": "Shop Tango",
+            "stars": 5,
+            "show_verified": true
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "name": "Elena S.",
+            "review_text": "Cool and supportive.",
+            "shop_label": "Shop Flamenco",
+            "stars": 5,
+            "show_verified": true
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

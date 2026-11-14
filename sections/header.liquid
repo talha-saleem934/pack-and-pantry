@@ -1,0 +1,32 @@
+<header class="site-header{% if section.settings.sticky %} is-sticky{% endif %}" style="--logo-width:{{ settings.logo_width }}px;--logo-width-mobile:{{ settings.logo_width_mobile }}px">
+  <div class="header page-width">
+    <button class="icon-button mobile-menu-toggle" type="button" aria-label="{{ 'accessibility.menu' | t }}" data-menu-open>{% render 'icon', icon: 'menu' %}</button>
+    <a class="header__logo" href="{{ routes.root_url }}" aria-label="{{ shop.name }}">
+      {%- if settings.logo != blank -%}
+        <picture>{%- if settings.logo_mobile != blank -%}<source media="(max-width: 749px)" srcset="{{ settings.logo_mobile | image_url: width: settings.logo_width_mobile | times: 2 }}">{%- endif -%}{{ settings.logo | image_url: width: settings.logo_width | times: 2 | image_tag: widths: '120, 180, 240, 360, 480, 560', alt: settings.logo_alt, preload: true }}</picture>
+      {%- else -%}
+        <span class="asset-logo-frame"><img class="header__logo-fallback" src="{{ 'pack-and-pantry-logo.png' | asset_url }}" width="500" height="500" alt="Pack & Pantry"></span>
+      {%- endif -%}
+    </a>
+    <nav class="header__nav" aria-label="Main navigation">
+      <ul>
+        {%- for link in section.settings.menu.links -%}
+          <li class="nav-item">
+            {%- if link.links != blank -%}
+              <details><summary>{{ link.title }} {% render 'icon', icon: 'chevron' %}</summary><ul class="nav-dropdown">{%- for child in link.links -%}<li><a href="{{ child.url }}"{% if child.current %} aria-current="page"{% endif %}>{{ child.title }}</a></li>{%- endfor -%}</ul></details>
+            {%- else -%}<a href="{{ link.url }}"{% if link.current %} aria-current="page"{% endif %}>{{ link.title }}</a>{%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+    </nav>
+    <div class="header__actions">
+      <details class="header__search"><summary class="icon-button" aria-label="{{ 'general.search.title' | t }}">{% render 'icon', icon: 'search' %}</summary><div class="search-panel"><predictive-search><form class="search-form" action="{{ routes.search_url }}" method="get" role="search"><label class="visually-hidden" for="HeaderSearch">{{ 'general.search.title' | t }}</label><input class="input" id="HeaderSearch" type="search" name="q" value="{{ search.terms | escape }}" placeholder="{{ 'general.search.placeholder' | t }}" autocomplete="off"><input type="hidden" name="options[prefix]" value="last"><button class="button" type="submit">{{ 'general.search.submit' | t }}</button></form><div class="predictive-results" data-predictive-results></div></predictive-search></div></details>
+      {%- if shop.customer_accounts_enabled -%}<a class="icon-button header__account" href="{{ routes.account_url }}" aria-label="Account">{% render 'icon', icon: 'account' %}</a>{%- endif -%}
+      <a class="icon-button header__cart" href="{{ routes.cart_url }}" data-cart-open aria-label="{{ 'cart.general.title' | t }}">{% render 'icon', icon: 'cart' %}<span class="cart-count" data-cart-count{% if cart.item_count == 0 %} hidden{% endif %}>{{ cart.item_count }}</span></a>
+    </div>
+  </div>
+</header>
+<div class="mobile-drawer" data-mobile-drawer aria-hidden="true"><button class="mobile-drawer__overlay" type="button" tabindex="-1" data-menu-close aria-label="{{ 'accessibility.close' | t }}"></button><div class="mobile-drawer__panel" role="dialog" aria-modal="true" aria-label="Menu"><div class="mobile-drawer__header"><strong>{{ shop.name }}</strong><button class="icon-button" type="button" data-menu-close aria-label="{{ 'accessibility.close' | t }}">{% render 'icon', icon: 'close' %}</button></div><form class="search-form" action="{{ routes.search_url }}" method="get" role="search"><label class="visually-hidden" for="MobileSearch">{{ 'general.search.title' | t }}</label><input class="input" id="MobileSearch" type="search" name="q" placeholder="{{ 'general.search.placeholder' | t }}"><button class="icon-button" type="submit" aria-label="{{ 'general.search.submit' | t }}">{% render 'icon', icon: 'search' %}</button></form><nav aria-label="Mobile navigation"><ul class="mobile-nav">{%- for link in section.settings.menu.links -%}<li>{%- if link.links != blank -%}<details><summary>{{ link.title }}</summary><ul>{%- for child in link.links -%}<li><a href="{{ child.url }}">{{ child.title }}</a></li>{%- endfor -%}</ul></details>{%- else -%}<a href="{{ link.url }}">{{ link.title }}</a>{%- endif -%}</li>{%- endfor -%}</ul></nav></div></div>
+{% schema %}
+{"name":"Header","settings":[{"type":"link_list","id":"menu","label":"Main menu","default":"main-menu"},{"type":"checkbox","id":"sticky","label":"Sticky header","default":true}],"presets":[{"name":"Header"}]}
+{% endschema %}
