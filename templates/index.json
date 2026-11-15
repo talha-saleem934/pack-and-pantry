@@ -835,7 +835,7 @@
         "link": "shopify://pages/bulk-orders",
         "whatsapp_number": "",
         "whatsapp_use_theme": true,
-        "whatsapp_mode": "extra",
+        "whatsapp_mode": "replace",
         "whatsapp_label": "Chat on WhatsApp",
         "whatsapp_message": "Hi Pack & Pantry, I would like a bulk order quote."
       }
