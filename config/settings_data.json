@@ -31,7 +31,7 @@
     "body_font": "poppins_n4",
     "page_width": 1400,
     "card_radius": 24,
-    "section_spacing": 40,
+    "section_spacing": 20,
     "enable_reveal": true,
     "motion_level": "subtle",
     "product_image_ratio": "square",

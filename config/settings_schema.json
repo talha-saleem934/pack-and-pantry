@@ -51,7 +51,7 @@
     "settings": [
       { "type": "range", "id": "page_width", "min": 1100, "max": 1600, "step": 50, "unit": "px", "label": "Page width", "default": 1300 },
       { "type": "range", "id": "card_radius", "min": 0, "max": 24, "step": 2, "unit": "px", "label": "Card corner radius", "default": 16 },
-      { "type": "range", "id": "section_spacing", "min": 40, "max": 120, "step": 5, "unit": "px", "label": "Desktop section spacing", "default": 90 },
+      { "type": "range", "id": "section_spacing", "min": 20, "max": 120, "step": 5, "unit": "px", "label": "Desktop section spacing", "default": 90 },
       { "type": "checkbox", "id": "enable_reveal", "label": "Enable subtle section reveals", "default": true },
       { "type": "select", "id": "motion_level", "label": "Animation level", "default": "subtle", "options": [
         { "value": "none", "label": "None" }, { "value": "subtle", "label": "Subtle" }, { "value": "expressive", "label": "Expressive" }
