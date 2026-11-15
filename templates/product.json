@@ -40,7 +40,7 @@
             "margin_top": 0,
             "margin_bottom": 6,
             "uppercase": false,
-            "color": "#073F36"
+            "color": "#073f36"
           }
         },
         "cro_countdown": {
@@ -78,7 +78,7 @@
         "cro_price": {
           "type": "cro_price",
           "settings": {
-            "savings": "percent",
+            "savings": "amount",
             "save_label": "Save {value}",
             "tax_note": "",
             "sale_label_sr": "Sale price",
