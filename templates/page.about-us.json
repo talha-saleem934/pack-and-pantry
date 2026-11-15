@@ -11,6 +11,7 @@
   "sections": {
     "main": {
       "type": "main-page",
+      "disabled": true,
       "settings": {}
     },
     "cro_about": {
@@ -20,14 +21,18 @@
           "type": "item",
           "settings": {
             "icon": "award",
+            "icon_text": "",
             "title": "Quality comes first",
-            "text": "<p>Quality is the one thing we never compromise on. Every jar, bottle and organiser we sell is chosen to be practical, dependable and good-looking on your shelf.</p>"
+            "text": "<p>Quality is the one thing we never compromise on. Every jar, bottle and organiser we sell is chosen to be practical, dependable and good-looking on your shelf.</p>",
+            "link_label": "",
+            "link": ""
           }
         },
         "happy": {
           "type": "item",
           "settings": {
             "icon": "heart",
+            "icon_text": "",
             "title": "Customer satisfaction is our priority",
             "text": "<p>Your satisfaction is our top priority. If something isn't right with your delivery, our team is here to help.</p>",
             "link_label": "Get in touch",
@@ -38,6 +43,7 @@
           "type": "item",
           "settings": {
             "icon": "truck",
+            "icon_text": "",
             "title": "Same or next working-day dispatch",
             "text": "<p>We dispatch every order the same working day or the next working day, once it has been received or confirmed with you.</p>",
             "link_label": "Shipping information",
@@ -48,6 +54,7 @@
           "type": "item",
           "settings": {
             "icon": "box",
+            "icon_text": "",
             "title": "Bulk orders welcome",
             "text": "<p>We welcome bulk orders from cafés, bakeries, retailers, caterers and gifting businesses. Tell us what you need and we'll prepare a quote.</p>",
             "link_label": "Request a bulk quote",
@@ -64,13 +71,44 @@
       "settings": {
         "eyebrow": "About Pack & Pantry",
         "heading": "Practical storage, chosen with care",
+        "subheading": "",
         "intro": "<p>Pack & Pantry brings attractive, practical jars, bottles and storage organisers to organised homes and growing food businesses. We keep things simple: useful products, honest details and fast dispatch.</p>",
         "layout": "cards",
         "columns": 2,
+        "intro_width": 760,
+        "card_title_size": 20,
         "button_label": "Shop the collection",
         "button_link": "shopify://collections/all",
         "button_2_label": "Contact us",
-        "button_2_link": "shopify://pages/contact"
+        "button_2_link": "shopify://pages/contact",
+        "full_width": false,
+        "container_width": 1300,
+        "align": "center",
+        "radius": 16,
+        "button_radius": 10,
+        "heading_size_desktop": 36,
+        "heading_size_mobile": 28,
+        "text_size_desktop": 17,
+        "text_size_mobile": 15,
+        "padding_top_desktop": 56,
+        "padding_bottom_desktop": 64,
+        "padding_top_mobile": 32,
+        "padding_bottom_mobile": 48,
+        "bg_color": "#f7f1e7",
+        "heading_color": "#18231f",
+        "text_color": "#3f4a45",
+        "accent_color": "#d4623d",
+        "button_bg": "#173f35",
+        "button_text": "#fffdf8",
+        "button_hover_bg": "#0f2f27",
+        "button_hover_text": "#ffffff",
+        "link_hover_color": "#d4623d",
+        "border_color": "#d7cec1",
+        "card_bg": "#fffdf8",
+        "icon_color": "#173f35",
+        "badge_bg": "#c64f32",
+        "badge_text": "#ffffff",
+        "icon_bg": "#f6e7c1"
       }
     }
   },
