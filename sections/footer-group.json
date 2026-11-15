@@ -30,6 +30,7 @@
         },
         "newsletter": {
           "type": "newsletter",
+          "disabled": true,
           "settings": {
             "heading": "Useful ideas, neatly delivered",
             "text": "Get product news and practical pantry inspiration."
