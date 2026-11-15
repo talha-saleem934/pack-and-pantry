@@ -94,7 +94,7 @@
           "settings": {
             "icon": "truck",
             "icon_text": "",
-            "title": "Free delivery over PKR 5,000",
+            "title": "Free delivery over PKR 2500",
             "text": "On eligible orders. Terms may apply.",
             "link": "shopify://pages/shipping-information"
           }
@@ -210,7 +210,7 @@
         "padding_bottom_desktop": 48,
         "padding_top_mobile": 40,
         "padding_bottom_mobile": 40,
-        "bg_color": "#F7F1E7",
+        "bg_color": "#f7f1e7",
         "heading_color": "#18231f",
         "text_color": "#3f4a45",
         "accent_color": "#d4623d",
