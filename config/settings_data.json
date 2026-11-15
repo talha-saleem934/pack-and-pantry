@@ -37,6 +37,9 @@
     "product_image_ratio": "square",
     "show_second_image": true,
     "show_vendor_cards": true,
+    "social_instagram": "#",
+    "social_facebook": "#",
+    "social_tiktok": "#",
     "content_for_index": [],
     "blocks": {
       "10830403595879607806": {
