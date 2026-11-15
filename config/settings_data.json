@@ -44,6 +44,7 @@
     "cro_wa_contact_links": true,
     "cro_free_delivery_threshold": 2500,
     "cro_pay_cod": true,
+    "cro_pay_bank": true,
     "content_for_index": [],
     "blocks": {
       "10830403595879607806": {
