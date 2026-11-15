@@ -157,3 +157,6 @@ a.cro-trust__title:hover { color: var(--cro-link-hover, var(--color-accent, #D46
 @keyframes cro-shine { 0% { background-position: 150% 0; } 60%, 100% { background-position: -100% 0; } }
 @keyframes cro-flicker { 0%, 100% { transform: scale(1) rotate(0); opacity: 1; } 50% { transform: scale(1.15) rotate(-6deg); opacity: .85; } }
 @media (prefers-reduced-motion: reduce) { .cro-cdbox::before, .cro-cdbox__label .cro-icon { animation: none; } }
+
+/* Mobile filter panel must sit above the sticky header (z-index 999) */
+.facets.is-open { z-index: 1001; }

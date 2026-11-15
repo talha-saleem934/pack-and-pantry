@@ -51,6 +51,8 @@
     --cro-ship-track: {{ s.ship_track }}; --cro-ship-fill: {{ s.ship_fill }};
     --cro-link-hover: {{ s.accent_color }};
   }
+  /* The header is sticky at z-index 999 (theme custom CSS); keep the drawer and its overlay above it */
+  #cro-{{ sid }} .cart-drawer { z-index: 1000; }
   #cro-{{ sid }} .cart-drawer__panel { background: {{ s.bg_color }}; color: var(--cro-text); }
   #cro-{{ sid }} .cart-drawer__footer { background: {{ s.bg_color }}; }
   #cro-{{ sid }} .cro-cd__ship { padding: 12px 22px; border-block-end: 1px solid var(--cro-border); background: {{ s.ship_panel_bg }}; }
