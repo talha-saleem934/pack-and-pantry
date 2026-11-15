@@ -4,7 +4,7 @@
 .product-card__media::after { content: ""; position: absolute; inset: 0; border: 1px solid rgba(23,63,53,.08); border-radius: inherit; pointer-events: none; }
 .product-card__image { transition: opacity var(--motion-standard),transform 420ms var(--ease-out); }
 .product-card__content { padding: 16px 4px 4px; }
-.product-card__title { margin-bottom: 6px; color: var(--color-heading); font-size: clamp(.98rem,1.25vw,1.12rem); font-weight: 700; line-height: 1.35; }
+.product-card__title { min-height: 73px; margin-bottom: 6px; color: var(--color-heading); font-size: clamp(.98rem,1.25vw,1.12rem); font-weight: 700; line-height: 1.35; }
 .product-card__meta { display: flex; flex-wrap: wrap; gap: 6px 10px; margin-bottom: 7px; color: var(--color-muted); font-size: .8rem; }
 .product-card .price { font-size: clamp(1.05rem,1.4vw,1.25rem); font-variant-numeric: tabular-nums; }
 .product-card__form,.product-card__content>.button { margin-top: 12px; }
