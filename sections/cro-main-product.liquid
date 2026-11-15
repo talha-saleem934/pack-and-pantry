@@ -57,14 +57,14 @@
   #cro-{{ sid }} .product__title { margin: 0; color: var(--cro-heading); font-size: {{ s.title_size_mobile }}px; line-height: 1.15; }
   {%- for block in section.blocks -%}
     {%- if block.type == 'title' %}
-  #cro-{{ sid }} .cro-title-{{ block.id }} {
+  #cro-{{ sid }} .product__title.cro-title-{{ block.id }} {
     font-size: {{ block.settings.size_mobile }}px; line-height: {{ block.settings.line_height | divided_by: 100.0 }};
     font-weight: {{ block.settings.weight }}; letter-spacing: {{ block.settings.letter_spacing }}px;
     margin-block: {{ block.settings.margin_top }}px {{ block.settings.margin_bottom }}px;
     {%- if block.settings.color != blank %} color: {{ block.settings.color }};{% endif %}
     {%- if block.settings.uppercase %} text-transform: uppercase;{% endif %}
   }
-  @media (min-width: 750px) { #cro-{{ sid }} .cro-title-{{ block.id }} { font-size: {{ block.settings.size_desktop }}px; } }
+  @media (min-width: 750px) { #cro-{{ sid }} .product__title.cro-title-{{ block.id }} { font-size: {{ block.settings.size_desktop }}px; } }
     {%- endif -%}
   {%- endfor %}
 
