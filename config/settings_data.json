@@ -37,10 +37,11 @@
     "product_image_ratio": "square",
     "show_second_image": true,
     "show_vendor_cards": true,
-    "social_instagram": "#",
-    "social_facebook": "#",
-    "social_tiktok": "#",
+    "social_instagram": "https://www.instagram.com/packandpantry/",
+    "social_facebook": "",
+    "social_tiktok": "",
     "cro_free_delivery_threshold": 2500,
+    "cro_pay_cod": true,
     "content_for_index": [],
     "blocks": {
       "10830403595879607806": {
