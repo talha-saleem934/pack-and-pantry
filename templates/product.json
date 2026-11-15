@@ -185,8 +185,8 @@
             "row_4_icon": "box",
             "row_4_title": "Ordering in bulk?",
             "row_4_text": "Cafés, bakeries and retailers can request a quote.",
-            "row_4_link": "shopify://pages/bulk-orders",
-            "row_4_whatsapp": "",
+            "row_4_link": "",
+            "row_4_whatsapp": "923226100768",
             "whatsapp_message": "Hi, I have a question about {product}: {url}"
           }
         },
