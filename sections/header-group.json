@@ -173,6 +173,9 @@
           "settings": {
             "text": "Blessed Friday Sale: up to 30% off",
             "link": "shopify://collections/all",
+            "whatsapp_number": "",
+            "whatsapp_use_theme": false,
+            "whatsapp_message": "",
             "icon": "flame",
             "icon_text": ""
           }
@@ -182,6 +185,9 @@
           "settings": {
             "text": "No code needed, discount applied automatically",
             "link": "shopify://collections/all",
+            "whatsapp_number": "",
+            "whatsapp_use_theme": false,
+            "whatsapp_message": "",
             "icon": "percent",
             "icon_text": ""
           }
@@ -191,6 +197,9 @@
           "settings": {
             "text": "Free delivery on orders over PKR 2500",
             "link": "",
+            "whatsapp_number": "",
+            "whatsapp_use_theme": false,
+            "whatsapp_message": "",
             "icon": "truck",
             "icon_text": ""
           }
@@ -200,6 +209,9 @@
           "settings": {
             "text": "Your Bulk Orders, Our Best Prices!",
             "link": "shopify://pages/bulk-orders",
+            "whatsapp_number": "",
+            "whatsapp_use_theme": false,
+            "whatsapp_message": "",
             "icon": "leaf",
             "icon_text": ""
           }
@@ -336,6 +348,18 @@
         "call_bg": "#173f35",
         "call_icon_color": "#fffdf8",
         "call_hover_bg": "#0f2f27",
+        "show_instagram": true,
+        "instagram_link": "https://www.instagram.com/packandpantry/",
+        "instagram_label": "Follow us on Instagram",
+        "show_tiktok": true,
+        "tiktok_link": "",
+        "tiktok_label": "Follow us on TikTok",
+        "show_facebook": false,
+        "facebook_link": "",
+        "facebook_label": "Follow us on Facebook",
+        "social_brand_colors": true,
+        "social_bg": "#173f35",
+        "social_icon_color": "#fffdf8",
         "top_enable": true,
         "top_after": 800,
         "top_label": "Back to top",
