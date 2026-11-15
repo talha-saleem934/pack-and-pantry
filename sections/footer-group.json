@@ -21,6 +21,13 @@
             "menu": "main-menu"
           }
         },
+        "menu_FRMbXr": {
+          "type": "menu",
+          "settings": {
+            "heading": "Policies",
+            "menu": "footer"
+          }
+        },
         "newsletter": {
           "type": "newsletter",
           "settings": {
@@ -31,6 +38,7 @@
       },
       "block_order": [
         "shop_menu",
+        "menu_FRMbXr",
         "newsletter"
       ],
       "custom_css": [
