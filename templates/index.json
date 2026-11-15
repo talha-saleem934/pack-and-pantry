@@ -23,7 +23,7 @@
             "focal_point_y": 50,
             "autoplay": true,
             "autoplay_speed": 5,
-            "animation": "fade",
+            "animation": "rotate",
             "transition_speed": 800,
             "pause_on_hover": true,
             "show_arrows": true,
