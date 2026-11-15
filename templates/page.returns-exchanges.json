@@ -11,6 +11,7 @@
   "sections": {
     "main": {
       "type": "main-page",
+      "disabled": true,
       "settings": {}
     },
     "cro_returns": {
@@ -20,30 +21,40 @@
           "type": "item",
           "settings": {
             "icon": "shield",
+            "icon_text": "",
             "title": "No returns, for hygiene reasons",
-            "text": "<p>Our jars, bottles and containers are kitchen and food-storage products, so for hygiene reasons we cannot accept returns.</p>"
+            "text": "<p>Our jars, bottles and containers are kitchen and food-storage products, so for hygiene reasons we cannot accept returns.</p>",
+            "link_label": "",
+            "link": ""
           }
         },
         "exchange": {
           "type": "item",
           "settings": {
             "icon": "refresh",
+            "icon_text": "",
             "title": "Damaged or transit problems? We exchange",
-            "text": "<p>If an item arrives damaged or something goes wrong in transit, we will exchange it. Just contact us within 7 days of delivery.</p>"
+            "text": "<p>If an item arrives damaged or something goes wrong in transit, we will exchange it. Just contact us within 7 days of delivery.</p>",
+            "link_label": "",
+            "link": ""
           }
         },
         "window": {
           "type": "item",
           "settings": {
             "icon": "clock",
+            "icon_text": "",
             "title": "Exchange window: 7 days from delivery",
-            "text": "<p>Exchange requests must reach us within 7 days of your order being delivered. Please include your order number and a short description of the problem.</p>"
+            "text": "<p>Exchange requests must reach us within 7 days of your order being delivered. Please include your order number and a short description of the problem.</p>",
+            "link_label": "",
+            "link": ""
           }
         },
         "help": {
           "type": "item",
           "settings": {
             "icon": "mail",
+            "icon_text": "",
             "title": "We're here to help",
             "text": "<p>Your satisfaction is our top priority. If something isn't right with your delivery, our team is here to help.</p>",
             "link_label": "Contact us",
@@ -60,11 +71,44 @@
       "settings": {
         "eyebrow": "Returns & exchanges",
         "heading": "Hygiene first, and covered if anything arrives damaged",
+        "subheading": "",
         "intro": "<p>Because our products store food, we keep hygiene at the heart of our policy. Here is exactly what we can and cannot do.</p>",
         "layout": "stack",
         "columns": 1,
+        "intro_width": 760,
+        "card_title_size": 20,
         "button_label": "Contact us about an exchange",
-        "button_link": "shopify://pages/contact"
+        "button_link": "shopify://pages/contact",
+        "button_2_label": "",
+        "button_2_link": "",
+        "full_width": false,
+        "container_width": 1300,
+        "align": "center",
+        "radius": 16,
+        "button_radius": 10,
+        "heading_size_desktop": 36,
+        "heading_size_mobile": 28,
+        "text_size_desktop": 17,
+        "text_size_mobile": 15,
+        "padding_top_desktop": 56,
+        "padding_bottom_desktop": 64,
+        "padding_top_mobile": 32,
+        "padding_bottom_mobile": 48,
+        "bg_color": "#f7f1e7",
+        "heading_color": "#18231f",
+        "text_color": "#3f4a45",
+        "accent_color": "#d4623d",
+        "button_bg": "#173f35",
+        "button_text": "#fffdf8",
+        "button_hover_bg": "#0f2f27",
+        "button_hover_text": "#ffffff",
+        "link_hover_color": "#d4623d",
+        "border_color": "#d7cec1",
+        "card_bg": "#fffdf8",
+        "icon_color": "#173f35",
+        "badge_bg": "#c64f32",
+        "badge_text": "#ffffff",
+        "icon_bg": "#f6e7c1"
       }
     }
   },
