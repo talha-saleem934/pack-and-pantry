@@ -11,15 +11,60 @@
   "sections": {
     "form": {
       "type": "bulk-order-form",
-      "settings": {}
+      "settings": {
+        "eyebrow": "Business and bulk orders",
+        "heading": "Tell us what you need",
+        "text": "Share the products, estimated quantities and intended use so your requirements can be reviewed."
+      }
     },
     "cro_contact": {
       "type": "cro-page-contact-boost",
       "settings": {
+        "eyebrow": "",
         "heading": "Prefer to talk first?",
         "subheading": "Reach us directly about larger orders.",
+        "show_whatsapp": true,
+        "whatsapp_label": "Chat on WhatsApp",
+        "whatsapp_number": "",
+        "whatsapp_message": "Hi Pack & Pantry, I have a question.",
+        "show_phone": true,
+        "phone_label": "Call us",
+        "phone": "",
+        "show_email": true,
+        "email_label": "Email us",
+        "email": "",
+        "form_label": "",
+        "form_text": "",
+        "form_link": "",
+        "response_time": "",
+        "full_width": false,
+        "container_width": 1300,
+        "align": "center",
+        "radius": 16,
+        "button_radius": 10,
+        "heading_size_desktop": 30,
+        "heading_size_mobile": 24,
+        "text_size_desktop": 17,
+        "text_size_mobile": 15,
         "padding_top_desktop": 8,
-        "padding_top_mobile": 8
+        "padding_bottom_desktop": 24,
+        "padding_top_mobile": 8,
+        "padding_bottom_mobile": 40,
+        "bg_color": "#F7F1E7",
+        "heading_color": "#18231f",
+        "text_color": "#3f4a45",
+        "accent_color": "#d4623d",
+        "button_bg": "#173f35",
+        "button_text": "#fffdf8",
+        "button_hover_bg": "#0f2f27",
+        "button_hover_text": "#ffffff",
+        "link_hover_color": "#d4623d",
+        "border_color": "#d7cec1",
+        "card_bg": "#fffdf8",
+        "icon_color": "#173f35",
+        "badge_bg": "#c64f32",
+        "badge_text": "#ffffff",
+        "icon_bg": "#dce8d8"
       }
     }
   },
