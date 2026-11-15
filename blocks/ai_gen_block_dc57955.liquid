@@ -91,6 +91,9 @@
     z-index: 1;
   }
 
+  .ai-hero-banner-{{ ai_gen_id }} .hb-slide-link { display: block; color: inherit; cursor: pointer; }
+  .ai-hero-banner-{{ ai_gen_id }} .hb-slide-link:focus-visible { outline: 3px solid {{ block.settings.button_bg_color }}; outline-offset: -3px; }
+
   /* Default = adapt to image (natural ratio, no cropping) */
   .ai-hero-banner-{{ ai_gen_id }} .hb-img {
     display: block;
@@ -373,6 +376,7 @@
             class="hb-slide{% if rendered == 1 %} is-active{% endif %}"
             {% unless rendered == 1 %}aria-hidden="true"{% endunless %}
           >
+            {%- if btn_link != blank and block.settings.image_clickable -%}<a class="hb-slide-link" href="{{ btn_link }}" aria-label="{{ btn_text | default: alt | default: shop.name | escape }}">{%- endif -%}
             <picture>
               <source
                 media="(max-width: 749px)"
@@ -396,6 +400,7 @@
                 {% if rendered == 1 %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}
               >
             </picture>
+            {%- if btn_link != blank and block.settings.image_clickable -%}</a>{%- endif -%}
 
             {%- if block.settings.enable_overlay -%}
               <div class="hb-overlay"></div>
@@ -779,6 +784,7 @@
     { "type": "image_picker", "id": "desktop_image", "label": "Desktop image" },
     { "type": "image_picker", "id": "mobile_image", "label": "Mobile image" },
     { "type": "text", "id": "image_alt", "label": "Image alt text", "default": "Hero banner" },
+    { "type": "checkbox", "id": "image_clickable", "label": "Make the whole image clickable", "default": true, "info": "Each slide opens its Button link when the image is clicked, even if the button text is empty." },
     { "type": "text", "id": "button_text", "label": "Button text" },
     { "type": "url", "id": "button_link", "label": "Button link" },
     {
