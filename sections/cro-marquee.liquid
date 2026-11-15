@@ -46,7 +46,7 @@
     endif
   endif
   if cro_wa_num != blank
-    assign cro_wa_msg = b.whatsapp_message | default: settings.cro_whatsapp_greeting | replace: '{product}', shop.name | replace: '{url}', canonical_url | replace: '&amp;', '&' | replace: '&#39;', "'" | replace: '&quot;', '"'
+    assign cro_wa_msg = b.whatsapp_message | default: settings.cro_whatsapp_greeting | replace: ' about {product}', '' | replace: '{product}', shop.name | replace: '{url}', canonical_url | replace: '&amp;', '&' | replace: '&#39;', "'" | replace: '&quot;', '"'
     assign cro_wa_enc = cro_wa_msg | url_encode
     assign mq_href = 'https://wa.me/' | append: cro_wa_num | append: '?text=' | append: cro_wa_enc
     assign mq_wa = true

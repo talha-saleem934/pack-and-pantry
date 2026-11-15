@@ -18,11 +18,13 @@
         assign wac_num = wac_num | remove_first: '0' | prepend: '92'
       endif
     endif
-    assign wac_subject = shop.name
+    assign wac_msg = settings.cro_whatsapp_greeting | default: 'Hi, I have a question.'
     if request.page_type == 'product'
-      assign wac_subject = product.title
+      assign wac_msg = wac_msg | replace: '{product}', product.title
+    else
+      assign wac_msg = wac_msg | replace: ' about {product}', '' | replace: '{product}', shop.name
     endif
-    assign wac_msg = settings.cro_whatsapp_greeting | default: 'Hi, I have a question.' | replace: '{product}', wac_subject | replace: '{url}', canonical_url | replace: '&amp;', '&' | replace: '&#39;', "'" | replace: '&quot;', '"'
+    assign wac_msg = wac_msg | replace: '{url}', canonical_url | replace: '&amp;', '&' | replace: '&#39;', "'" | replace: '&quot;', '"'
     assign wac_phrases = settings.cro_wa_contact_phrases | default: 'Contact us' | split: ','
   -%}
   <script>

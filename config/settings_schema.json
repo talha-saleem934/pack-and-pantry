@@ -78,7 +78,7 @@
     "settings": [
       { "type": "header", "content": "Contact and support", "info": "Defaults for every CRO section. A section can override them in its own settings." },
       { "type": "text", "id": "cro_whatsapp_number", "label": "WhatsApp number", "info": "International format, digits only, e.g. 923001234567." },
-      { "type": "textarea", "id": "cro_whatsapp_greeting", "label": "Default WhatsApp message", "default": "Hi Pack & Pantry, I have a question about {product}.", "info": "{product} becomes the product title on product pages (shop name elsewhere); {url} becomes the page link." },
+      { "type": "textarea", "id": "cro_whatsapp_greeting", "label": "Default WhatsApp message", "default": "Hi Pack & Pantry, I have a question about {product}.", "info": "{product} becomes the product title on product pages (on other pages \" about {product}\" is left out); {url} becomes the page link." },
       { "type": "text", "id": "cro_support_phone", "label": "Support phone", "info": "As it should be dialled, e.g. +92 300 1234567." },
       { "type": "text", "id": "cro_support_email", "label": "Support email" },
       { "type": "checkbox", "id": "cro_wa_contact_links", "label": "Open WhatsApp from every \"Contact us\" link", "default": false, "info": "Any link whose text matches one of the phrases below opens a WhatsApp chat with the number above instead. Needs the WhatsApp number to be set." },

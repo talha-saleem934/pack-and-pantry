@@ -35,7 +35,7 @@
   if request.page_type == 'product'
     assign wa_msg = wa_msg | replace: '{product}', product.title
   else
-    assign wa_msg = wa_msg | replace: '{product}', shop.name
+    assign wa_msg = wa_msg | replace: ' about {product}', '' | replace: '{product}', shop.name
   endif
   assign wa_msg = wa_msg | replace: '{url}', canonical_url | replace: '&amp;', '&' | replace: '&#39;', "'" | replace: '&quot;', '"'
   assign call_number = s.call_number | default: settings.cro_support_phone
@@ -203,7 +203,7 @@
       "type": "textarea",
       "id": "wa_message",
       "label": "Prefilled message",
-      "info": "Leave empty to use the default greeting in Theme settings. {product} becomes the product title on product pages (shop name elsewhere) and {url} the page link."
+      "info": "Leave empty to use the default greeting in Theme settings. {product} becomes the product title on product pages (on other pages \" about {product}\" is left out) and {url} the page link."
     },
     {
       "type": "text",
