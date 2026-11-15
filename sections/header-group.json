@@ -17,7 +17,7 @@
         "blessed_friday": {
           "type": "message",
           "settings": {
-            "text": "Blessed Friday Sale: up to 30% off jars, bottles & organisers",
+            "text": "Blessed Friday Sale: up to 30% off",
             "link": "shopify://collections/all",
             "link_label": "Shop the sale",
             "icon": "flame",
