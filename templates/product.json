@@ -152,7 +152,6 @@
         },
         "cro_delivery": {
           "type": "cro_delivery",
-          "disabled": true,
           "settings": {
             "icon": "truck",
             "icon_text": "",
@@ -181,7 +180,7 @@
             "row_3_icon": "refresh",
             "row_3_title": "Damaged in transit?",
             "row_3_text": "We exchange within 7 days of delivery.",
-            "row_3_link": "shopify://pages/returns-exchanges",
+            "row_3_link": "shopify://pages/return-exchange",
             "row_3_whatsapp": "",
             "row_4_icon": "box",
             "row_4_title": "Ordering in bulk?",
