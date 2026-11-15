@@ -157,13 +157,6 @@
         "cd_urgent": "#c64f32"
       }
     },
-    "announcement": {
-      "type": "announcement-bar",
-      "settings": {
-        "text": "Practical storage for calmer kitchens and organised pantries",
-        "link": ""
-      }
-    },
     "header": {
       "type": "header",
       "custom_css": [],
@@ -427,7 +420,6 @@
   },
   "order": [
     "cro_announcement",
-    "announcement",
     "header",
     "cro_sale_marquee",
     "cart_drawer",
