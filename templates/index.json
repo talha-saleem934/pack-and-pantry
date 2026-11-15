@@ -198,7 +198,7 @@
             "icon_text": "",
             "title": "Damaged in transit?",
             "text": "We exchange within 7 days of delivery.",
-            "link": "shopify://pages/returns-exchanges",
+            "link": "shopify://pages/return-exchange",
             "whatsapp_number": "",
             "whatsapp_use_theme": false,
             "whatsapp_message": ""
