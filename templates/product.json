@@ -120,7 +120,7 @@
           "settings": {
             "atc_label": "",
             "dynamic_checkout": true,
-            "show_whatsapp": true,
+            "show_whatsapp": false,
             "whatsapp_label": "Order on WhatsApp",
             "whatsapp_message": "Hi, I'd like to order {product} ({variant}), quantity {qty}. {url}"
           }
@@ -172,18 +172,23 @@
             "row_1_title": "Free delivery over PKR 2500",
             "row_1_text": "On eligible orders. Terms may apply.",
             "row_1_link": "shopify://pages/shipping-information",
+            "row_1_whatsapp": "",
             "row_2_icon": "clock",
             "row_2_title": "Fast dispatch",
             "row_2_text": "Same or next working day once your order is confirmed.",
             "row_2_link": "shopify://pages/shipping-information",
+            "row_2_whatsapp": "",
             "row_3_icon": "refresh",
             "row_3_title": "Damaged in transit?",
             "row_3_text": "We exchange within 7 days of delivery.",
             "row_3_link": "shopify://pages/returns-exchanges",
+            "row_3_whatsapp": "",
             "row_4_icon": "box",
             "row_4_title": "Ordering in bulk?",
             "row_4_text": "Cafés, bakeries and retailers can request a quote.",
-            "row_4_link": "shopify://pages/bulk-orders"
+            "row_4_link": "shopify://pages/bulk-orders",
+            "row_4_whatsapp": "",
+            "whatsapp_message": "Hi, I have a question about {product}: {url}"
           }
         },
         "cro_payment": {
@@ -631,6 +636,22 @@
     "cro_pdp_faq": {
       "type": "cro-pdp-faq",
       "blocks": {
+        "dispatch": {
+          "type": "question",
+          "settings": {
+            "category": "",
+            "question": "How quickly will my order ship?",
+            "answer": "<p>We dispatch every order the same working day or the next working day, once it has been received or confirmed with you.</p>"
+          }
+        },
+        "returns": {
+          "type": "question",
+          "settings": {
+            "category": "",
+            "question": "Can I return this product?",
+            "answer": "<p>Our jars, bottles and containers are kitchen and food-storage products, so for hygiene reasons we cannot accept returns. If an item arrives damaged or something goes wrong in transit, we will exchange it. Just contact us within 7 days of delivery.</p>"
+          }
+        },
         "size": {
           "type": "question",
           "settings": {
@@ -661,20 +682,6 @@
             "category": "",
             "question": "Do you accept bulk orders?",
             "answer": "<p>We welcome bulk orders from cafés, bakeries, retailers, caterers and gifting businesses. Tell us what you need and we'll prepare a quote.</p>"
-          }
-        },
-        "dispatch": {
-          "type": "question",
-          "settings": {
-            "question": "How quickly will my order ship?",
-            "answer": "<p>We dispatch every order the same working day or the next working day, once it has been received or confirmed with you.</p>"
-          }
-        },
-        "returns": {
-          "type": "question",
-          "settings": {
-            "question": "Can I return this product?",
-            "answer": "<p>Our jars, bottles and containers are kitchen and food-storage products, so for hygiene reasons we cannot accept returns. If an item arrives damaged or something goes wrong in transit, we will exchange it. Just contact us within 7 days of delivery.</p>"
           }
         }
       },
