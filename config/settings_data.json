@@ -40,6 +40,7 @@
     "social_instagram": "#",
     "social_facebook": "#",
     "social_tiktok": "#",
+    "cro_free_delivery_threshold": 2500,
     "content_for_index": [],
     "blocks": {
       "10830403595879607806": {
