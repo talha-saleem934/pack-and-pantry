@@ -17,6 +17,10 @@
           "settings": {
             "show_sale": true,
             "sale_label": "Save {value}%",
+            "show_new": true,
+            "new_label": "New",
+            "show_best": true,
+            "best_label": "Best seller",
             "custom_text": "Blessed Friday deal",
             "custom_only_on_sale": true
           }
@@ -34,13 +38,25 @@
           "settings": {
             "heading": "Blessed Friday Sale ends in",
             "icon": "flame",
+            "icon_text": "",
             "mode": "fixed",
             "end": "2026-12-02 23:59",
+            "evergreen_hours": 24,
+            "prefix": "",
+            "suffix": "",
+            "suffix_later": "for dispatch on {day}",
             "fallback": "Sale ends 2 December",
             "style": "boxes",
             "show_days": true,
+            "separator": ":",
+            "label_days": "Days",
+            "label_hours": "Hrs",
+            "label_minutes": "Min",
+            "label_seconds": "Sec",
+            "urgent": 60,
+            "only_on_sale": false,
             "expire_action": "hide",
-            "only_on_sale": false
+            "expired_message": "This offer has ended"
           }
         },
         "judge_me_reviews_preview_badge_qbXVKp": {
@@ -51,7 +67,10 @@
           "type": "cro_price",
           "settings": {
             "savings": "percent",
-            "save_label": "Save {value}"
+            "save_label": "Save {value}",
+            "tax_note": "",
+            "sale_label_sr": "Sale price",
+            "regular_label_sr": "Regular price"
           }
         },
         "sku": {
@@ -64,6 +83,7 @@
         "cro_scarcity": {
           "type": "cro_scarcity",
           "settings": {
+            "threshold": 0,
             "text": "Only {count} left in stock, order soon",
             "show_bar": true
           }
@@ -72,7 +92,11 @@
           "type": "cro_variant_picker",
           "settings": {
             "style": "pills",
-            "show_selected": true
+            "swatch_option": "",
+            "show_selected": true,
+            "unavailable_label": "Sold out",
+            "size_guide": "",
+            "size_guide_label": "Size guide"
           }
         },
         "quantity": {
@@ -82,18 +106,33 @@
         "cro_buy_buttons": {
           "type": "cro_buy_buttons",
           "settings": {
+            "atc_label": "",
             "dynamic_checkout": true,
-            "show_whatsapp": true
+            "show_whatsapp": true,
+            "whatsapp_label": "Order on WhatsApp",
+            "whatsapp_message": "Hi, I'd like to order {product} ({variant}), quantity {qty}. {url}"
           }
         },
         "cro_sold": {
           "type": "cro_sold",
-          "settings": {}
+          "settings": {
+            "icon": "flame",
+            "icon_text": "",
+            "text": "{count} sold"
+          }
         },
         "cro_delivery": {
           "type": "cro_delivery",
           "disabled": true,
-          "settings": {}
+          "settings": {
+            "icon": "truck",
+            "icon_text": "",
+            "label": "Estimated delivery:",
+            "date_template": "{start} – {end}",
+            "fallback": "{min}–{max} working days",
+            "cities": "",
+            "city_label": "Choose your city"
+          }
         },
         "cro_trust_box": {
           "type": "cro_trust_box",
@@ -106,6 +145,7 @@
             "row_2_icon": "lock",
             "row_2_title": "Secure checkout",
             "row_2_text": "Payment is handled by Shopify's encrypted checkout.",
+            "row_2_link": "",
             "row_3_icon": "refresh",
             "row_3_title": "Returns & exchanges",
             "row_3_text": "Read our policy before you order.",
@@ -140,19 +180,41 @@
           "type": "cro_policies",
           "settings": {
             "description_tab": true,
+            "description_label": "Description",
             "open_first": true,
             "shipping_page": "shipping-information",
-            "returns_page": "returns-exchanges"
+            "shipping_label": "Shipping & delivery",
+            "returns_page": "returns-exchanges",
+            "returns_label": "Returns & exchanges",
+            "extra_page": "",
+            "extra_label": ""
           }
         },
         "cro_share": {
           "type": "cro_share",
-          "settings": {}
+          "settings": {
+            "label": "Share:",
+            "copy_label": "Copy link",
+            "copied_label": "Link copied",
+            "show_whatsapp": true,
+            "show_facebook": true,
+            "more_label": "More"
+          }
         },
         "cro_ask": {
           "type": "cro_ask",
           "settings": {
-            "contact_link": "shopify://pages/contact"
+            "heading": "Have a question?",
+            "text": "Ask us about sizes, materials or stock before you order.",
+            "show_whatsapp": true,
+            "whatsapp_label": "Ask on WhatsApp",
+            "whatsapp_message": "Hi, I have a question about {product}: {url}",
+            "show_email": true,
+            "email": "",
+            "email_label": "Email us",
+            "email_subject": "Question about {product}",
+            "contact_link": "shopify://pages/contact",
+            "contact_label": "Contact us"
           }
         }
       },
@@ -178,18 +240,123 @@
         "cro_ask"
       ],
       "settings": {
-        "media_width": 55,
-        "column_gap": 64,
-        "sticky_info": true,
+        "media_width": 40,
+        "column_gap": 20,
+        "info_max_width": 640,
+        "sticky_info": false,
+        "sticky_offset": 96,
+        "block_gap": 14,
+        "title_size_desktop": 38,
+        "title_size_mobile": 28,
+        "padding_top_desktop": 16,
+        "padding_bottom_desktop": 48,
+        "padding_top_mobile": 8,
+        "padding_bottom_mobile": 32,
         "gallery_style": "thumbnails",
-        "sticky_atc": "cro"
+        "thumbs_position": "bottom",
+        "show_thumbs": true,
+        "show_counter": true,
+        "enable_zoom": true,
+        "gallery_ratio": "adapt",
+        "gallery_fit": "contain",
+        "media_bg": "#f2efe8",
+        "sticky_atc": "cro",
+        "satc_desktop": true,
+        "satc_mobile": true,
+        "satc_qty": true,
+        "satc_label": "",
+        "satc_bg": "#fffdf8",
+        "satc_text": "#18231f",
+        "satc_border": "#d7cec1",
+        "satc_btn_bg": "#173f35",
+        "satc_btn_text": "#fffdf8",
+        "satc_btn_hover_bg": "#0f2f27",
+        "button_radius": 10,
+        "atc_bg": "#173f35",
+        "atc_text": "#fffdf8",
+        "atc_hover_bg": "#0f2f27",
+        "atc_hover_text": "#ffffff",
+        "wa_bg": "#1a7f45",
+        "wa_text": "#ffffff",
+        "wa_hover_bg": "#146536",
+        "option_active_bg": "#173f35",
+        "option_active_text": "#fffdf8",
+        "option_active_border": "#173f35",
+        "heading_color": "#18231f",
+        "text_color": "#3f4a45",
+        "accent_color": "#d4623d",
+        "icon_color": "#173f35",
+        "border_color": "#d7cec1",
+        "box_bg": "#fffdf8",
+        "sale_price_color": "#c64f32",
+        "urgency_color": "#a72c2c",
+        "star_color": "#e8b44a",
+        "badge_bg": "#c64f32",
+        "badge_text": "#ffffff",
+        "new_badge_bg": "#173f35",
+        "new_badge_text": "#fffdf8",
+        "best_badge_bg": "#e8b44a",
+        "best_badge_text": "#18231f",
+        "custom_badge_bg": "#18231f",
+        "custom_badge_text": "#e8b44a",
+        "cd_panel_bg": "#173f35",
+        "cd_panel_text": "#fffdf8",
+        "cd_box_bg": "#0f2f27",
+        "cd_digit": "#fffdf8",
+        "cd_label": "#e8b44a",
+        "scarcity_track": "#f3d9d2",
+        "gallery_label": "Product images",
+        "enlarge_label": "Enlarge",
+        "thumb_label": "Show image {n}",
+        "prev_label": "Previous image",
+        "next_label": "Next image",
+        "qty_minus_label": "Decrease quantity",
+        "qty_plus_label": "Increase quantity",
+        "close_label": "Close"
       }
     },
     "cro_complementary": {
       "type": "cro-pdp-complementary",
       "settings": {
+        "eyebrow": "",
         "heading": "Complete the set",
-        "limit": 3
+        "subheading": "Pick the pieces that go with it and add them together.",
+        "limit": 3,
+        "fallback_related": true,
+        "prechecked": true,
+        "this_item_label": "This item",
+        "total_label": "Total:",
+        "button_label": "Add selected to cart",
+        "loading_label": "Adding…",
+        "success_label": "Added to cart",
+        "editor_note": "Suggested products load here on the live store.",
+        "full_width": false,
+        "container_width": 1300,
+        "align": "start",
+        "radius": 16,
+        "button_radius": 10,
+        "heading_size_desktop": 30,
+        "heading_size_mobile": 24,
+        "text_size_desktop": 17,
+        "text_size_mobile": 15,
+        "padding_top_desktop": 48,
+        "padding_bottom_desktop": 48,
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 40,
+        "bg_color": "#f7f1e7",
+        "heading_color": "#18231f",
+        "text_color": "#3f4a45",
+        "accent_color": "#d4623d",
+        "button_bg": "#173f35",
+        "button_text": "#fffdf8",
+        "button_hover_bg": "#0f2f27",
+        "button_hover_text": "#ffffff",
+        "link_hover_color": "#d4623d",
+        "border_color": "#d7cec1",
+        "card_bg": "#fffdf8",
+        "icon_color": "#173f35",
+        "badge_bg": "#c64f32",
+        "badge_text": "#ffffff"
       }
     },
     "suave_reviews_slider_w8BDkh": {
@@ -309,11 +476,11 @@
         "text_color": "#030303",
         "name_color": "#171717",
         "review_text_color": "#161515",
-        "accent_color": "#9FE870",
-        "verified_color": "#9FE870",
-        "star_color": "#9FE870",
-        "shop_link_color": "#9FE870",
-        "play_button_color": "#9FE870",
+        "accent_color": "#9fe870",
+        "verified_color": "#9fe870",
+        "star_color": "#9fe870",
+        "shop_link_color": "#9fe870",
+        "play_button_color": "#9fe870",
         "play_icon_color": "#ffffff",
         "arrow_bg": "#2a3a2a",
         "arrow_color": "#ffffff",
@@ -425,6 +592,7 @@
         "size": {
           "type": "question",
           "settings": {
+            "category": "",
             "question": "How do I choose a size?",
             "answer": "<p>Use the capacity and dimensions shown on each product page, then contact us if you need help comparing options.</p>"
           }
@@ -432,6 +600,7 @@
         "material": {
           "type": "question",
           "settings": {
+            "category": "",
             "question": "Which materials are available?",
             "answer": "<p>Materials vary by product. Check the verified product details on the item you are considering.</p>"
           }
@@ -439,6 +608,7 @@
         "care": {
           "type": "question",
           "settings": {
+            "category": "",
             "question": "How should I care for my products?",
             "answer": "<p>Follow the care information supplied on each product page or with the product.</p>"
           }
@@ -446,6 +616,7 @@
         "business": {
           "type": "question",
           "settings": {
+            "category": "",
             "question": "Can I enquire about a larger order?",
             "answer": "<p>Use the business enquiry form to share the products and quantities you are considering.</p>"
           }
@@ -460,7 +631,37 @@
       "settings": {
         "eyebrow": "Good to know",
         "heading": "Questions before you buy",
-        "schema_markup": true
+        "subheading": "",
+        "open_first": false,
+        "schema_markup": true,
+        "content_width": 820,
+        "full_width": false,
+        "container_width": 1300,
+        "align": "center",
+        "radius": 16,
+        "button_radius": 10,
+        "heading_size_desktop": 34,
+        "heading_size_mobile": 26,
+        "text_size_desktop": 17,
+        "text_size_mobile": 15,
+        "padding_top_desktop": 64,
+        "padding_bottom_desktop": 64,
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 40,
+        "bg_color": "#f7f1e7",
+        "heading_color": "#18231f",
+        "text_color": "#3f4a45",
+        "accent_color": "#d4623d",
+        "button_bg": "#173f35",
+        "button_text": "#fffdf8",
+        "button_hover_bg": "#0f2f27",
+        "button_hover_text": "#ffffff",
+        "link_hover_color": "#d4623d",
+        "border_color": "#d7cec1",
+        "card_bg": "#fffdf8",
+        "icon_color": "#173f35",
+        "badge_bg": "#c64f32",
+        "badge_text": "#ffffff"
       }
     },
     "featured_collection_g8n4nR": {
@@ -479,8 +680,41 @@
     "cro_recently_viewed": {
       "type": "cro-pdp-recently-viewed",
       "settings": {
+        "eyebrow": "",
         "heading": "Recently viewed",
-        "limit": 4
+        "subheading": "",
+        "limit": 4,
+        "editor_note": "Products the visitor viewed appear here. Hidden when there are none.",
+        "full_width": false,
+        "container_width": 1300,
+        "align": "center",
+        "radius": 16,
+        "button_radius": 10,
+        "columns_desktop": 4,
+        "columns_tablet": 3,
+        "columns_mobile": "2",
+        "heading_size_desktop": 30,
+        "heading_size_mobile": 24,
+        "text_size_desktop": 17,
+        "text_size_mobile": 15,
+        "padding_top_desktop": 48,
+        "padding_bottom_desktop": 48,
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 40,
+        "bg_color": "#fffdf8",
+        "heading_color": "#18231f",
+        "text_color": "#3f4a45",
+        "accent_color": "#d4623d",
+        "button_bg": "#173f35",
+        "button_text": "#fffdf8",
+        "button_hover_bg": "#0f2f27",
+        "button_hover_text": "#ffffff",
+        "link_hover_color": "#d4623d",
+        "border_color": "#d7cec1",
+        "card_bg": "#fffdf8",
+        "icon_color": "#173f35",
+        "badge_bg": "#c64f32",
+        "badge_text": "#ffffff"
       }
     }
   },
