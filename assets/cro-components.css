@@ -64,7 +64,7 @@
 .motion-none .cro-motion { animation: none; transition: none; }
 
 /* Price (snippets/cro-price.liquid) */
-.cro-price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+.cro-price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; margin: 10px 0px;}
 .cro-price__now { color: var(--cro-price-color, var(--color-heading, #18231F)); font-weight: 700; }
 .cro-price--sale .cro-price__now { color: var(--cro-price-sale, var(--color-promotion, #C64F32)); }
 .cro-price__was { color: var(--color-muted, #637069); font-size: .88em; }
