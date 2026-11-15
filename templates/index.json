@@ -39,6 +39,7 @@
             "desktop_image": "shopify://shop_images/Smart_Storage_Organized_Home.webp",
             "mobile_image": "shopify://shop_images/Smart_Storage_for_an_Organised_Home.webp",
             "image_alt": "Hero banner",
+            "image_clickable": true,
             "button_text": "",
             "button_link": "shopify://collections/all",
             "desktop_image_2": "shopify://shop_images/Declutter_in_Style__Pantry_Perfection.webp",
@@ -171,7 +172,10 @@
             "icon_text": "",
             "title": "Free delivery over PKR 2500",
             "text": "On eligible orders. Terms may apply.",
-            "link": "shopify://pages/shipping-information"
+            "link": "shopify://pages/shipping-information",
+            "whatsapp_number": "",
+            "whatsapp_use_theme": false,
+            "whatsapp_message": ""
           }
         },
         "bulk": {
@@ -181,7 +185,10 @@
             "icon_text": "",
             "title": "Bulk orders welcome",
             "text": "Cafés, bakeries and retailers can request a quote.",
-            "link": "shopify://pages/bulk-orders"
+            "link": "",
+            "whatsapp_number": "923226100768",
+            "whatsapp_use_theme": true,
+            "whatsapp_message": ""
           }
         },
         "returns": {
@@ -191,7 +198,10 @@
             "icon_text": "",
             "title": "Damaged in transit?",
             "text": "We exchange within 7 days of delivery.",
-            "link": "shopify://pages/returns-exchanges"
+            "link": "shopify://pages/returns-exchanges",
+            "whatsapp_number": "",
+            "whatsapp_use_theme": false,
+            "whatsapp_message": ""
           }
         },
         "help": {
@@ -201,7 +211,10 @@
             "icon_text": "",
             "title": "Help when you need it",
             "text": "Questions about sizes or stock? Our team will reply.",
-            "link": "shopify://pages/contact"
+            "link": "shopify://pages/contact",
+            "whatsapp_number": "",
+            "whatsapp_use_theme": false,
+            "whatsapp_message": ""
           }
         }
       },
@@ -490,6 +503,9 @@
           "settings": {
             "text": "Glass jars",
             "link": "shopify://collections/jars",
+            "whatsapp_number": "",
+            "whatsapp_use_theme": false,
+            "whatsapp_message": "",
             "icon": "none",
             "icon_text": ""
           }
@@ -499,6 +515,9 @@
           "settings": {
             "text": "Bottles",
             "link": "shopify://collections/bottles",
+            "whatsapp_number": "",
+            "whatsapp_use_theme": false,
+            "whatsapp_message": "",
             "icon": "none",
             "icon_text": ""
           }
@@ -508,6 +527,9 @@
           "settings": {
             "text": "Storage organisers",
             "link": "shopify://collections/storage-organizers",
+            "whatsapp_number": "",
+            "whatsapp_use_theme": false,
+            "whatsapp_message": "",
             "icon": "none",
             "icon_text": ""
           }
@@ -517,6 +539,9 @@
           "settings": {
             "text": "Bulk orders for cafés & bakeries",
             "link": "shopify://pages/bulk-orders",
+            "whatsapp_number": "",
+            "whatsapp_use_theme": false,
+            "whatsapp_message": "",
             "icon": "none",
             "icon_text": ""
           }
@@ -807,7 +832,12 @@
         "heading": "Packaging that works as hard as you do",
         "text": "Planning a larger order for a café, bakery, retailer or gifting business? Tell us which products and quantities you are considering.",
         "label": "Plan a bulk order",
-        "link": "shopify://pages/bulk-orders"
+        "link": "shopify://pages/bulk-orders",
+        "whatsapp_number": "",
+        "whatsapp_use_theme": false,
+        "whatsapp_mode": "extra",
+        "whatsapp_label": "Chat on WhatsApp",
+        "whatsapp_message": "Hi Pack & Pantry, I would like a bulk order quote."
       }
     },
     "inspiration": {
