@@ -32,8 +32,8 @@
         "title": {
           "type": "title",
           "settings": {
-            "size_desktop": 18,
-            "size_mobile": 26,
+            "size_desktop": 32,
+            "size_mobile": 20,
             "weight": "700",
             "line_height": 115,
             "letter_spacing": 0,
