@@ -9,14 +9,6 @@
  */
 {
   "sections": {
-    "form": {
-      "type": "bulk-order-form",
-      "settings": {
-        "eyebrow": "Business and bulk orders",
-        "heading": "Tell us what you need",
-        "text": "Share the products, estimated quantities and intended use so your requirements can be reviewed."
-      }
-    },
     "cro_contact": {
       "type": "cro-page-contact-boost",
       "settings": {
@@ -29,8 +21,8 @@
         "whatsapp_message": "Hi Pack & Pantry, I have a question.",
         "show_phone": true,
         "phone_label": "Call us",
-        "phone": "",
-        "show_email": true,
+        "phone": "923226100768",
+        "show_email": false,
         "email_label": "Email us",
         "email": "",
         "form_label": "",
@@ -50,7 +42,7 @@
         "padding_bottom_desktop": 24,
         "padding_top_mobile": 8,
         "padding_bottom_mobile": 40,
-        "bg_color": "#F7F1E7",
+        "bg_color": "#f7f1e7",
         "heading_color": "#18231f",
         "text_color": "#3f4a45",
         "accent_color": "#d4623d",
@@ -66,10 +58,18 @@
         "badge_text": "#ffffff",
         "icon_bg": "#dce8d8"
       }
+    },
+    "form": {
+      "type": "bulk-order-form",
+      "settings": {
+        "eyebrow": "Business and bulk orders",
+        "heading": "Tell us what you need",
+        "text": "Share the products, estimated quantities and intended use so your requirements can be reviewed."
+      }
     }
   },
   "order": [
-    "form",
-    "cro_contact"
+    "cro_contact",
+    "form"
   ]
 }
