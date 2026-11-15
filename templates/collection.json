@@ -86,6 +86,90 @@
         "columns": 3
       }
     },
+    "cro_how_it_works_n9gc7J": {
+      "type": "cro-how-it-works",
+      "blocks": {
+        "step_WazzB8": {
+          "type": "step",
+          "settings": {
+            "icon": "box",
+            "icon_text": "",
+            "title": "Pick your containers",
+            "text": "Browse jars, bottles and organisers with sizes and prices on every page."
+          }
+        },
+        "step_UNaWag": {
+          "type": "step",
+          "settings": {
+            "icon": "lock",
+            "icon_text": "",
+            "title": "Check out securely",
+            "text": "Pay through Shopify's secure checkout."
+          }
+        },
+        "step_R3r3V9": {
+          "type": "step",
+          "settings": {
+            "icon": "package",
+            "icon_text": "",
+            "title": "We pack and dispatch",
+            "text": "Your order is prepared and sent on its way."
+          }
+        },
+        "step_9njxtQ": {
+          "type": "step",
+          "settings": {
+            "icon": "truck",
+            "icon_text": "",
+            "title": "Delivered to your door",
+            "text": "Free delivery on orders over PKR 2500."
+          }
+        }
+      },
+      "block_order": [
+        "step_WazzB8",
+        "step_UNaWag",
+        "step_R3r3V9",
+        "step_9njxtQ"
+      ],
+      "settings": {
+        "eyebrow": "Simple from start to shelf",
+        "heading": "How ordering works",
+        "subheading": "",
+        "show_numbers": true,
+        "button_label": "Start shopping",
+        "button_link": "shopify://collections/all",
+        "full_width": false,
+        "container_width": 1300,
+        "align": "center",
+        "radius": 16,
+        "button_radius": 10,
+        "heading_size_desktop": 38,
+        "heading_size_mobile": 28,
+        "text_size_desktop": 17,
+        "text_size_mobile": 15,
+        "padding_top_desktop": 40,
+        "padding_bottom_desktop": 20,
+        "padding_top_mobile": 20,
+        "padding_bottom_mobile": 20,
+        "bg_color": "#f7f1e7",
+        "heading_color": "#18231f",
+        "text_color": "#3f4a45",
+        "accent_color": "#d4623d",
+        "button_bg": "#173f35",
+        "button_text": "#fffdf8",
+        "button_hover_bg": "#0f2f27",
+        "button_hover_text": "#ffffff",
+        "link_hover_color": "#d4623d",
+        "border_color": "#d7cec1",
+        "card_bg": "#fffdf8",
+        "icon_color": "#173f35",
+        "badge_bg": "#d4623d",
+        "badge_text": "#ffffff",
+        "step_bg": "#dce8d8",
+        "step_icon": "#173f35"
+      }
+    },
     "cro_collection_trust": {
       "type": "cro-collection-trust",
       "blocks": {
@@ -96,7 +180,10 @@
             "icon_text": "",
             "title": "Free delivery over PKR 2500",
             "text": "On eligible orders. Terms may apply.",
-            "link": "shopify://pages/shipping-information"
+            "link": "shopify://pages/shipping-information",
+            "whatsapp_number": "",
+            "whatsapp_use_theme": false,
+            "whatsapp_message": ""
           }
         },
         "secure": {
@@ -106,7 +193,10 @@
             "icon_text": "",
             "title": "Fast dispatch",
             "text": "Same or next working day once confirmed.",
-            "link": "shopify://pages/shipping-information"
+            "link": "shopify://pages/shipping-information",
+            "whatsapp_number": "",
+            "whatsapp_use_theme": false,
+            "whatsapp_message": ""
           }
         },
         "returns": {
@@ -116,7 +206,10 @@
             "icon_text": "",
             "title": "Damaged in transit?",
             "text": "We exchange within 7 days of delivery.",
-            "link": "shopify://pages/returns-exchanges"
+            "link": "shopify://pages/returns-exchanges",
+            "whatsapp_number": "",
+            "whatsapp_use_theme": false,
+            "whatsapp_message": ""
           }
         },
         "help": {
@@ -126,7 +219,10 @@
             "icon_text": "",
             "title": "Help when you need it",
             "text": "Questions about sizes or stock? Contact us.",
-            "link": "shopify://pages/contact"
+            "link": "shopify://pages/contact",
+            "whatsapp_number": "",
+            "whatsapp_use_theme": false,
+            "whatsapp_message": ""
           }
         }
       },
@@ -136,6 +232,7 @@
         "returns",
         "help"
       ],
+      "disabled": true,
       "settings": {
         "region_label": "Why shop with us",
         "boxed": true,
@@ -230,6 +327,7 @@
   "order": [
     "cro_collection_banner",
     "main",
+    "cro_how_it_works_n9gc7J",
     "cro_collection_trust",
     "support",
     "cro_recently_viewed"
