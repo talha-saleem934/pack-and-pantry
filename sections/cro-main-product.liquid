@@ -104,6 +104,7 @@
     border-radius: 18px; border: 1px solid rgba(255, 255, 255, .18);
     background: linear-gradient(135deg, {{ s.cd_panel_bg }} 0%, {{ s.cd_panel_bg_2 }} 100%);
     color: {{ s.cd_panel_text }}; box-shadow: 0 14px 34px {{ s.cd_panel_bg | color_modify: 'alpha', 0.28 }};
+    margin: 10px 0px;
   }
   #cro-{{ sid }} .cro-cdbox::before {
     content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
