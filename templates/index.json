@@ -186,7 +186,7 @@
             "title": "Bulk orders welcome",
             "text": "Cafés, bakeries and retailers can request a quote.",
             "link": "",
-            "whatsapp_number": "923226100768",
+            "whatsapp_number": "",
             "whatsapp_use_theme": true,
             "whatsapp_message": ""
           }
@@ -834,7 +834,7 @@
         "label": "Plan a bulk order",
         "link": "shopify://pages/bulk-orders",
         "whatsapp_number": "",
-        "whatsapp_use_theme": false,
+        "whatsapp_use_theme": true,
         "whatsapp_mode": "extra",
         "whatsapp_label": "Chat on WhatsApp",
         "whatsapp_message": "Hi Pack & Pantry, I would like a bulk order quote."
