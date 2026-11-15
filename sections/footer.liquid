@@ -1,10 +1,16 @@
+{{ 'cro-components.css' | asset_url | stylesheet_tag }}
 <footer class="footer" style="--logo-width:{{ settings.logo_width }}px">
   <div class="page-width">
     <div class="footer__grid">
       <div class="footer__brand">
         {%- if settings.logo_light != blank -%}{{ settings.logo_light | image_url: width: 400 | image_tag: widths: '180, 260, 400', loading: 'lazy', alt: settings.logo_alt }}{%- else -%}<span class="asset-logo-frame footer__asset-frame"><img class="footer__asset-logo" src="{{ 'pack-and-pantry-logo.png' | asset_url }}" width="500" height="500" loading="lazy" alt="Pack & Pantry"></span>{%- endif -%}
         <p>{{ section.settings.description }}</p>
-        <ul class="social-list">{%- if settings.social_instagram != blank -%}<li><a href="{{ settings.social_instagram }}" rel="noopener" target="_blank">Instagram</a></li>{%- endif -%}{%- if settings.social_facebook != blank -%}<li><a href="{{ settings.social_facebook }}" rel="noopener" target="_blank">Facebook</a></li>{%- endif -%}{%- if settings.social_tiktok != blank -%}<li><a href="{{ settings.social_tiktok }}" rel="noopener" target="_blank">TikTok</a></li>{%- endif -%}</ul>
+        <ul class="social-list cro-social" aria-label="Social media">
+          {%- if settings.social_instagram != blank -%}<li><a href="{{ settings.social_instagram }}" rel="noopener" target="_blank" aria-label="Instagram">{% render 'cro-icon', icon: 'instagram', size: 20 %}</a></li>{%- endif -%}
+          {%- if settings.social_facebook != blank -%}<li><a href="{{ settings.social_facebook }}" rel="noopener" target="_blank" aria-label="Facebook">{% render 'cro-icon', icon: 'facebook', size: 20 %}</a></li>{%- endif -%}
+          {%- if settings.social_tiktok != blank -%}<li><a href="{{ settings.social_tiktok }}" rel="noopener" target="_blank" aria-label="TikTok">{% render 'cro-icon', icon: 'tiktok', size: 20 %}</a></li>{%- endif -%}
+          {%- if settings.social_pinterest != blank -%}<li><a href="{{ settings.social_pinterest }}" rel="noopener" target="_blank" aria-label="Pinterest">{% render 'cro-icon', icon: 'pinterest', size: 20 %}</a></li>{%- endif -%}
+        </ul>
       </div>
       {%- for block in section.blocks -%}
         {%- case block.type -%}

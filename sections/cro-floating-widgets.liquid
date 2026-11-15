@@ -27,7 +27,7 @@
   else
     assign wa_msg = wa_msg | replace: '{product}', shop.name
   endif
-  assign wa_msg = wa_msg | replace: '{url}', canonical_url
+  assign wa_msg = wa_msg | replace: '{url}', canonical_url | replace: '&amp;', '&' | replace: '&#39;', "'" | replace: '&quot;', '"'
   assign call_number = s.call_number | default: settings.cro_support_phone
   assign call_href = call_number | remove: ' ' | remove: '-' | remove: '(' | remove: ')'
 
@@ -35,13 +35,26 @@
   if s.wa_enable and wa_number != blank
     assign show_wa = true
   endif
+  assign fw_ig = s.instagram_link | default: settings.social_instagram
+  assign fw_tt = s.tiktok_link | default: settings.social_tiktok
+  assign fw_fb = s.facebook_link | default: settings.social_facebook
+  assign show_social = false
+  if s.show_instagram and fw_ig != blank
+    assign show_social = true
+  endif
+  if s.show_tiktok and fw_tt != blank
+    assign show_social = true
+  endif
+  if s.show_facebook and fw_fb != blank
+    assign show_social = true
+  endif
   assign show_call = false
   if s.call_enable and call_href != blank
     assign show_call = true
   endif
 -%}
 {%- if show_here -%}
-{%- if show_wa or show_call or s.top_enable -%}
+{%- if show_wa or show_call or show_social or s.top_enable -%}
 {{ 'cro-components.css' | asset_url | stylesheet_tag }}
 <script src="{{ 'cro-core.js' | asset_url }}" defer="defer"></script>
 {% style %}
@@ -84,6 +97,13 @@
   #cro-{{ sid }} .cro-fw__wa-img { display: block; inline-size: {{ s.wa_size }}px; block-size: {{ s.wa_size }}px; object-fit: contain; filter: drop-shadow(0 6px 14px rgba(15, 47, 39, .25)); }
   #cro-{{ sid }} .cro-fw__wa--pulse { animation: cro-pulse 2.4s ease-out infinite; }
   #cro-{{ sid }} .cro-fw__label { display: none; padding-inline-start: 18px; color: var(--cro-fw-wa-icon); font-weight: 700; font-size: {{ s.label_size }}px; white-space: nowrap; }
+  #cro-{{ sid }} .cro-fw__social { background: {{ s.social_bg }}; color: {{ s.social_icon_color }}; }
+  #cro-{{ sid }} .cro-fw__social:hover { transform: translateY(-2px); filter: brightness(1.08); }
+  {%- if s.social_brand_colors %}
+  #cro-{{ sid }} .cro-fw__social--instagram { background: radial-gradient(circle at 30% 107%, #FDF497 0%, #FDF497 5%, #FD5949 45%, #D6249F 60%, #285AEB 90%); color: #FFFFFF; }
+  #cro-{{ sid }} .cro-fw__social--tiktok { background: #010101; color: #FFFFFF; box-shadow: -2px -2px 0 rgba(37, 244, 238, .45) inset, 2px 2px 0 rgba(254, 44, 85, .45) inset, 0 8px 24px rgba(15, 47, 39, .18); }
+  #cro-{{ sid }} .cro-fw__social--facebook { background: #1877F2; color: #FFFFFF; }
+  {%- endif %}
   #cro-{{ sid }} .cro-fw__call { background: var(--cro-fw-call-bg); color: var(--cro-fw-call-icon); }
   #cro-{{ sid }} .cro-fw__call:hover { background: var(--cro-fw-call-hover-bg); }
   #cro-{{ sid }} .cro-fw__top { background: var(--cro-fw-top-bg); color: var(--cro-fw-top-icon); border: 1px solid var(--cro-fw-top-border); opacity: 0; visibility: hidden; transform: translateY(8px); }
@@ -118,6 +138,9 @@
   {%- if s.top_enable -%}
     <button type="button" class="cro-fw__btn cro-fw__top" data-cro-top aria-label="{{ s.top_label | escape }}">{% render 'cro-icon', icon: 'chevron-up', size: 22 %}</button>
   {%- endif -%}
+  {%- if s.show_instagram and fw_ig != blank -%}<a class="cro-fw__btn cro-fw__social cro-fw__social--instagram" href="{{ fw_ig }}" target="_blank" rel="noopener" aria-label="{{ s.instagram_label | escape }}">{% render 'cro-icon', icon: 'instagram', size: 22 %}</a>{%- endif -%}
+  {%- if s.show_tiktok and fw_tt != blank -%}<a class="cro-fw__btn cro-fw__social cro-fw__social--tiktok" href="{{ fw_tt }}" target="_blank" rel="noopener" aria-label="{{ s.tiktok_label | escape }}">{% render 'cro-icon', icon: 'tiktok', size: 22 %}</a>{%- endif -%}
+  {%- if s.show_facebook and fw_fb != blank -%}<a class="cro-fw__btn cro-fw__social cro-fw__social--facebook" href="{{ fw_fb }}" target="_blank" rel="noopener" aria-label="{{ s.facebook_label | escape }}">{% render 'cro-icon', icon: 'facebook', size: 22 %}</a>{%- endif -%}
   {%- if show_call -%}
     <a class="cro-fw__btn cro-fw__call" href="tel:{{ call_href | escape }}" data-cro-call aria-label="{{ s.call_label | escape }}">{% render 'cro-icon', icon: 'phone', size: 22 %}</a>
   {%- endif -%}
@@ -143,62 +166,430 @@
   "name": "CRO floating buttons",
   "tag": "div",
   "class": "cro-section cro-section--floating",
-  "enabled_on": { "groups": ["header", "footer"] },
+  "enabled_on": {
+    "groups": [
+      "header",
+      "footer"
+    ]
+  },
   "settings": [
-    { "type": "header", "content": "WhatsApp" },
-    { "type": "checkbox", "id": "wa_enable", "label": "Show WhatsApp button", "default": true },
-    { "type": "text", "id": "wa_number", "label": "WhatsApp number", "info": "International format, digits only, e.g. 923001234567. Leave empty to use Theme settings → CRO & conversion. The button stays hidden until a number is set." },
-    { "type": "textarea", "id": "wa_message", "label": "Prefilled message", "info": "Leave empty to use the default greeting in Theme settings. {product} becomes the product title on product pages (shop name elsewhere) and {url} the page link." },
-    { "type": "text", "id": "wa_aria_label", "label": "Button label (screen readers)", "default": "Chat with us on WhatsApp", "info": "If you show a visible label, start this text with the same words." },
-    { "type": "text", "id": "wa_label", "label": "Visible label (desktop)", "default": "Chat with us" },
-    { "type": "checkbox", "id": "wa_show_label", "label": "Show visible label on desktop", "default": false },
-    { "type": "range", "id": "label_size", "label": "Label text size", "min": 12, "max": 20, "step": 1, "unit": "px", "default": 15 },
-    { "type": "image_picker", "id": "wa_icon_image", "label": "Custom icon image", "info": "Optional. Shown at full button size with no background circle, so use a complete WhatsApp logo (PNG/SVG with transparency)." },
-    { "type": "range", "id": "wa_size", "label": "Button size", "min": 48, "max": 72, "step": 4, "unit": "px", "default": 56 },
-    { "type": "range", "id": "wa_icon_size", "label": "Icon size", "min": 20, "max": 40, "step": 2, "unit": "px", "default": 28 },
-    { "type": "checkbox", "id": "wa_pulse", "label": "Pulse animation", "default": false, "info": "Turned off automatically for visitors who prefer reduced motion." },
-    { "type": "color", "id": "wa_bg", "label": "Background", "default": "#1A7F45", "info": "WhatsApp's bright green (#25D366) with white text is below 4.5:1 contrast; this darker green passes WCAG AA." },
-    { "type": "color", "id": "wa_icon_color", "label": "Icon and label", "default": "#FFFFFF" },
-    { "type": "color", "id": "wa_hover_bg", "label": "Hover background", "default": "#146536" },
-
-    { "type": "header", "content": "Call button" },
-    { "type": "checkbox", "id": "call_enable", "label": "Show call button", "default": false },
-    { "type": "text", "id": "call_number", "label": "Phone number", "info": "Leave empty to use the support phone in Theme settings → CRO & conversion." },
-    { "type": "text", "id": "call_label", "label": "Button label (screen readers)", "default": "Call us" },
-    { "type": "color", "id": "call_bg", "label": "Background", "default": "#173F35" },
-    { "type": "color", "id": "call_icon_color", "label": "Icon", "default": "#FFFDF8" },
-    { "type": "color", "id": "call_hover_bg", "label": "Hover background", "default": "#0F2F27" },
-
-    { "type": "header", "content": "Back to top" },
-    { "type": "checkbox", "id": "top_enable", "label": "Show back-to-top button", "default": true },
-    { "type": "range", "id": "top_after", "label": "Show after scrolling", "min": 200, "max": 2000, "step": 100, "unit": "px", "default": 800 },
-    { "type": "text", "id": "top_label", "label": "Button label (screen readers)", "default": "Back to top" },
-    { "type": "color", "id": "top_bg", "label": "Background", "default": "#FFFDF8" },
-    { "type": "color", "id": "top_icon_color", "label": "Icon", "default": "#173F35" },
-    { "type": "color", "id": "top_border", "label": "Border", "default": "#D7CEC1" },
-    { "type": "color", "id": "top_hover_bg", "label": "Hover background", "default": "#DCE8D8" },
-
-    { "type": "header", "content": "Position" },
-    { "type": "select", "id": "side", "label": "Side", "default": "end", "options": [ { "value": "end", "label": "Right" }, { "value": "start", "label": "Left" } ] },
-    { "type": "range", "id": "offset_side_desktop", "label": "Side offset (desktop)", "min": 8, "max": 64, "step": 4, "unit": "px", "default": 24 },
-    { "type": "range", "id": "offset_side_mobile", "label": "Side offset (mobile)", "min": 8, "max": 64, "step": 4, "unit": "px", "default": 16 },
-    { "type": "range", "id": "offset_bottom_desktop", "label": "Bottom offset (desktop)", "min": 8, "max": 160, "step": 4, "unit": "px", "default": 24 },
-    { "type": "range", "id": "offset_bottom_mobile", "label": "Bottom offset (mobile)", "min": 8, "max": 160, "step": 4, "unit": "px", "default": 16 },
-    { "type": "range", "id": "sticky_atc_offset", "label": "Extra lift above the mobile sticky add-to-cart bar", "min": 0, "max": 160, "step": 4, "unit": "px", "default": 80, "info": "Applied on mobile product pages where the sticky add-to-cart bar is shown." },
-    { "type": "range", "id": "secondary_size", "label": "Call and back-to-top size", "min": 48, "max": 64, "step": 4, "unit": "px", "default": 48 },
-    { "type": "color", "id": "focus_color", "label": "Keyboard focus ring", "default": "#E8B44A" },
-
-    { "type": "header", "content": "Visibility" },
-    { "type": "checkbox", "id": "show_home", "label": "Home page", "default": true },
-    { "type": "checkbox", "id": "show_product", "label": "Product pages", "default": true },
-    { "type": "checkbox", "id": "show_collection", "label": "Collection pages", "default": true },
-    { "type": "checkbox", "id": "show_cart", "label": "Cart page", "default": false },
-    { "type": "checkbox", "id": "show_pages", "label": "Content pages (About, Contact…)", "default": true },
-    { "type": "checkbox", "id": "show_blog", "label": "Blog and articles", "default": true },
-    { "type": "checkbox", "id": "show_search", "label": "Search results", "default": true },
-    { "type": "checkbox", "id": "show_other", "label": "Other pages (404, account…)", "default": true },
-    { "type": "checkbox", "id": "hide_when_overlay", "label": "Hide while the cart drawer, menu or a pop-up is open", "default": true }
+    {
+      "type": "header",
+      "content": "WhatsApp"
+    },
+    {
+      "type": "checkbox",
+      "id": "wa_enable",
+      "label": "Show WhatsApp button",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "wa_number",
+      "label": "WhatsApp number",
+      "info": "International format, digits only, e.g. 923001234567. Leave empty to use Theme settings → CRO & conversion. The button stays hidden until a number is set."
+    },
+    {
+      "type": "textarea",
+      "id": "wa_message",
+      "label": "Prefilled message",
+      "info": "Leave empty to use the default greeting in Theme settings. {product} becomes the product title on product pages (shop name elsewhere) and {url} the page link."
+    },
+    {
+      "type": "text",
+      "id": "wa_aria_label",
+      "label": "Button label (screen readers)",
+      "default": "Chat with us on WhatsApp",
+      "info": "If you show a visible label, start this text with the same words."
+    },
+    {
+      "type": "text",
+      "id": "wa_label",
+      "label": "Visible label (desktop)",
+      "default": "Chat with us"
+    },
+    {
+      "type": "checkbox",
+      "id": "wa_show_label",
+      "label": "Show visible label on desktop",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "label_size",
+      "label": "Label text size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "image_picker",
+      "id": "wa_icon_image",
+      "label": "Custom icon image",
+      "info": "Optional. Shown at full button size with no background circle, so use a complete WhatsApp logo (PNG/SVG with transparency)."
+    },
+    {
+      "type": "range",
+      "id": "wa_size",
+      "label": "Button size",
+      "min": 48,
+      "max": 72,
+      "step": 4,
+      "unit": "px",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "wa_icon_size",
+      "label": "Icon size",
+      "min": 20,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "checkbox",
+      "id": "wa_pulse",
+      "label": "Pulse animation",
+      "default": false,
+      "info": "Turned off automatically for visitors who prefer reduced motion."
+    },
+    {
+      "type": "color",
+      "id": "wa_bg",
+      "label": "Background",
+      "default": "#1A7F45",
+      "info": "WhatsApp's bright green (#25D366) with white text is below 4.5:1 contrast; this darker green passes WCAG AA."
+    },
+    {
+      "type": "color",
+      "id": "wa_icon_color",
+      "label": "Icon and label",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "wa_hover_bg",
+      "label": "Hover background",
+      "default": "#146536"
+    },
+    {
+      "type": "header",
+      "content": "Call button"
+    },
+    {
+      "type": "checkbox",
+      "id": "call_enable",
+      "label": "Show call button",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "call_number",
+      "label": "Phone number",
+      "info": "Leave empty to use the support phone in Theme settings → CRO & conversion."
+    },
+    {
+      "type": "text",
+      "id": "call_label",
+      "label": "Button label (screen readers)",
+      "default": "Call us"
+    },
+    {
+      "type": "color",
+      "id": "call_bg",
+      "label": "Background",
+      "default": "#173F35"
+    },
+    {
+      "type": "color",
+      "id": "call_icon_color",
+      "label": "Icon",
+      "default": "#FFFDF8"
+    },
+    {
+      "type": "color",
+      "id": "call_hover_bg",
+      "label": "Hover background",
+      "default": "#0F2F27"
+    },
+    {
+      "type": "header",
+      "content": "Social buttons",
+      "info": "Links default to Theme settings → Social media when left empty."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_instagram",
+      "label": "Show Instagram",
+      "default": false
+    },
+    {
+      "type": "url",
+      "id": "instagram_link",
+      "label": "Instagram link"
+    },
+    {
+      "type": "text",
+      "id": "instagram_label",
+      "label": "Instagram label (screen readers)",
+      "default": "Follow us on Instagram"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tiktok",
+      "label": "Show TikTok",
+      "default": false
+    },
+    {
+      "type": "url",
+      "id": "tiktok_link",
+      "label": "TikTok link"
+    },
+    {
+      "type": "text",
+      "id": "tiktok_label",
+      "label": "TikTok label (screen readers)",
+      "default": "Follow us on TikTok"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_facebook",
+      "label": "Show Facebook",
+      "default": false
+    },
+    {
+      "type": "url",
+      "id": "facebook_link",
+      "label": "Facebook link"
+    },
+    {
+      "type": "text",
+      "id": "facebook_label",
+      "label": "Facebook label (screen readers)",
+      "default": "Follow us on Facebook"
+    },
+    {
+      "type": "checkbox",
+      "id": "social_brand_colors",
+      "label": "Use each platform's brand colours",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "social_bg",
+      "label": "Button background (when brand colours are off)",
+      "default": "#173F35"
+    },
+    {
+      "type": "color",
+      "id": "social_icon_color",
+      "label": "Icon colour (when brand colours are off)",
+      "default": "#FFFDF8"
+    },
+    {
+      "type": "header",
+      "content": "Back to top"
+    },
+    {
+      "type": "checkbox",
+      "id": "top_enable",
+      "label": "Show back-to-top button",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "top_after",
+      "label": "Show after scrolling",
+      "min": 200,
+      "max": 2000,
+      "step": 100,
+      "unit": "px",
+      "default": 800
+    },
+    {
+      "type": "text",
+      "id": "top_label",
+      "label": "Button label (screen readers)",
+      "default": "Back to top"
+    },
+    {
+      "type": "color",
+      "id": "top_bg",
+      "label": "Background",
+      "default": "#FFFDF8"
+    },
+    {
+      "type": "color",
+      "id": "top_icon_color",
+      "label": "Icon",
+      "default": "#173F35"
+    },
+    {
+      "type": "color",
+      "id": "top_border",
+      "label": "Border",
+      "default": "#D7CEC1"
+    },
+    {
+      "type": "color",
+      "id": "top_hover_bg",
+      "label": "Hover background",
+      "default": "#DCE8D8"
+    },
+    {
+      "type": "header",
+      "content": "Position"
+    },
+    {
+      "type": "select",
+      "id": "side",
+      "label": "Side",
+      "default": "end",
+      "options": [
+        {
+          "value": "end",
+          "label": "Right"
+        },
+        {
+          "value": "start",
+          "label": "Left"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "offset_side_desktop",
+      "label": "Side offset (desktop)",
+      "min": 8,
+      "max": 64,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "offset_side_mobile",
+      "label": "Side offset (mobile)",
+      "min": 8,
+      "max": 64,
+      "step": 4,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "offset_bottom_desktop",
+      "label": "Bottom offset (desktop)",
+      "min": 8,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "offset_bottom_mobile",
+      "label": "Bottom offset (mobile)",
+      "min": 8,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "sticky_atc_offset",
+      "label": "Extra lift above the mobile sticky add-to-cart bar",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 80,
+      "info": "Applied on mobile product pages where the sticky add-to-cart bar is shown."
+    },
+    {
+      "type": "range",
+      "id": "secondary_size",
+      "label": "Call and back-to-top size",
+      "min": 48,
+      "max": 64,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "color",
+      "id": "focus_color",
+      "label": "Keyboard focus ring",
+      "default": "#E8B44A"
+    },
+    {
+      "type": "header",
+      "content": "Visibility"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_home",
+      "label": "Home page",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product",
+      "label": "Product pages",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_collection",
+      "label": "Collection pages",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cart",
+      "label": "Cart page",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_pages",
+      "label": "Content pages (About, Contact…)",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_blog",
+      "label": "Blog and articles",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "Search results",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_other",
+      "label": "Other pages (404, account…)",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_when_overlay",
+      "label": "Hide while the cart drawer, menu or a pop-up is open",
+      "default": true
+    }
   ],
-  "presets": [ { "name": "CRO floating buttons" } ]
+  "presets": [
+    {
+      "name": "CRO floating buttons"
+    }
+  ]
 }
 {% endschema %}

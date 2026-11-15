@@ -16,13 +16,28 @@
   {%- for tb in blocks -%}
     {%- if tb.type == tb_type -%}
       {%- assign tbs = tb.settings -%}
+      {%- liquid
+  assign tbs_href = tbs.link
+  assign tbs_wa = false
+  assign cro_wa_num = tbs.whatsapp_number
+  if tbs.whatsapp_use_theme and cro_wa_num == blank
+    assign cro_wa_num = settings.cro_whatsapp_number
+  endif
+  assign cro_wa_num = cro_wa_num | remove: '+' | remove: ' ' | remove: '-' | remove: '(' | remove: ')'
+  if cro_wa_num != blank
+    assign cro_wa_msg = tbs.whatsapp_message | default: settings.cro_whatsapp_greeting | replace: '{product}', shop.name | replace: '{url}', canonical_url | replace: '&amp;', '&' | replace: '&#39;', "'" | replace: '&quot;', '"'
+    assign cro_wa_enc = cro_wa_msg | url_encode
+    assign tbs_href = 'https://wa.me/' | append: cro_wa_num | append: '?text=' | append: cro_wa_enc
+    assign tbs_wa = true
+  endif
+-%}
       <li class="cro-trust__item" {{ tb.shopify_attributes }}>
         {%- if tbs.icon != 'none' or tbs.icon_image != blank or tbs.icon_text != blank -%}
           <span class="cro-trust__icon">{% render 'cro-icon', icon: tbs.icon, image: tbs.icon_image, text: tbs.icon_text, size: tb_size %}</span>
         {%- endif -%}
         <span class="cro-trust__body">
-          {%- if tbs.link != blank -%}
-            <a class="cro-trust__title" href="{{ tbs.link }}">{{ tbs.title | escape }}</a>
+          {%- if tbs_href != blank -%}
+            <a class="cro-trust__title" href="{{ tbs_href }}"{% if tbs_wa %} target="_blank" rel="noopener" data-cro-wa="trust"{% endif %}>{{ tbs.title | escape }}</a>
           {%- else -%}
             <span class="cro-trust__title">{{ tbs.title | escape }}</span>
           {%- endif -%}

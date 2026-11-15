@@ -107,11 +107,33 @@
 @media (min-width: 750px) { .cro-pc__body { padding: 14px 16px 16px; } .cro-pc__title { font-size: 16px; } }
 
 /* Payment icons (snippets/cro-payment-icons.liquid) */
-.cro-pay { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0; padding: 0; list-style: none; }
-.cro-pay__item { display: inline-flex; align-items: center; gap: 6px; min-block-size: 26px; }
-.cro-pay__item svg { inline-size: 38px; block-size: 24px; }
-.cro-pay__chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border: 1px solid var(--cro-border, #D7CEC1); border-radius: 6px; background: var(--cro-card-bg, #fff); font-size: 12px; font-weight: 700; color: var(--cro-heading, #18231F); }
+.cro-pay-wrap { min-inline-size: 0; }
+.cro-pay-wrap--seal { position: relative; margin-block: 18px 6px; padding: 20px 12px 12px; border: 1px solid var(--cro-pay-border, #E6DCCB); border-radius: 16px; background: linear-gradient(180deg, #FFFFFF 0%, var(--cro-pay-bg, #F7F1E7) 100%); }
+.cro-pay__head { position: absolute; inset-block-start: 0; inset-inline: 0; display: flex; justify-content: center; margin: 0; transform: translateY(-50%); }
+.cro-pay__head span { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border: 1px solid var(--cro-pay-border, #E6DCCB); border-radius: 999px; background: #FFFFFF; color: var(--cro-pay-head, #173F35); font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; box-shadow: 0 4px 12px rgba(15, 47, 39, .08); }
+.cro-pay__head .cro-icon { color: var(--cro-pay-accent, #2F6F4E); }
+.cro-pay { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.cro-pay__item { display: inline-flex; align-items: center; }
+.cro-pay__item--card { padding: 4px 6px; border: 1px solid #E6DCCB; border-radius: 8px; background: #FFFFFF; box-shadow: 0 2px 6px rgba(15, 47, 39, .07); transition: transform .2s ease, box-shadow .2s ease; }
+.cro-pay__item--card:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(15, 47, 39, .12); }
+.cro-pay__item svg { display: block; inline-size: 40px; block-size: 26px; }
+.cro-pay__chip { display: inline-flex; align-items: center; gap: 6px; min-block-size: 34px; padding: 0 12px; border: 1px solid #E6DCCB; border-radius: 999px; background: #FFFFFF; color: var(--cro-heading, #18231F); font-size: 12px; font-weight: 800; box-shadow: 0 2px 6px rgba(15, 47, 39, .07); }
+.cro-pay__chip::before { content: ""; inline-size: 8px; block-size: 8px; border-radius: 50%; background: var(--cro-pay-dot, #173F35); }
+.cro-pay__chip:has(.cro-icon, img)::before { display: none; }
+.cro-pay__chip .cro-icon { color: var(--cro-pay-dot, #173F35); }
+.cro-pay__chip--cod { --cro-pay-dot: #2F6F4E; }
+.cro-pay__chip--jazzcash { --cro-pay-dot: #C8102E; }
+.cro-pay__chip--easypaisa { --cro-pay-dot: #3BB54A; }
+.cro-pay__chip--bank { --cro-pay-dot: #173F35; }
 .cro-pay__chip img { block-size: 18px; inline-size: auto; }
+@media (prefers-reduced-motion: reduce) { .cro-pay__item--card { transition: none; } }
+
+/* Footer social icons */
+.cro-social { display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0 0; padding: 0; list-style: none; }
+.cro-social a { display: inline-flex; align-items: center; justify-content: center; inline-size: 44px; block-size: 44px; border: 1px solid rgba(255, 255, 255, .28); border-radius: 50%; color: inherit; text-decoration: none; transition: background-color .2s ease, color .2s ease, transform .2s ease, border-color .2s ease; }
+.cro-social a:hover { background: var(--color-secondary, #E8B44A); border-color: var(--color-secondary, #E8B44A); color: var(--color-primary, #173F35); transform: translateY(-2px); }
+.cro-social a:focus-visible { outline: 2px solid var(--color-secondary, #E8B44A); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { .cro-social a { transition: none; } }
 
 /* Free-delivery progress (cart drawer, cart page) */
 .cro-ship { display: grid; gap: 8px; }

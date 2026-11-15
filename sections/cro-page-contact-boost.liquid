@@ -99,7 +99,7 @@
     {%- endif -%}
     <ul class="cro-cb2" role="list">
       {%- if s.show_whatsapp and wa != blank -%}
-        <li><a class="cro-cb2__card cro-card" href="https://wa.me/{{ wa }}?text={{ s.whatsapp_message | url_encode }}" target="_blank" rel="noopener" data-cro-wa="contact"><span class="cro-cb2__icon">{% render 'cro-icon', icon: 'whatsapp', size: 24 %}</span><span><span class="cro-cb2__title">{{ s.whatsapp_label | escape }}</span><span class="cro-cb2__value">+{{ wa }}</span></span></a></li>
+        <li><a class="cro-cb2__card cro-card" href="https://wa.me/{{ wa }}?text={{ s.whatsapp_message | replace: '&amp;', '&' | url_encode }}" target="_blank" rel="noopener" data-cro-wa="contact"><span class="cro-cb2__icon">{% render 'cro-icon', icon: 'whatsapp', size: 24 %}</span><span><span class="cro-cb2__title">{{ s.whatsapp_label | escape }}</span><span class="cro-cb2__value">+{{ wa }}</span></span></a></li>
       {%- endif -%}
       {%- if s.show_phone and phone != blank -%}
         <li><a class="cro-cb2__card cro-card" href="tel:{{ phone | remove: ' ' | remove: '-' }}"><span class="cro-cb2__icon">{% render 'cro-icon', icon: 'phone', size: 22 %}</span><span><span class="cro-cb2__title">{{ s.phone_label | escape }}</span><span class="cro-cb2__value">{{ phone | escape }}</span></span></a></li>

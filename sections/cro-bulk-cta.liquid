@@ -94,7 +94,7 @@
       </div>
       <div class="cro-bulk__actions">
         {%- if s.form_label != blank -%}<a class="cro-btn" href="{{ s.form_link | default: routes.root_url }}">{{ s.form_label | escape }}</a>{%- endif -%}
-        {%- if wa != blank and s.whatsapp_label != blank -%}<a class="cro-btn cro-bulk__wa" href="https://wa.me/{{ wa }}?text={{ s.whatsapp_message | url_encode }}" target="_blank" rel="noopener" data-cro-wa="bulk">{% render 'cro-icon', icon: 'whatsapp', size: 20 %}{{ s.whatsapp_label | escape }}</a>{%- endif -%}
+        {%- if wa != blank and s.whatsapp_label != blank -%}<a class="cro-btn cro-bulk__wa" href="https://wa.me/{{ wa }}?text={{ s.whatsapp_message | replace: '&amp;', '&' | url_encode }}" target="_blank" rel="noopener" data-cro-wa="bulk">{% render 'cro-icon', icon: 'whatsapp', size: 20 %}{{ s.whatsapp_label | escape }}</a>{%- endif -%}
         {%- if s.phone != blank -%}<a class="cro-btn cro-btn--ghost" href="tel:{{ s.phone | remove: ' ' | remove: '-' }}">{% render 'cro-icon', icon: 'phone', size: 18 %}{{ s.phone | escape }}</a>{%- endif -%}
       </div>
     </div>

@@ -12,9 +12,66 @@
     "main": {
       "type": "main-page",
       "settings": {}
+    },
+    "cro_shipping": {
+      "type": "cro-page-content",
+      "blocks": {
+        "dispatch": {
+          "type": "item",
+          "settings": {
+            "icon": "clock",
+            "title": "Same or next working-day dispatch",
+            "text": "<p>We dispatch every order the same working day or the next working day, once it has been received or confirmed with you.</p>"
+          }
+        },
+        "free": {
+          "type": "item",
+          "settings": {
+            "icon": "truck",
+            "title": "Free delivery over PKR 2,500",
+            "text": "<p>Eligible orders over PKR 2,500 get free delivery. Terms may apply.</p>"
+          }
+        },
+        "damage": {
+          "type": "item",
+          "settings": {
+            "icon": "refresh",
+            "title": "Arrived damaged?",
+            "text": "<p>If an item arrives damaged or something goes wrong in transit, we will exchange it. Just contact us within 7 days of delivery.</p>",
+            "link_label": "Returns & exchanges policy",
+            "link": "shopify://pages/returns-exchanges"
+          }
+        },
+        "bulk": {
+          "type": "item",
+          "settings": {
+            "icon": "box",
+            "title": "Bulk and business orders",
+            "text": "<p>We welcome bulk orders from cafés, bakeries, retailers, caterers and gifting businesses. Tell us what you need and we'll prepare a quote.</p>",
+            "link_label": "Request a bulk quote",
+            "link": "shopify://pages/bulk-orders"
+          }
+        }
+      },
+      "block_order": [
+        "dispatch",
+        "free",
+        "damage",
+        "bulk"
+      ],
+      "settings": {
+        "eyebrow": "Shipping information",
+        "heading": "Fast dispatch, carefully packed",
+        "intro": "<p>We dispatch every order the same working day or the next working day, once it has been received or confirmed with you.</p>",
+        "layout": "cards",
+        "columns": 2,
+        "button_label": "Start shopping",
+        "button_link": "shopify://collections/all"
+      }
     }
   },
   "order": [
-    "main"
+    "main",
+    "cro_shipping"
   ]
 }

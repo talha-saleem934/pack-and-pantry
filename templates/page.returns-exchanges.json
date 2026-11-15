@@ -12,9 +12,64 @@
     "main": {
       "type": "main-page",
       "settings": {}
+    },
+    "cro_returns": {
+      "type": "cro-page-content",
+      "blocks": {
+        "noreturn": {
+          "type": "item",
+          "settings": {
+            "icon": "shield",
+            "title": "No returns, for hygiene reasons",
+            "text": "<p>Our jars, bottles and containers are kitchen and food-storage products, so for hygiene reasons we cannot accept returns.</p>"
+          }
+        },
+        "exchange": {
+          "type": "item",
+          "settings": {
+            "icon": "refresh",
+            "title": "Damaged or transit problems? We exchange",
+            "text": "<p>If an item arrives damaged or something goes wrong in transit, we will exchange it. Just contact us within 7 days of delivery.</p>"
+          }
+        },
+        "window": {
+          "type": "item",
+          "settings": {
+            "icon": "clock",
+            "title": "Exchange window: 7 days from delivery",
+            "text": "<p>Exchange requests must reach us within 7 days of your order being delivered. Please include your order number and a short description of the problem.</p>"
+          }
+        },
+        "help": {
+          "type": "item",
+          "settings": {
+            "icon": "mail",
+            "title": "We're here to help",
+            "text": "<p>Your satisfaction is our top priority. If something isn't right with your delivery, our team is here to help.</p>",
+            "link_label": "Contact us",
+            "link": "shopify://pages/contact"
+          }
+        }
+      },
+      "block_order": [
+        "noreturn",
+        "exchange",
+        "window",
+        "help"
+      ],
+      "settings": {
+        "eyebrow": "Returns & exchanges",
+        "heading": "Hygiene first, and covered if anything arrives damaged",
+        "intro": "<p>Because our products store food, we keep hygiene at the heart of our policy. Here is exactly what we can and cannot do.</p>",
+        "layout": "stack",
+        "columns": 1,
+        "button_label": "Contact us about an exchange",
+        "button_link": "shopify://pages/contact"
+      }
     }
   },
   "order": [
-    "main"
+    "main",
+    "cro_returns"
   ]
 }

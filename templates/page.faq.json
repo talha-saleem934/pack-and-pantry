@@ -56,11 +56,116 @@
         "eyebrow": "Good to know",
         "heading": "Storage questions, neatly answered",
         "text": "Helpful starting points for choosing and ordering storage."
+      },
+      "disabled": true
+    },
+    "cro_faq": {
+      "type": "cro-faq",
+      "blocks": {
+        "dispatch": {
+          "type": "question",
+          "settings": {
+            "category": "Orders & delivery",
+            "question": "How quickly do you dispatch orders?",
+            "answer": "<p>We dispatch every order the same working day or the next working day, once it has been received or confirmed with you.</p>"
+          }
+        },
+        "free": {
+          "type": "question",
+          "settings": {
+            "category": "Orders & delivery",
+            "question": "Do you offer free delivery?",
+            "answer": "<p>Eligible orders over PKR 2,500 get free delivery. Terms may apply.</p>"
+          }
+        },
+        "confirm": {
+          "type": "question",
+          "settings": {
+            "category": "Orders & delivery",
+            "question": "Why is my order confirmed before it ships?",
+            "answer": "<p>Some orders are confirmed with you before dispatch. As soon as your order is confirmed, it is dispatched the same or the next working day.</p>"
+          }
+        },
+        "returns": {
+          "type": "question",
+          "settings": {
+            "category": "Returns & exchanges",
+            "question": "Can I return a product?",
+            "answer": "<p>Our jars, bottles and containers are kitchen and food-storage products, so for hygiene reasons we cannot accept returns.</p>"
+          }
+        },
+        "damaged": {
+          "type": "question",
+          "settings": {
+            "category": "Returns & exchanges",
+            "question": "What if my order arrives damaged?",
+            "answer": "<p>If an item arrives damaged or something goes wrong in transit, we will exchange it. Just contact us within 7 days of delivery.</p>"
+          }
+        },
+        "window": {
+          "type": "question",
+          "settings": {
+            "category": "Returns & exchanges",
+            "question": "How long do I have to request an exchange?",
+            "answer": "<p>Please contact us within 7 days of delivery with your order number and a short description of the problem.</p>"
+          }
+        },
+        "quality": {
+          "type": "question",
+          "settings": {
+            "category": "Products",
+            "question": "How do you make sure of quality?",
+            "answer": "<p>Quality is the one thing we never compromise on. Every jar, bottle and organiser we sell is chosen to be practical, dependable and good-looking on your shelf.</p>"
+          }
+        },
+        "size": {
+          "type": "question",
+          "settings": {
+            "category": "Products",
+            "question": "How do I choose the right size?",
+            "answer": "<p>Use the capacity and dimensions shown on each product page, then contact us if you need help comparing options.</p>"
+          }
+        },
+        "care": {
+          "type": "question",
+          "settings": {
+            "category": "Products",
+            "question": "How should I care for my products?",
+            "answer": "<p>Follow the care information supplied on each product page or with the product.</p>"
+          }
+        },
+        "bulk": {
+          "type": "question",
+          "settings": {
+            "category": "Bulk orders",
+            "question": "Do you accept bulk orders?",
+            "answer": "<p>We welcome bulk orders from cafés, bakeries, retailers, caterers and gifting businesses. Tell us what you need and we'll prepare a quote. Use our <a href=\"/pages/bulk-orders\">Bulk Orders page</a> to send your requirements.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "dispatch",
+        "free",
+        "confirm",
+        "returns",
+        "damaged",
+        "window",
+        "quality",
+        "size",
+        "care",
+        "bulk"
+      ],
+      "settings": {
+        "eyebrow": "Good to know",
+        "heading": "Frequently asked questions",
+        "open_first": true,
+        "schema_markup": true
       }
     }
   },
   "order": [
     "main",
-    "faq"
+    "faq",
+    "cro_faq"
   ]
 }

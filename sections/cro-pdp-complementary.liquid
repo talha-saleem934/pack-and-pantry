@@ -84,6 +84,16 @@
 #cro-{{ sid }} .cro-set__price { color: var(--cro-heading); font-weight: 700; white-space: nowrap; }
 #cro-{{ sid }} .cro-set__footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 16px; }
 #cro-{{ sid }} .cro-set__total { color: var(--cro-heading); font-size: 20px; font-weight: 700; }
+@media (max-width: 749px) {
+  #cro-{{ sid }} .cro-set > .cro-set__items { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  #cro-{{ sid }} .cro-set > .cro-set__items > [data-cro-comp-target] { display: contents; }
+  #cro-{{ sid }} .cro-set__item { position: relative; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "img img" "title price"; align-items: start; gap: 8px; padding: 8px; }
+  #cro-{{ sid }} .cro-set__item > :nth-child(2) { grid-area: img; inline-size: 100%; block-size: auto; aspect-ratio: 1; border-radius: 10px; object-fit: cover; }
+  #cro-{{ sid }} .cro-set__item > :nth-child(3) { grid-area: title; min-inline-size: 0; }
+  #cro-{{ sid }} .cro-set__item .cro-set__price { grid-area: price; font-size: 13px; }
+  #cro-{{ sid }} .cro-set__item input { position: absolute; inset-block-start: 14px; inset-inline-start: 14px; z-index: 1; }
+  #cro-{{ sid }} .cro-set__title { font-size: 13px; line-height: 1.3; }
+}
 @media (min-width: 990px) { #cro-{{ sid }} .cro-set { grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr); align-items: start; } }
 
 {% endstyle %}
@@ -95,7 +105,7 @@
       {%- if rec.available and rv.available -%}
         <label class="cro-set__item cro-card" data-cro-set-item>
           <input type="checkbox" value="{{ rv.id }}" data-price="{{ rv.price }}" data-cro-set-check {% if s.prechecked %}checked{% endif %}>
-          {%- if rec.featured_media -%}{{ rec.featured_media | image_url: width: 160, height: 160, crop: 'center' | image_tag: loading: 'lazy', alt: '', width: 64, height: 64 }}{%- else -%}<span></span>{%- endif -%}
+          {%- if rec.featured_media -%}{{ rec.featured_media | image_url: width: 360, height: 360, crop: 'center' | image_tag: loading: 'lazy', alt: '', width: 64, height: 64 }}{%- else -%}<span></span>{%- endif -%}
           <span><a class="cro-set__title" href="{{ rec.url }}">{{ rec.title | escape }}</a>{%- unless rec.has_only_default_variant -%}<span class="cro-set__tag">{{ rv.title | escape }}</span>{%- endunless -%}</span>
           <span class="cro-set__price">{{ rv.price | money }}</span>
         </label>
@@ -121,7 +131,7 @@
           {%- if product.available and base.available -%}
             <label class="cro-set__item cro-card">
               <input type="checkbox" value="{{ base.id }}" data-price="{{ base.price }}" data-cro-set-check data-cro-set-base checked>
-              {%- if product.featured_media -%}{{ product.featured_media | image_url: width: 160, height: 160, crop: 'center' | image_tag: loading: 'lazy', alt: '', width: 64, height: 64 }}{%- else -%}<span></span>{%- endif -%}
+              {%- if product.featured_media -%}{{ product.featured_media | image_url: width: 360, height: 360, crop: 'center' | image_tag: loading: 'lazy', alt: '', width: 64, height: 64 }}{%- else -%}<span></span>{%- endif -%}
               <span><span class="cro-set__title">{{ product.title | escape }}</span><span class="cro-set__tag">{{ s.this_item_label | escape }}</span></span>
               <span class="cro-set__price">{{ base.price | money }}</span>
             </label>

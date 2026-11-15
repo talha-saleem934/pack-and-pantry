@@ -103,6 +103,12 @@
       { "type": "page", "id": "cro_page_shipping", "label": "Shipping / delivery page" },
       { "type": "page", "id": "cro_page_returns", "label": "Returns and exchanges page" },
       { "type": "page", "id": "cro_page_privacy", "label": "Privacy page" },
+      { "type": "header", "content": "Sale countdown (all sections)", "info": "When on, every countdown in every section uses this time instead of its own. Sections whose countdown is set to None stay without one." },
+      { "type": "checkbox", "id": "cro_cd_override", "label": "Use one countdown time across the store", "default": false },
+      { "type": "select", "id": "cro_cd_mode", "label": "Countdown type", "default": "fixed", "options": [ { "value": "fixed", "label": "Offer ends at a date and time" }, { "value": "daily", "label": "Daily dispatch cut-off" }, { "value": "evergreen", "label": "Per-visitor timer" } ] },
+      { "type": "text", "id": "cro_cd_end", "label": "End date and time", "placeholder": "2026-12-02 23:59", "info": "Format YYYY-MM-DD HH:MM in the shop timezone. Set it to when the offer really ends." },
+      { "type": "range", "id": "cro_cd_hours", "label": "Per-visitor timer length", "min": 1, "max": 72, "step": 1, "unit": "h", "default": 24 },
+      { "type": "text", "id": "cro_cd_fallback", "label": "Text shown before the timer loads", "info": "e.g. 'Sale ends 2 December'." },
       { "type": "header", "content": "Measurement" },
       { "type": "checkbox", "id": "cro_enable_analytics", "label": "Send CRO events to the data layer", "default": false, "info": "Only pushes events when window.dataLayer already exists. No tracking code is added." }
     ]

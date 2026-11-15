@@ -189,8 +189,8 @@
           "settings": {
             "icon": "refresh",
             "icon_text": "",
-            "title": "Returns & exchanges",
-            "text": "Read our policy before you order.",
+            "title": "Damaged in transit?",
+            "text": "We exchange within 7 days of delivery.",
             "link": "shopify://pages/returns-exchanges"
           }
         },
@@ -927,10 +927,9 @@
         },
         "delivery": {
           "type": "question",
-          "disabled": true,
           "settings": {
-            "question": "Where will delivery and returns information appear?",
-            "answer": "<p>Add the verified delivery and returns policies before publishing this section.</p>"
+            "question": "How fast do you dispatch, and can I return items?",
+            "answer": "<p>We dispatch every order the same working day or the next working day, once it has been received or confirmed with you. Our jars, bottles and containers are kitchen and food-storage products, so for hygiene reasons we cannot accept returns. If an item arrives damaged or something goes wrong in transit, we will exchange it. Just contact us within 7 days of delivery.</p>"
           }
         },
         "bulk": {

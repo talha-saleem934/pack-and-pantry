@@ -102,11 +102,11 @@
         "secure": {
           "type": "trust",
           "settings": {
-            "icon": "lock",
+            "icon": "clock",
             "icon_text": "",
-            "title": "Secure checkout",
-            "text": "Payment is handled by Shopify's encrypted checkout.",
-            "link": ""
+            "title": "Fast dispatch",
+            "text": "Same or next working day once confirmed.",
+            "link": "shopify://pages/shipping-information"
           }
         },
         "returns": {
@@ -114,8 +114,8 @@
           "settings": {
             "icon": "refresh",
             "icon_text": "",
-            "title": "Returns & exchanges",
-            "text": "Read our policy before you order.",
+            "title": "Damaged in transit?",
+            "text": "We exchange within 7 days of delivery.",
             "link": "shopify://pages/returns-exchanges"
           }
         },

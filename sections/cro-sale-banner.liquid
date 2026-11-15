@@ -8,8 +8,14 @@
     assign has_cd = true
   endif
   assign server_expired = false
-  if s.countdown_mode == 'fixed' and s.countdown_end != blank
-    assign end_ts = s.countdown_end | date: '%s' | plus: 0
+  assign sb_end = s.countdown_end
+  assign sb_mode = s.countdown_mode
+  if settings.cro_cd_override
+    assign sb_end = settings.cro_cd_end
+    assign sb_mode = settings.cro_cd_mode
+  endif
+  if s.countdown_mode != 'none' and sb_mode == 'fixed' and sb_end != blank
+    assign end_ts = sb_end | date: '%s' | plus: 0
     if end_ts > 1000000000 and end_ts < now_ts
       assign server_expired = true
     endif

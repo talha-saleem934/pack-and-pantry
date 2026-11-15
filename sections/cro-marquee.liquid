@@ -27,8 +27,23 @@
       {%- endif -%}
     {%- endcapture -%}
     {%- if item_inner != blank -%}
-      {%- if b.link != blank -%}
-        <a class="cro-mq-item cro-mq-item--{{ block.type }}" href="{{ b.link }}" {{ block.shopify_attributes }}>{{ item_inner }}</a>
+      {%- liquid
+  assign mq_href = b.link
+  assign mq_wa = false
+  assign cro_wa_num = b.whatsapp_number
+  if b.whatsapp_use_theme and cro_wa_num == blank
+    assign cro_wa_num = settings.cro_whatsapp_number
+  endif
+  assign cro_wa_num = cro_wa_num | remove: '+' | remove: ' ' | remove: '-' | remove: '(' | remove: ')'
+  if cro_wa_num != blank
+    assign cro_wa_msg = b.whatsapp_message | default: settings.cro_whatsapp_greeting | replace: '{product}', shop.name | replace: '{url}', canonical_url | replace: '&amp;', '&' | replace: '&#39;', "'" | replace: '&quot;', '"'
+    assign cro_wa_enc = cro_wa_msg | url_encode
+    assign mq_href = 'https://wa.me/' | append: cro_wa_num | append: '?text=' | append: cro_wa_enc
+    assign mq_wa = true
+  endif
+-%}
+      {%- if mq_href != blank -%}
+        <a class="cro-mq-item cro-mq-item--{{ block.type }}" href="{{ mq_href }}"{% if mq_wa %} target="_blank" rel="noopener" data-cro-wa="marquee"{% endif %} {{ block.shopify_attributes }}>{{ item_inner }}</a>
       {%- else -%}
         <span class="cro-mq-item cro-mq-item--{{ block.type }}" {{ block.shopify_attributes }}>{{ item_inner }}</span>
       {%- endif -%}
@@ -46,8 +61,12 @@
 
 {%- liquid
   assign mq_expired = false
-  if s.hide_after != blank
-    assign mq_end_ts = s.hide_after | date: '%s' | plus: 0
+  assign mq_hide_after = s.hide_after
+  if s.hide_after != blank and settings.cro_cd_override and settings.cro_cd_mode == 'fixed' and settings.cro_cd_end != blank
+    assign mq_hide_after = settings.cro_cd_end
+  endif
+  if mq_hide_after != blank
+    assign mq_end_ts = mq_hide_after | date: '%s' | plus: 0
     assign mq_now_ts = 'now' | date: '%s' | plus: 0
     if mq_end_ts > 1000000000 and mq_end_ts < mq_now_ts
       assign mq_expired = true
@@ -102,7 +121,7 @@
     #cro-{{ sid }} .cro-mq-item { font-size: {{ s.font_size_desktop }}px; }
   }
 {% endstyle %}
-<div id="cro-{{ sid }}" class="cro-mqs" role="region" aria-label="{{ s.region_label | escape }}"{% if s.hide_after != blank and request.design_mode == false %} data-cro-hide-after="{{ s.hide_after | escape }}"{% endif %}>
+<div id="cro-{{ sid }}" class="cro-mqs" role="region" aria-label="{{ s.region_label | escape }}"{% if mq_hide_after != blank and request.design_mode == false %} data-cro-hide-after="{{ mq_hide_after | escape }}"{% endif %}>
   <div class="cro-mqs__inner">
     <div class="cro-mq{% if s.edge_fade %} cro-mq--fade{% endif %}" data-cro-marquee data-speed="{{ s.speed }}" data-direction="{{ s.direction }}" data-pause="{{ s.pause_on_hover }}">
       <div class="cro-mq__track" data-cro-mq-track>
@@ -123,76 +142,676 @@
   "class": "cro-section cro-section--marquee",
   "max_blocks": 12,
   "settings": [
-    { "type": "header", "content": "Content" },
-    { "type": "text", "id": "region_label", "label": "Screen-reader label", "default": "Highlights" },
-    { "type": "text", "id": "hide_after", "label": "Hide after date and time", "placeholder": "2026-12-02 23:59", "info": "Optional. Format YYYY-MM-DD HH:MM in the shop timezone. Use it for sale messages so the strip disappears when the sale ends." },
-    { "type": "text", "id": "empty_editor_note", "label": "Theme editor note when empty", "default": "Add text or image blocks to this marquee.", "info": "Only visible inside the theme editor." },
-
-    { "type": "header", "content": "Behaviour" },
-    { "type": "range", "id": "speed", "label": "Speed", "min": 10, "max": 200, "step": 5, "unit": "px", "default": 40, "info": "Pixels per second. Movement stops for visitors who prefer reduced motion; items wrap into a static row instead." },
-    { "type": "select", "id": "direction", "label": "Direction", "default": "left", "options": [ { "value": "left", "label": "Left" }, { "value": "right", "label": "Right" } ] },
-    { "type": "checkbox", "id": "pause_on_hover", "label": "Pause on hover", "default": true },
-    { "type": "checkbox", "id": "edge_fade", "label": "Fade the edges", "default": true },
-
-    { "type": "header", "content": "Separator" },
-    { "type": "select", "id": "separator_type", "label": "Separator", "default": "text", "options": [ { "value": "none", "label": "None" }, { "value": "text", "label": "Character" }, { "value": "icon", "label": "Icon" }, { "value": "image", "label": "Image" } ] },
-    { "type": "text", "id": "separator_text", "label": "Separator character", "default": "✦" },
-    { "type": "select", "id": "separator_icon", "label": "Separator icon", "default": "sparkle", "options": [{"value":"none","label":"None"},{"value":"truck","label":"Truck"},{"value":"shield","label":"Shield"},{"value":"cash","label":"Cash"},{"value":"refresh","label":"Refresh / returns"},{"value":"lock","label":"Lock"},{"value":"star","label":"Star"},{"value":"whatsapp","label":"WhatsApp"},{"value":"gift","label":"Gift"},{"value":"clock","label":"Clock"},{"value":"tag","label":"Tag"},{"value":"heart","label":"Heart"},{"value":"check","label":"Check"},{"value":"phone","label":"Phone"},{"value":"box","label":"Box"},{"value":"leaf","label":"Leaf"},{"value":"award","label":"Award"},{"value":"sparkle","label":"Sparkle"},{"value":"percent","label":"Percent"},{"value":"mail","label":"Mail"},{"value":"map-pin","label":"Map pin"},{"value":"thumbs-up","label":"Thumbs up"},{"value":"package","label":"Package"},{"value":"camera","label":"Camera"},{"value":"play","label":"Play"},{"value":"flame","label":"Flame"}] },
-    { "type": "image_picker", "id": "separator_image", "label": "Separator image" },
-
-    { "type": "header", "content": "Layout" },
-    { "type": "checkbox", "id": "full_width", "label": "Full width", "default": true },
-    { "type": "range", "id": "container_width", "label": "Container width", "min": 800, "max": 1800, "step": 50, "unit": "px", "default": 1300 },
-    { "type": "select", "id": "align", "label": "Alignment when motion is reduced", "default": "center", "options": [ { "value": "start", "label": "Start" }, { "value": "center", "label": "Centre" }, { "value": "end", "label": "End" } ] },
-    { "type": "range", "id": "gap", "label": "Gap between items", "min": 8, "max": 96, "step": 4, "unit": "px", "default": 32 },
-    { "type": "range", "id": "height_desktop", "label": "Minimum height (desktop)", "min": 24, "max": 160, "step": 4, "unit": "px", "default": 56 },
-    { "type": "range", "id": "height_mobile", "label": "Minimum height (mobile)", "min": 24, "max": 160, "step": 4, "unit": "px", "default": 48 },
-    { "type": "range", "id": "padding_top_desktop", "label": "Padding top (desktop)", "min": 0, "max": 80, "step": 4, "unit": "px", "default": 8 },
-    { "type": "range", "id": "padding_bottom_desktop", "label": "Padding bottom (desktop)", "min": 0, "max": 80, "step": 4, "unit": "px", "default": 8 },
-    { "type": "range", "id": "padding_top_mobile", "label": "Padding top (mobile)", "min": 0, "max": 80, "step": 4, "unit": "px", "default": 4 },
-    { "type": "range", "id": "padding_bottom_mobile", "label": "Padding bottom (mobile)", "min": 0, "max": 80, "step": 4, "unit": "px", "default": 4 },
-
-    { "type": "header", "content": "Typography" },
-    { "type": "select", "id": "font_family", "label": "Font", "default": "body", "options": [ { "value": "body", "label": "Body font" }, { "value": "heading", "label": "Heading font" } ] },
-    { "type": "range", "id": "font_size_desktop", "label": "Text size (desktop)", "min": 10, "max": 48, "step": 1, "unit": "px", "default": 18 },
-    { "type": "range", "id": "font_size_mobile", "label": "Text size (mobile)", "min": 10, "max": 48, "step": 1, "unit": "px", "default": 15 },
-    { "type": "select", "id": "font_weight", "label": "Font weight", "default": "700", "options": [ { "value": "400", "label": "Regular" }, { "value": "700", "label": "Bold" } ] },
-    { "type": "range", "id": "letter_spacing", "label": "Letter spacing", "min": 0, "max": 4, "step": 0.5, "unit": "px", "default": 0.5 },
-    { "type": "checkbox", "id": "uppercase", "label": "Uppercase", "default": true },
-    { "type": "range", "id": "icon_size", "label": "Icon and separator size", "min": 12, "max": 48, "step": 2, "unit": "px", "default": 20 },
-
-    { "type": "header", "content": "Colours", "info": "Keep text at a 4.5:1 contrast ratio or better against the background (WCAG AA)." },
-    { "type": "color", "id": "bg_color", "label": "Background", "default": "#173F35" },
-    { "type": "color", "id": "bg_color_2", "label": "Background gradient end", "info": "Optional. Set it for a gradient background." },
-    { "type": "range", "id": "gradient_angle", "label": "Gradient angle", "min": 0, "max": 180, "step": 15, "unit": "deg", "default": 90 },
-    { "type": "color", "id": "text_color", "label": "Text", "default": "#F7F1E7" },
-    { "type": "color", "id": "icon_color", "label": "Icons", "default": "#E8B44A" },
-    { "type": "color", "id": "separator_color", "label": "Separator", "default": "#E8B44A" },
-    { "type": "color", "id": "link_hover_color", "label": "Link hover", "default": "#E8B44A" },
-    { "type": "checkbox", "id": "border_top", "label": "Top border", "default": false },
-    { "type": "checkbox", "id": "border_bottom", "label": "Bottom border", "default": false },
-    { "type": "color", "id": "border_color", "label": "Border", "default": "#D7CEC1" }
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "region_label",
+      "label": "Screen-reader label",
+      "default": "Highlights"
+    },
+    {
+      "type": "text",
+      "id": "hide_after",
+      "label": "Hide after date and time",
+      "placeholder": "2026-12-02 23:59",
+      "info": "Optional. Format YYYY-MM-DD HH:MM in the shop timezone. Use it for sale messages so the strip disappears when the sale ends. When the global sale countdown in Theme settings is on, its end time is used instead."
+    },
+    {
+      "type": "text",
+      "id": "empty_editor_note",
+      "label": "Theme editor note when empty",
+      "default": "Add text or image blocks to this marquee.",
+      "info": "Only visible inside the theme editor."
+    },
+    {
+      "type": "header",
+      "content": "Behaviour"
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Speed",
+      "min": 10,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "default": 40,
+      "info": "Pixels per second. Movement stops for visitors who prefer reduced motion; items wrap into a static row instead."
+    },
+    {
+      "type": "select",
+      "id": "direction",
+      "label": "Direction",
+      "default": "left",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "pause_on_hover",
+      "label": "Pause on hover",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "edge_fade",
+      "label": "Fade the edges",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Separator"
+    },
+    {
+      "type": "select",
+      "id": "separator_type",
+      "label": "Separator",
+      "default": "text",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "text",
+          "label": "Character"
+        },
+        {
+          "value": "icon",
+          "label": "Icon"
+        },
+        {
+          "value": "image",
+          "label": "Image"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "separator_text",
+      "label": "Separator character",
+      "default": "✦"
+    },
+    {
+      "type": "select",
+      "id": "separator_icon",
+      "label": "Separator icon",
+      "default": "sparkle",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "truck",
+          "label": "Truck"
+        },
+        {
+          "value": "shield",
+          "label": "Shield"
+        },
+        {
+          "value": "cash",
+          "label": "Cash"
+        },
+        {
+          "value": "refresh",
+          "label": "Refresh / returns"
+        },
+        {
+          "value": "lock",
+          "label": "Lock"
+        },
+        {
+          "value": "star",
+          "label": "Star"
+        },
+        {
+          "value": "whatsapp",
+          "label": "WhatsApp"
+        },
+        {
+          "value": "gift",
+          "label": "Gift"
+        },
+        {
+          "value": "clock",
+          "label": "Clock"
+        },
+        {
+          "value": "tag",
+          "label": "Tag"
+        },
+        {
+          "value": "heart",
+          "label": "Heart"
+        },
+        {
+          "value": "check",
+          "label": "Check"
+        },
+        {
+          "value": "phone",
+          "label": "Phone"
+        },
+        {
+          "value": "box",
+          "label": "Box"
+        },
+        {
+          "value": "leaf",
+          "label": "Leaf"
+        },
+        {
+          "value": "award",
+          "label": "Award"
+        },
+        {
+          "value": "sparkle",
+          "label": "Sparkle"
+        },
+        {
+          "value": "percent",
+          "label": "Percent"
+        },
+        {
+          "value": "mail",
+          "label": "Mail"
+        },
+        {
+          "value": "map-pin",
+          "label": "Map pin"
+        },
+        {
+          "value": "thumbs-up",
+          "label": "Thumbs up"
+        },
+        {
+          "value": "package",
+          "label": "Package"
+        },
+        {
+          "value": "camera",
+          "label": "Camera"
+        },
+        {
+          "value": "play",
+          "label": "Play"
+        },
+        {
+          "value": "flame",
+          "label": "Flame"
+        }
+      ]
+    },
+    {
+      "type": "image_picker",
+      "id": "separator_image",
+      "label": "Separator image"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "Full width",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "container_width",
+      "label": "Container width",
+      "min": 800,
+      "max": 1800,
+      "step": 50,
+      "unit": "px",
+      "default": 1300
+    },
+    {
+      "type": "select",
+      "id": "align",
+      "label": "Alignment when motion is reduced",
+      "default": "center",
+      "options": [
+        {
+          "value": "start",
+          "label": "Start"
+        },
+        {
+          "value": "center",
+          "label": "Centre"
+        },
+        {
+          "value": "end",
+          "label": "End"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap between items",
+      "min": 8,
+      "max": 96,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "height_desktop",
+      "label": "Minimum height (desktop)",
+      "min": 24,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "height_mobile",
+      "label": "Minimum height (mobile)",
+      "min": 24,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "label": "Padding top (desktop)",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "label": "Padding bottom (desktop)",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Padding top (mobile)",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Padding bottom (mobile)",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "select",
+      "id": "font_family",
+      "label": "Font",
+      "default": "body",
+      "options": [
+        {
+          "value": "body",
+          "label": "Body font"
+        },
+        {
+          "value": "heading",
+          "label": "Heading font"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "font_size_desktop",
+      "label": "Text size (desktop)",
+      "min": 10,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "font_size_mobile",
+      "label": "Text size (mobile)",
+      "min": 10,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "select",
+      "id": "font_weight",
+      "label": "Font weight",
+      "default": "700",
+      "options": [
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "letter_spacing",
+      "label": "Letter spacing",
+      "min": 0,
+      "max": 4,
+      "step": 0.5,
+      "unit": "px",
+      "default": 0.5
+    },
+    {
+      "type": "checkbox",
+      "id": "uppercase",
+      "label": "Uppercase",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "label": "Icon and separator size",
+      "min": 12,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Colours",
+      "info": "Keep text at a 4.5:1 contrast ratio or better against the background (WCAG AA)."
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#173F35"
+    },
+    {
+      "type": "color",
+      "id": "bg_color_2",
+      "label": "Background gradient end",
+      "info": "Optional. Set it for a gradient background."
+    },
+    {
+      "type": "range",
+      "id": "gradient_angle",
+      "label": "Gradient angle",
+      "min": 0,
+      "max": 180,
+      "step": 15,
+      "unit": "deg",
+      "default": 90
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#F7F1E7"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icons",
+      "default": "#E8B44A"
+    },
+    {
+      "type": "color",
+      "id": "separator_color",
+      "label": "Separator",
+      "default": "#E8B44A"
+    },
+    {
+      "type": "color",
+      "id": "link_hover_color",
+      "label": "Link hover",
+      "default": "#E8B44A"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_top",
+      "label": "Top border",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "border_bottom",
+      "label": "Bottom border",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border",
+      "default": "#D7CEC1"
+    }
   ],
   "blocks": [
     {
       "type": "text",
       "name": "Text",
       "settings": [
-        { "type": "text", "id": "text", "label": "Text", "default": "Glass jars" },
-        { "type": "url", "id": "link", "label": "Link" },
-        { "type": "select", "id": "icon", "label": "Icon", "default": "none", "options": [{"value":"none","label":"None"},{"value":"truck","label":"Truck"},{"value":"shield","label":"Shield"},{"value":"cash","label":"Cash"},{"value":"refresh","label":"Refresh / returns"},{"value":"lock","label":"Lock"},{"value":"star","label":"Star"},{"value":"whatsapp","label":"WhatsApp"},{"value":"gift","label":"Gift"},{"value":"clock","label":"Clock"},{"value":"tag","label":"Tag"},{"value":"heart","label":"Heart"},{"value":"check","label":"Check"},{"value":"phone","label":"Phone"},{"value":"box","label":"Box"},{"value":"leaf","label":"Leaf"},{"value":"award","label":"Award"},{"value":"sparkle","label":"Sparkle"},{"value":"percent","label":"Percent"},{"value":"mail","label":"Mail"},{"value":"map-pin","label":"Map pin"},{"value":"thumbs-up","label":"Thumbs up"},{"value":"package","label":"Package"},{"value":"camera","label":"Camera"},{"value":"play","label":"Play"},{"value":"flame","label":"Flame"}] },
-        { "type": "text", "id": "icon_text", "label": "Icon emoji / text", "info": "Overrides the built-in icon." },
-        { "type": "image_picker", "id": "icon_image", "label": "Icon image", "info": "Overrides emoji and built-in icon." }
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Glass jars"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        },
+        {
+          "type": "text",
+          "id": "whatsapp_number",
+          "label": "WhatsApp number",
+          "info": "Optional. International format, digits only, e.g. 923001234567. When set, this item opens a WhatsApp chat instead of the link."
+        },
+        {
+          "type": "checkbox",
+          "id": "whatsapp_use_theme",
+          "label": "Use the WhatsApp number from Theme settings",
+          "default": false
+        },
+        {
+          "type": "textarea",
+          "id": "whatsapp_message",
+          "label": "WhatsApp message",
+          "info": "Empty uses the default greeting from Theme settings."
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "default": "none",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "truck",
+              "label": "Truck"
+            },
+            {
+              "value": "shield",
+              "label": "Shield"
+            },
+            {
+              "value": "cash",
+              "label": "Cash"
+            },
+            {
+              "value": "refresh",
+              "label": "Refresh / returns"
+            },
+            {
+              "value": "lock",
+              "label": "Lock"
+            },
+            {
+              "value": "star",
+              "label": "Star"
+            },
+            {
+              "value": "whatsapp",
+              "label": "WhatsApp"
+            },
+            {
+              "value": "gift",
+              "label": "Gift"
+            },
+            {
+              "value": "clock",
+              "label": "Clock"
+            },
+            {
+              "value": "tag",
+              "label": "Tag"
+            },
+            {
+              "value": "heart",
+              "label": "Heart"
+            },
+            {
+              "value": "check",
+              "label": "Check"
+            },
+            {
+              "value": "phone",
+              "label": "Phone"
+            },
+            {
+              "value": "box",
+              "label": "Box"
+            },
+            {
+              "value": "leaf",
+              "label": "Leaf"
+            },
+            {
+              "value": "award",
+              "label": "Award"
+            },
+            {
+              "value": "sparkle",
+              "label": "Sparkle"
+            },
+            {
+              "value": "percent",
+              "label": "Percent"
+            },
+            {
+              "value": "mail",
+              "label": "Mail"
+            },
+            {
+              "value": "map-pin",
+              "label": "Map pin"
+            },
+            {
+              "value": "thumbs-up",
+              "label": "Thumbs up"
+            },
+            {
+              "value": "package",
+              "label": "Package"
+            },
+            {
+              "value": "camera",
+              "label": "Camera"
+            },
+            {
+              "value": "play",
+              "label": "Play"
+            },
+            {
+              "value": "flame",
+              "label": "Flame"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "icon_text",
+          "label": "Icon emoji / text",
+          "info": "Overrides the built-in icon."
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "Icon image",
+          "info": "Overrides emoji and built-in icon."
+        }
       ]
     },
     {
       "type": "image",
       "name": "Image / logo",
       "settings": [
-        { "type": "image_picker", "id": "image", "label": "Image" },
-        { "type": "text", "id": "alt", "label": "Alt text", "info": "Describe the logo or badge, e.g. the brand name." },
-        { "type": "range", "id": "image_height", "label": "Image height", "min": 16, "max": 120, "step": 4, "unit": "px", "default": 32 },
-        { "type": "url", "id": "link", "label": "Link" }
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "alt",
+          "label": "Alt text",
+          "info": "Describe the logo or badge, e.g. the brand name."
+        },
+        {
+          "type": "range",
+          "id": "image_height",
+          "label": "Image height",
+          "min": 16,
+          "max": 120,
+          "step": 4,
+          "unit": "px",
+          "default": 32
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
       ]
     }
   ],
@@ -200,10 +819,30 @@
     {
       "name": "CRO marquee",
       "blocks": [
-        { "type": "text", "settings": { "text": "Glass jars" } },
-        { "type": "text", "settings": { "text": "Bottles" } },
-        { "type": "text", "settings": { "text": "Storage organisers" } },
-        { "type": "text", "settings": { "text": "Pantry essentials" } }
+        {
+          "type": "text",
+          "settings": {
+            "text": "Glass jars"
+          }
+        },
+        {
+          "type": "text",
+          "settings": {
+            "text": "Bottles"
+          }
+        },
+        {
+          "type": "text",
+          "settings": {
+            "text": "Storage organisers"
+          }
+        },
+        {
+          "type": "text",
+          "settings": {
+            "text": "Pantry essentials"
+          }
+        }
       ]
     }
   ]

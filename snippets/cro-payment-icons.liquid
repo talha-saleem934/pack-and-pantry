@@ -1,9 +1,9 @@
 {%- comment -%}
   Payment methods strip.
-  1. Methods actually enabled in Shopify Payments / checkout (shop.enabled_payment_types) when use_shop_types is not false.
+  1. Methods actually enabled in Shopify checkout (shop.enabled_payment_types) unless use_shop_types is false.
   2. Local methods switched on in Theme settings → CRO & conversion (COD, JazzCash, Easypaisa, bank transfer, Visa, Mastercard).
-  Params (all optional): use_shop_types, label_cod, label_jazzcash, label_easypaisa, label_bank,
-  image_cod, image_jazzcash, image_easypaisa, image_bank, aria_label
+  Params (all optional): heading (shows the framed "secure checkout" seal), use_shop_types, label_cod, label_jazzcash,
+  label_easypaisa, label_bank, image_cod, image_jazzcash, image_easypaisa, image_bank, aria_label
 {%- endcomment -%}
 {%- liquid
   assign pi_shop = true
@@ -19,29 +19,32 @@
   endif
 -%}
 {%- if pi_has -%}
-<ul class="cro-pay" aria-label="{{ aria_label | default: 'Payment methods' | escape }}">
-  {%- if settings.cro_pay_cod -%}
-    <li class="cro-pay__item"><span class="cro-pay__chip">{%- if image_cod != blank -%}{{ image_cod | image_url: height: 36 | image_tag: height: 18, alt: '' }}{%- else -%}{% render 'cro-icon', icon: 'cash', size: 16 %}{%- endif -%}{{ label_cod | default: 'Cash on delivery' | escape }}</span></li>
-  {%- endif -%}
-  {%- if settings.cro_pay_jazzcash -%}
-    <li class="cro-pay__item"><span class="cro-pay__chip">{%- if image_jazzcash != blank -%}{{ image_jazzcash | image_url: height: 36 | image_tag: height: 18, alt: '' }}{%- endif -%}{{ label_jazzcash | default: 'JazzCash' | escape }}</span></li>
-  {%- endif -%}
-  {%- if settings.cro_pay_easypaisa -%}
-    <li class="cro-pay__item"><span class="cro-pay__chip">{%- if image_easypaisa != blank -%}{{ image_easypaisa | image_url: height: 36 | image_tag: height: 18, alt: '' }}{%- endif -%}{{ label_easypaisa | default: 'Easypaisa' | escape }}</span></li>
-  {%- endif -%}
-  {%- if settings.cro_pay_bank -%}
-    <li class="cro-pay__item"><span class="cro-pay__chip">{%- if image_bank != blank -%}{{ image_bank | image_url: height: 36 | image_tag: height: 18, alt: '' }}{%- else -%}{% render 'cro-icon', icon: 'lock', size: 16 %}{%- endif -%}{{ label_bank | default: 'Bank transfer' | escape }}</span></li>
-  {%- endif -%}
-  {%- if pi_shop -%}
-    {%- for type in shop.enabled_payment_types -%}
-      <li class="cro-pay__item">{{ type | payment_type_svg_tag }}</li>
-    {%- endfor -%}
-  {%- endif -%}
-  {%- unless pi_shop and shop.enabled_payment_types contains 'visa' -%}
-    {%- if settings.cro_pay_visa -%}<li class="cro-pay__item">{{ 'visa' | payment_type_svg_tag }}</li>{%- endif -%}
-  {%- endunless -%}
-  {%- unless pi_shop and shop.enabled_payment_types contains 'master' -%}
-    {%- if settings.cro_pay_mastercard -%}<li class="cro-pay__item">{{ 'master' | payment_type_svg_tag }}</li>{%- endif -%}
-  {%- endunless -%}
-</ul>
+<div class="cro-pay-wrap{% if heading != blank %} cro-pay-wrap--seal{% endif %}">
+  {%- if heading != blank -%}<p class="cro-pay__head"><span>{% render 'cro-icon', icon: 'lock', size: 14 %}{{ heading | escape }}</span></p>{%- endif -%}
+  <ul class="cro-pay" aria-label="{{ aria_label | default: heading | default: 'Payment methods' | escape }}">
+    {%- if settings.cro_pay_cod -%}
+      <li class="cro-pay__item"><span class="cro-pay__chip cro-pay__chip--cod">{%- if image_cod != blank -%}{{ image_cod | image_url: height: 36 | image_tag: height: 18, alt: '' }}{%- else -%}{% render 'cro-icon', icon: 'cash', size: 16 %}{%- endif -%}{{ label_cod | default: 'Cash on delivery' | escape }}</span></li>
+    {%- endif -%}
+    {%- if settings.cro_pay_jazzcash -%}
+      <li class="cro-pay__item"><span class="cro-pay__chip cro-pay__chip--jazzcash">{%- if image_jazzcash != blank -%}{{ image_jazzcash | image_url: height: 36 | image_tag: height: 18, alt: '' }}{%- endif -%}{{ label_jazzcash | default: 'JazzCash' | escape }}</span></li>
+    {%- endif -%}
+    {%- if settings.cro_pay_easypaisa -%}
+      <li class="cro-pay__item"><span class="cro-pay__chip cro-pay__chip--easypaisa">{%- if image_easypaisa != blank -%}{{ image_easypaisa | image_url: height: 36 | image_tag: height: 18, alt: '' }}{%- endif -%}{{ label_easypaisa | default: 'Easypaisa' | escape }}</span></li>
+    {%- endif -%}
+    {%- if settings.cro_pay_bank -%}
+      <li class="cro-pay__item"><span class="cro-pay__chip cro-pay__chip--bank">{%- if image_bank != blank -%}{{ image_bank | image_url: height: 36 | image_tag: height: 18, alt: '' }}{%- else -%}{% render 'cro-icon', icon: 'lock', size: 16 %}{%- endif -%}{{ label_bank | default: 'Bank transfer' | escape }}</span></li>
+    {%- endif -%}
+    {%- if pi_shop -%}
+      {%- for type in shop.enabled_payment_types -%}
+        <li class="cro-pay__item cro-pay__item--card">{{ type | payment_type_svg_tag }}</li>
+      {%- endfor -%}
+    {%- endif -%}
+    {%- unless pi_shop and shop.enabled_payment_types contains 'visa' -%}
+      {%- if settings.cro_pay_visa -%}<li class="cro-pay__item cro-pay__item--card">{{ 'visa' | payment_type_svg_tag }}</li>{%- endif -%}
+    {%- endunless -%}
+    {%- unless pi_shop and shop.enabled_payment_types contains 'master' -%}
+      {%- if settings.cro_pay_mastercard -%}<li class="cro-pay__item cro-pay__item--card">{{ 'master' | payment_type_svg_tag }}</li>{%- endif -%}
+    {%- endunless -%}
+  </ul>
+</div>
 {%- endif -%}

@@ -46,8 +46,14 @@
       if b.text == blank and b.countdown_mode == 'none'
         assign show = false
       endif
-      if b.countdown_mode == 'fixed' and b.expire_action == 'hide_block' and b.countdown_end != blank
-        assign end_ts = b.countdown_end | date: '%s' | plus: 0
+      assign ab_end = b.countdown_end
+      assign ab_mode = b.countdown_mode
+      if settings.cro_cd_override and b.countdown_mode != 'none'
+        assign ab_end = settings.cro_cd_end
+        assign ab_mode = settings.cro_cd_mode
+      endif
+      if ab_mode == 'fixed' and b.expire_action == 'hide_block' and ab_end != blank
+        assign end_ts = ab_end | date: '%s' | plus: 0
         if end_ts > 1000000000 and end_ts < now_ts
           assign show = false
         endif

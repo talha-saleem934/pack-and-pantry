@@ -24,6 +24,17 @@
 {%- endcomment -%}
 {%- liquid
   assign cd_mode = mode | default: 'fixed'
+  assign cd_end = end
+  assign cd_hours = hours | default: 24
+  assign cd_key = id
+  assign cd_global = false
+  if settings.cro_cd_override
+    assign cd_global = true
+    assign cd_mode = settings.cro_cd_mode | default: 'fixed'
+    assign cd_end = settings.cro_cd_end
+    assign cd_hours = settings.cro_cd_hours | default: 24
+    assign cd_key = 'global'
+  endif
   assign cd_style = style | default: 'inline'
   assign cd_tz = settings.cro_timezone | default: 'Asia/Karachi'
   assign cd_cutoff_hour = cutoff_hour | default: settings.cro_dispatch_cutoff_hour | default: 14
@@ -47,8 +58,11 @@
   assign cd_l_m = label_m | default: 'Min'
   assign cd_l_s = label_s | default: 'Sec'
   assign cd_fallback = fallback
-  if cd_fallback == blank and cd_mode == 'fixed' and end != blank
-    assign cd_fallback = prefix | append: ' ' | append: end
+  if cd_global
+    assign cd_fallback = settings.cro_cd_fallback
+  endif
+  if cd_fallback == blank and cd_mode == 'fixed' and cd_end != blank
+    assign cd_fallback = prefix | append: ' ' | append: cd_end
   endif
 -%}
 <span
@@ -57,8 +71,8 @@
   data-cro-countdown
   data-mode="{{ cd_mode }}"
   data-tz="{{ cd_tz | escape }}"
-  {%- if cd_mode == 'fixed' %} data-end="{{ end | escape }}"{% endif -%}
-  {%- if cd_mode == 'evergreen' %} data-hours="{{ hours | default: 24 }}" data-key="{{ id }}"{% endif -%}
+  {%- if cd_mode == 'fixed' %} data-end="{{ cd_end | escape }}"{% endif -%}
+  {%- if cd_mode == 'evergreen' %} data-hours="{{ cd_hours }}" data-key="{{ cd_key }}"{% endif -%}
   {%- if cd_mode == 'daily' %} data-cutoff="{{ cd_cutoff_hour }}:00" data-skip="{{ cd_skip | escape }}" data-holidays="{{ cd_holidays | escape }}" data-suffix-today="{{ suffix | escape }}" data-suffix-later="{{ suffix_later | default: suffix | escape }}"{% endif %}
   data-expire="{{ cd_expire }}"
   data-pad="{{ cd_pad }}"

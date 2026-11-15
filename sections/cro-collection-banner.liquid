@@ -9,8 +9,14 @@
   endif
   assign title = s.heading | default: collection.title
   assign server_expired = false
-  if s.countdown_mode == 'fixed' and s.countdown_end != blank and s.on_expire == 'hide'
-    assign end_ts = s.countdown_end | date: '%s' | plus: 0
+  assign cb_end = s.countdown_end
+  assign cb_mode = s.countdown_mode
+  if settings.cro_cd_override
+    assign cb_end = settings.cro_cd_end
+    assign cb_mode = settings.cro_cd_mode
+  endif
+  if s.countdown_mode != 'none' and cb_mode == 'fixed' and cb_end != blank and s.on_expire == 'hide'
+    assign end_ts = cb_end | date: '%s' | plus: 0
     assign now_ts = 'now' | date: '%s' | plus: 0
     if end_ts > 1000000000 and end_ts < now_ts
       assign server_expired = true
