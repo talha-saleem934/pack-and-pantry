@@ -286,8 +286,8 @@
       "type": "cro-floating-widgets",
       "settings": {
         "wa_enable": true,
-        "wa_number": "",
-        "wa_message": "",
+        "wa_number": "03064863629",
+        "wa_message": "How Can I Help You!",
         "wa_aria_label": "Chat with us on WhatsApp",
         "wa_label": "Chat with us",
         "wa_show_label": false,
