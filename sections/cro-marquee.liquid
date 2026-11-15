@@ -35,6 +35,16 @@
     assign cro_wa_num = settings.cro_whatsapp_number
   endif
   assign cro_wa_num = cro_wa_num | remove: '+' | remove: ' ' | remove: '-' | remove: '(' | remove: ')'
+  assign cro_wa_num = cro_wa_num | remove: '.'
+  assign cro_wa_first = cro_wa_num | slice: 0, 2
+  if cro_wa_first == '00'
+    assign cro_wa_num = cro_wa_num | remove_first: '00'
+  else
+    assign cro_wa_first = cro_wa_num | slice: 0
+    if cro_wa_first == '0'
+      assign cro_wa_num = cro_wa_num | remove_first: '0' | prepend: '92'
+    endif
+  endif
   if cro_wa_num != blank
     assign cro_wa_msg = b.whatsapp_message | default: settings.cro_whatsapp_greeting | replace: '{product}', shop.name | replace: '{url}', canonical_url | replace: '&amp;', '&' | replace: '&#39;', "'" | replace: '&quot;', '"'
     assign cro_wa_enc = cro_wa_msg | url_encode

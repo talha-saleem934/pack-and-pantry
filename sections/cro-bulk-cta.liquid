@@ -2,7 +2,19 @@
   assign s = section.settings
   assign sid = section.id
 -%}
-{%- assign wa = s.whatsapp_number | default: settings.cro_whatsapp_number | remove: '+' | remove: ' ' | remove: '-' -%}
+{%- liquid
+  assign wa = s.whatsapp_number | default: settings.cro_whatsapp_number | remove: '+' | remove: ' ' | remove: '-' | remove: '(' | remove: ')'
+  assign wa = wa | remove: '.'
+  assign cro_wa_first = wa | slice: 0, 2
+  if cro_wa_first == '00'
+    assign wa = wa | remove_first: '00'
+  else
+    assign cro_wa_first = wa | slice: 0
+    if cro_wa_first == '0'
+      assign wa = wa | remove_first: '0' | prepend: '92'
+    endif
+  endif
+-%}
 {{ 'cro-components.css' | asset_url | stylesheet_tag }}
 <script src="{{ 'cro-core.js' | asset_url }}" defer="defer"></script>
 {%- liquid

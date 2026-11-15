@@ -8,6 +8,16 @@
 {%- if settings.cro_wa_contact_links and settings.cro_whatsapp_number != blank -%}
   {%- liquid
     assign wac_num = settings.cro_whatsapp_number | remove: '+' | remove: ' ' | remove: '-' | remove: '(' | remove: ')'
+    assign wac_num = wac_num | remove: '.'
+    assign cro_wa_first = wac_num | slice: 0, 2
+    if cro_wa_first == '00'
+      assign wac_num = wac_num | remove_first: '00'
+    else
+      assign cro_wa_first = wac_num | slice: 0
+      if cro_wa_first == '0'
+        assign wac_num = wac_num | remove_first: '0' | prepend: '92'
+      endif
+    endif
     assign wac_subject = shop.name
     if request.page_type == 'product'
       assign wac_subject = product.title

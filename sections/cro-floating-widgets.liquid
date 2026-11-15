@@ -21,6 +21,16 @@
   endcase
 
   assign wa_number = s.wa_number | default: settings.cro_whatsapp_number | remove: '+' | remove: ' ' | remove: '-' | remove: '(' | remove: ')'
+  assign wa_number = wa_number | remove: '.'
+  assign cro_wa_first = wa_number | slice: 0, 2
+  if cro_wa_first == '00'
+    assign wa_number = wa_number | remove_first: '00'
+  else
+    assign cro_wa_first = wa_number | slice: 0
+    if cro_wa_first == '0'
+      assign wa_number = wa_number | remove_first: '0' | prepend: '92'
+    endif
+  endif
   assign wa_msg = s.wa_message | default: settings.cro_whatsapp_greeting
   if request.page_type == 'product'
     assign wa_msg = wa_msg | replace: '{product}', product.title

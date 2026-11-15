@@ -13,6 +13,16 @@
   endif
   assign info_width = 100 | minus: s.media_width
   assign wa_number = settings.cro_whatsapp_number | remove: '+' | remove: ' ' | remove: '-' | remove: '(' | remove: ')'
+  assign wa_number = wa_number | remove: '.'
+  assign cro_wa_first = wa_number | slice: 0, 2
+  if cro_wa_first == '00'
+    assign wa_number = wa_number | remove_first: '00'
+  else
+    assign cro_wa_first = wa_number | slice: 0
+    if cro_wa_first == '0'
+      assign wa_number = wa_number | remove_first: '0' | prepend: '92'
+    endif
+  endif
   assign on_sale = false
   if current.compare_at_price > current.price
     assign on_sale = true
@@ -531,6 +541,16 @@
                         assign row_num = settings.cro_whatsapp_number
                       endif
                       assign row_num = row_num | remove: '+' | remove: ' ' | remove: '-' | remove: '(' | remove: ')'
+                      assign row_num = row_num | remove: '.'
+                      assign cro_wa_first = row_num | slice: 0, 2
+                      if cro_wa_first == '00'
+                        assign row_num = row_num | remove_first: '00'
+                      else
+                        assign cro_wa_first = row_num | slice: 0
+                        if cro_wa_first == '0'
+                          assign row_num = row_num | remove_first: '0' | prepend: '92'
+                        endif
+                      endif
                       if row_num != blank
                         assign row_msg = b.whatsapp_message | default: settings.cro_whatsapp_greeting | replace: '{product}', product.title | replace: '{url}', canonical_url | replace: '&amp;', '&' | replace: '&#39;', "'" | replace: '&quot;', '"'
                         assign row_enc = row_msg | url_encode

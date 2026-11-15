@@ -5,6 +5,16 @@
     assign bc_num = settings.cro_whatsapp_number
   endif
   assign bc_num = bc_num | remove: '+' | remove: ' ' | remove: '-' | remove: '(' | remove: ')'
+  assign bc_num = bc_num | remove: '.'
+  assign cro_wa_first = bc_num | slice: 0, 2
+  if cro_wa_first == '00'
+    assign bc_num = bc_num | remove_first: '00'
+  else
+    assign cro_wa_first = bc_num | slice: 0
+    if cro_wa_first == '0'
+      assign bc_num = bc_num | remove_first: '0' | prepend: '92'
+    endif
+  endif
   assign bc_msg = section.settings.whatsapp_message | default: settings.cro_whatsapp_greeting | replace: '{product}', shop.name | replace: '{url}', canonical_url | replace: '&amp;', '&' | replace: '&#39;', "'" | replace: '&quot;', '"'
   assign bc_enc = bc_msg | url_encode
 -%}{%- if bc_num != blank and section.settings.whatsapp_mode == 'replace' -%}<a class="button button--accent" href="https://wa.me/{{ bc_num }}?text={{ bc_enc }}" target="_blank" rel="noopener" data-cro-wa="business">{{ section.settings.label }} <span class="button__icon" aria-hidden="true">→</span></a>{%- else -%}<a class="button button--accent" href="{{ section.settings.link | default: routes.root_url }}">{{ section.settings.label }} <span class="button__icon" aria-hidden="true">→</span></a>{%- endif -%}{%- if bc_num != blank and section.settings.whatsapp_mode == 'extra' -%} <a class="button button--secondary" style="display:inline-flex;align-items:center;gap:8px;margin-inline-start:10px" href="https://wa.me/{{ bc_num }}?text={{ bc_enc }}" target="_blank" rel="noopener" data-cro-wa="business">{% render 'cro-icon', icon: 'whatsapp', size: 20 %}{{ section.settings.whatsapp_label }}</a>{%- endif -%}</div><div class="business-panel__uses" aria-label="Business uses">{%- for block in section.blocks -%}<span {{ block.shopify_attributes }}>{{ block.settings.label }}</span>{%- endfor -%}</div></div></div></section>

@@ -4,6 +4,16 @@
 -%}
 {%- liquid
   assign wa = s.whatsapp_number | default: settings.cro_whatsapp_number | remove: '+' | remove: ' ' | remove: '-' | remove: '(' | remove: ')'
+  assign wa = wa | remove: '.'
+  assign cro_wa_first = wa | slice: 0, 2
+  if cro_wa_first == '00'
+    assign wa = wa | remove_first: '00'
+  else
+    assign cro_wa_first = wa | slice: 0
+    if cro_wa_first == '0'
+      assign wa = wa | remove_first: '0' | prepend: '92'
+    endif
+  endif
   assign phone = s.phone | default: settings.cro_support_phone
   assign email = s.email | default: settings.cro_support_email | default: shop.email
 -%}
