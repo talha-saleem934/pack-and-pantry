@@ -16,8 +16,14 @@
         "badge": "Up to 30% off",
         "heading": "Blessed Friday Sale is on",
         "text": "Up to 30% off jars, bottles and storage organisers, applied automatically. No code needed.",
+        "show_description": false,
+        "show_count": false,
+        "count_label": "{count} products",
         "button_label": "Shop all deals",
         "button_link": "shopify://collections/all",
+        "use_collection_image": false,
+        "overlay_color": "#0f2f27",
+        "overlay_opacity": 50,
         "countdown_mode": "fixed",
         "countdown_end": "2026-12-02 23:59",
         "countdown_prefix": "Ends in",
@@ -28,56 +34,43 @@
         "label_minutes": "Min",
         "label_seconds": "Sec",
         "on_expire": "hide",
+        "full_width": false,
+        "container_width": 1300,
+        "align": "center",
+        "radius": 16,
+        "button_radius": 10,
         "min_height_desktop": 180,
-        "min_height_mobile": 160
+        "min_height_mobile": 160,
+        "heading_size_desktop": 40,
+        "heading_size_mobile": 28,
+        "text_size_desktop": 17,
+        "text_size_mobile": 15,
+        "padding_top_desktop": 16,
+        "padding_bottom_desktop": 8,
+        "padding_top_mobile": 12,
+        "padding_bottom_mobile": 4,
+        "bg_color": "#f7f1e7",
+        "heading_color": "#18231f",
+        "text_color": "#3f4a45",
+        "accent_color": "#e8b44a",
+        "button_bg": "#e8b44a",
+        "button_text": "#173f35",
+        "button_hover_bg": "#d4623d",
+        "button_hover_text": "#fffdf8",
+        "link_hover_color": "#d4623d",
+        "border_color": "#d7cec1",
+        "card_bg": "#fffdf8",
+        "icon_color": "#173f35",
+        "badge_bg": "#c64f32",
+        "badge_text": "#ffffff",
+        "panel_bg": "#173f35",
+        "panel_text": "#f7f1e7",
+        "panel_heading": "#fffdf8",
+        "cd_box_bg": "#0f2f27",
+        "cd_digit": "#fffdf8",
+        "cd_label": "#e8b44a",
+        "cd_urgent": "#f2a38a"
       }
-    },
-    "cro_collection_trust": {
-      "type": "cro-collection-trust",
-      "blocks": {
-        "delivery": {
-          "type": "trust",
-          "settings": {
-            "icon": "truck",
-            "title": "Free delivery over PKR 5,000",
-            "text": "On eligible orders. Terms may apply.",
-            "link": "shopify://pages/shipping-information"
-          }
-        },
-        "secure": {
-          "type": "trust",
-          "settings": {
-            "icon": "lock",
-            "title": "Secure checkout",
-            "text": "Payment is handled by Shopify's encrypted checkout."
-          }
-        },
-        "returns": {
-          "type": "trust",
-          "settings": {
-            "icon": "refresh",
-            "title": "Returns & exchanges",
-            "text": "Read our policy before you order.",
-            "link": "shopify://pages/returns-exchanges"
-          }
-        },
-        "help": {
-          "type": "trust",
-          "settings": {
-            "icon": "mail",
-            "title": "Help when you need it",
-            "text": "Questions about sizes or stock? Contact us.",
-            "link": "shopify://pages/contact"
-          }
-        }
-      },
-      "block_order": [
-        "delivery",
-        "secure",
-        "returns",
-        "help"
-      ],
-      "settings": {}
     },
     "main": {
       "type": "main-collection",
@@ -93,14 +86,97 @@
         "columns": 3
       }
     },
+    "cro_collection_trust": {
+      "type": "cro-collection-trust",
+      "blocks": {
+        "delivery": {
+          "type": "trust",
+          "settings": {
+            "icon": "truck",
+            "icon_text": "",
+            "title": "Free delivery over PKR 5,000",
+            "text": "On eligible orders. Terms may apply.",
+            "link": "shopify://pages/shipping-information"
+          }
+        },
+        "secure": {
+          "type": "trust",
+          "settings": {
+            "icon": "lock",
+            "icon_text": "",
+            "title": "Secure checkout",
+            "text": "Payment is handled by Shopify's encrypted checkout.",
+            "link": ""
+          }
+        },
+        "returns": {
+          "type": "trust",
+          "settings": {
+            "icon": "refresh",
+            "icon_text": "",
+            "title": "Returns & exchanges",
+            "text": "Read our policy before you order.",
+            "link": "shopify://pages/returns-exchanges"
+          }
+        },
+        "help": {
+          "type": "trust",
+          "settings": {
+            "icon": "mail",
+            "icon_text": "",
+            "title": "Help when you need it",
+            "text": "Questions about sizes or stock? Contact us.",
+            "link": "shopify://pages/contact"
+          }
+        }
+      },
+      "block_order": [
+        "delivery",
+        "secure",
+        "returns",
+        "help"
+      ],
+      "settings": {
+        "region_label": "Why shop with us",
+        "boxed": true,
+        "full_width": false,
+        "container_width": 1300,
+        "align": "center",
+        "radius": 16,
+        "button_radius": 10,
+        "icon_size": 20,
+        "heading_size_desktop": 38,
+        "heading_size_mobile": 28,
+        "text_size_desktop": 17,
+        "text_size_mobile": 15,
+        "padding_top_desktop": 8,
+        "padding_bottom_desktop": 8,
+        "padding_top_mobile": 8,
+        "padding_bottom_mobile": 8,
+        "bg_color": "#f7f1e7",
+        "heading_color": "#18231f",
+        "text_color": "#3f4a45",
+        "accent_color": "#d4623d",
+        "button_bg": "#173f35",
+        "button_text": "#fffdf8",
+        "button_hover_bg": "#0f2f27",
+        "button_hover_text": "#ffffff",
+        "link_hover_color": "#d4623d",
+        "border_color": "#d7cec1",
+        "card_bg": "#fffdf8",
+        "icon_color": "#173f35",
+        "badge_bg": "#c64f32",
+        "badge_text": "#ffffff"
+      }
+    },
     "support": {
       "type": "rich-text",
       "custom_css": [
-        ".text-center{max-width:820px;margin:auto;padding:40px 24px;background:#fffdf8;border:1px solid #d7cec1;border-radius:22px;text-align:center;display:flex;flex-direction:column;align-items:center}",
-        ".text-center h2{font-size:44px;color:#173f35;margin:10px auto 18px;max-width:700px}",
-        ".text-center .eyebrow{color:#d4623d;margin:0 auto}",
-        ".text-center .rte{line-height:28px;margin:0 auto 18px;max-width:620px}",
-        ".text-center .button{margin:0 auto!important}"
+        ".text-center {max-width: 820px; margin: auto; padding: 40px 24px; background: #fffdf8; border: 1px solid #d7cec1; border-radius: 22px; text-align: center; display: flex; flex-direction: column; align-items: center;}",
+        ".text-center h2 {font-size: 44px; color: #173f35; margin: 10px auto 18px; max-width: 700px;}",
+        ".text-center .eyebrow {color: #d4623d; margin: 0 auto;}",
+        ".text-center .rte {line-height: 28px; margin: 0 auto 18px; max-width: 620px;}",
+        ".text-center .button {margin: 0 auto !important;}"
       ],
       "settings": {
         "eyebrow": "Need help choosing?",
@@ -113,15 +189,48 @@
     "cro_recently_viewed": {
       "type": "cro-pdp-recently-viewed",
       "settings": {
+        "eyebrow": "",
         "heading": "Recently viewed",
-        "limit": 4
+        "subheading": "",
+        "limit": 4,
+        "editor_note": "Products the visitor viewed appear here. Hidden when there are none.",
+        "full_width": false,
+        "container_width": 1300,
+        "align": "center",
+        "radius": 16,
+        "button_radius": 10,
+        "columns_desktop": 4,
+        "columns_tablet": 3,
+        "columns_mobile": "2",
+        "heading_size_desktop": 30,
+        "heading_size_mobile": 24,
+        "text_size_desktop": 17,
+        "text_size_mobile": 15,
+        "padding_top_desktop": 48,
+        "padding_bottom_desktop": 48,
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 40,
+        "bg_color": "#F7F1E7",
+        "heading_color": "#18231f",
+        "text_color": "#3f4a45",
+        "accent_color": "#d4623d",
+        "button_bg": "#173f35",
+        "button_text": "#fffdf8",
+        "button_hover_bg": "#0f2f27",
+        "button_hover_text": "#ffffff",
+        "link_hover_color": "#d4623d",
+        "border_color": "#d7cec1",
+        "card_bg": "#fffdf8",
+        "icon_color": "#173f35",
+        "badge_bg": "#c64f32",
+        "badge_text": "#ffffff"
       }
     }
   },
   "order": [
     "cro_collection_banner",
-    "cro_collection_trust",
     "main",
+    "cro_collection_trust",
     "support",
     "cro_recently_viewed"
   ]
