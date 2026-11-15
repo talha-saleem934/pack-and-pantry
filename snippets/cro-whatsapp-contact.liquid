@@ -1,0 +1,51 @@
+{%- comment -%}
+  Turns every "Contact us" link on the page into a WhatsApp chat with the store's WhatsApp number.
+  Controlled from Theme settings → CRO & conversion → Contact and support:
+    cro_wa_contact_links  (on/off), cro_wa_contact_phrases (link texts to match),
+    cro_wa_contact_page   (also links that point to the Contact page).
+  Links keep their normal destination when JavaScript is off or no WhatsApp number is set.
+{%- endcomment -%}
+{%- if settings.cro_wa_contact_links and settings.cro_whatsapp_number != blank -%}
+  {%- liquid
+    assign wac_num = settings.cro_whatsapp_number | remove: '+' | remove: ' ' | remove: '-' | remove: '(' | remove: ')'
+    assign wac_subject = shop.name
+    if request.page_type == 'product'
+      assign wac_subject = product.title
+    endif
+    assign wac_msg = settings.cro_whatsapp_greeting | default: 'Hi, I have a question.' | replace: '{product}', wac_subject | replace: '{url}', canonical_url | replace: '&amp;', '&' | replace: '&#39;', "'" | replace: '&quot;', '"'
+    assign wac_phrases = settings.cro_wa_contact_phrases | default: 'Contact us' | split: ','
+  -%}
+  <script>
+    (function () {
+      var num = {{ wac_num | json }};
+      var msg = {{ wac_msg | json }};
+      var phrases = {{ wac_phrases | json }};
+      var matchPage = {{ settings.cro_wa_contact_page | json }};
+      var norm = function (s) { return (s || '').replace(/\s+/g, ' ').trim().toLowerCase(); };
+      var list = phrases.map(norm).filter(Boolean);
+      var href = 'https://wa.me/' + num + '?text=' + encodeURIComponent(msg);
+      var pageRe = /\/pages\/contact\/?([?#].*)?$/i;
+      function apply(root) {
+        (root || document).querySelectorAll('a[href]:not([data-cro-wa-contact])').forEach(function (a) {
+          var text = norm(a.textContent);
+          var url = a.getAttribute('href') || '';
+          if (list.indexOf(text) === -1 && !(matchPage && pageRe.test(url))) return;
+          a.setAttribute('data-cro-wa-contact', '');
+          a.setAttribute('href', href);
+          a.setAttribute('target', '_blank');
+          a.setAttribute('rel', 'noopener');
+          a.addEventListener('click', function () {
+            document.dispatchEvent(new CustomEvent('cro:whatsapp-click', { detail: { source: 'contact-link' } }));
+          });
+        });
+      }
+      function start() {
+        apply();
+        new MutationObserver(function (records) {
+          for (var i = 0; i < records.length; i++) { if (records[i].addedNodes.length) { apply(); return; } }
+        }).observe(document.body, { childList: true, subtree: true });
+      }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+    })();
+  </script>
+{%- endif -%}
