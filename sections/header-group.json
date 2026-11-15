@@ -210,7 +210,7 @@
             "text": "Your Bulk Orders, Our Best Prices!",
             "link": "shopify://pages/bulk-orders",
             "whatsapp_number": "",
-            "whatsapp_use_theme": false,
+            "whatsapp_use_theme": true,
             "whatsapp_message": "",
             "icon": "leaf",
             "icon_text": ""
