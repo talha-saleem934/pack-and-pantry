@@ -14,22 +14,62 @@
       "disabled": true,
       "settings": {}
     },
+    "cro_contact": {
+      "type": "cro-page-contact-boost",
+      "settings": {
+        "eyebrow": "",
+        "heading": "Talk to us",
+        "subheading": "Choose the quickest way to reach us, or use the form below.",
+        "show_whatsapp": true,
+        "whatsapp_label": "Chat on WhatsApp",
+        "whatsapp_number": "923226100768",
+        "whatsapp_message": "Hi Pack & Pantry, I have a question.",
+        "show_phone": true,
+        "phone_label": "Call us",
+        "phone": "",
+        "show_email": true,
+        "email_label": "Email us",
+        "email": "",
+        "form_label": "Ordering in bulk?",
+        "form_text": "Request a quote for cafés, bakeries and shops",
+        "form_link": "shopify://pages/bulk-orders",
+        "response_time": "",
+        "full_width": false,
+        "container_width": 1300,
+        "align": "center",
+        "radius": 16,
+        "button_radius": 10,
+        "heading_size_desktop": 30,
+        "heading_size_mobile": 24,
+        "text_size_desktop": 17,
+        "text_size_mobile": 15,
+        "padding_top_desktop": 40,
+        "padding_bottom_desktop": 24,
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 40,
+        "bg_color": "#fffdf8",
+        "heading_color": "#18231f",
+        "text_color": "#3f4a45",
+        "accent_color": "#d4623d",
+        "button_bg": "#173f35",
+        "button_text": "#fffdf8",
+        "button_hover_bg": "#0f2f27",
+        "button_hover_text": "#ffffff",
+        "link_hover_color": "#d4623d",
+        "border_color": "#d7cec1",
+        "card_bg": "#fffdf8",
+        "icon_color": "#173f35",
+        "badge_bg": "#c64f32",
+        "badge_text": "#ffffff",
+        "icon_bg": "#dce8d8"
+      }
+    },
     "form": {
       "type": "contact-form",
       "settings": {
         "eyebrow": "Contact Pack & Pantry",
         "heading": "How can we help?",
         "text": "Ask about products, sizing, availability or your storage requirements."
-      }
-    },
-    "cro_contact": {
-      "type": "cro-page-contact-boost",
-      "settings": {
-        "heading": "Talk to us",
-        "subheading": "Choose the quickest way to reach us, or use the form below.",
-        "form_label": "Ordering in bulk?",
-        "form_text": "Request a quote for cafés, bakeries and shops",
-        "form_link": "shopify://pages/bulk-orders"
       }
     }
   },
