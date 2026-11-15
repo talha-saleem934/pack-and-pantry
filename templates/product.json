@@ -125,6 +125,18 @@
             "whatsapp_message": "Hi, I'd like to order {product} ({variant}), quantity {qty}. {url}"
           }
         },
+        "cro_delivery": {
+          "type": "cro_delivery",
+          "settings": {
+            "icon": "truck",
+            "icon_text": "",
+            "label": "Estimated delivery:",
+            "date_template": "{start} – {end}",
+            "fallback": "{min}–{max} working days",
+            "cities": "",
+            "city_label": "Choose your city"
+          }
+        },
         "cro_fbt": {
           "type": "cro_fbt",
           "settings": {
@@ -148,18 +160,6 @@
             "icon": "flame",
             "icon_text": "",
             "text": "{count} sold"
-          }
-        },
-        "cro_delivery": {
-          "type": "cro_delivery",
-          "settings": {
-            "icon": "truck",
-            "icon_text": "",
-            "label": "Estimated delivery:",
-            "date_template": "{start} – {end}",
-            "fallback": "{min}–{max} working days",
-            "cities": "",
-            "city_label": "Choose your city"
           }
         },
         "cro_trust_box": {
@@ -264,9 +264,9 @@
         "cro_variant_picker",
         "quantity",
         "cro_buy_buttons",
+        "cro_delivery",
         "cro_fbt",
         "cro_sold",
-        "cro_delivery",
         "cro_trust_box",
         "cro_payment",
         "curlear_showcase_snippet_QrjWgp",
