@@ -214,7 +214,7 @@
         "icon_bg_show": true,
         "padding_top_desktop": 32,
         "padding_bottom_desktop": 32,
-        "padding_top_mobile": 24,
+        "padding_top_mobile": 20,
         "padding_bottom_mobile": 24,
         "bg_color": "#fffdf8",
         "heading_color": "#18231f",
