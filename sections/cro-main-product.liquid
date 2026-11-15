@@ -27,6 +27,7 @@
 {{ 'cro-components.css' | asset_url | stylesheet_tag }}
 <script src="{{ 'cro-core.js' | asset_url }}" defer="defer"></script>
 <script src="{{ 'cro-product.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'cro-commerce.js' | asset_url }}" defer="defer"></script>
 {% style %}
   #cro-{{ sid }} {
     --cro-accent: {{ s.accent_color }};
@@ -54,6 +55,18 @@
   }
   #cro-{{ sid }} .product__info > div + div { margin-block-start: {{ s.block_gap }}px; }
   #cro-{{ sid }} .product__title { margin: 0; color: var(--cro-heading); font-size: {{ s.title_size_mobile }}px; line-height: 1.15; }
+  {%- for block in section.blocks -%}
+    {%- if block.type == 'title' %}
+  #cro-{{ sid }} .cro-title-{{ block.id }} {
+    font-size: {{ block.settings.size_mobile }}px; line-height: {{ block.settings.line_height | divided_by: 100.0 }};
+    font-weight: {{ block.settings.weight }}; letter-spacing: {{ block.settings.letter_spacing }}px;
+    margin-block: {{ block.settings.margin_top }}px {{ block.settings.margin_bottom }}px;
+    {%- if block.settings.color != blank %} color: {{ block.settings.color }};{% endif %}
+    {%- if block.settings.uppercase %} text-transform: uppercase;{% endif %}
+  }
+  @media (min-width: 750px) { #cro-{{ sid }} .cro-title-{{ block.id }} { font-size: {{ block.settings.size_desktop }}px; } }
+    {%- endif -%}
+  {%- endfor %}
 
   /* Gallery */
   #cro-{{ sid }} .cro-gallery { display: grid; gap: 12px; min-inline-size: 0; }
@@ -86,9 +99,28 @@
   #cro-{{ sid }} .cro-rating { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px; color: var(--cro-text); font-size: 14px; text-decoration: none; }
   #cro-{{ sid }} a.cro-rating:hover { color: var(--cro-link-hover); }
   #cro-{{ sid }} .cro-rating .cro-stars { --cro-star-size: 18px; }
-  #cro-{{ sid }} .cro-cdbox { display: grid; gap: 8px; padding: 12px 14px; border-radius: 12px; background: {{ s.cd_panel_bg }}; color: {{ s.cd_panel_text }}; font-size: 15px; }
-  #cro-{{ sid }} .cro-cdbox__label { margin: 0; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-  #cro-{{ sid }} .cro-cdbox .cro-cd { font-size: 16px; }
+  #cro-{{ sid }} .cro-cdbox {
+    position: relative; isolation: isolate; overflow: hidden; display: grid; gap: 12px; padding: 16px 18px;
+    border-radius: 18px; border: 1px solid rgba(255, 255, 255, .18);
+    background: linear-gradient(135deg, {{ s.cd_panel_bg }} 0%, {{ s.cd_panel_bg_2 }} 100%);
+    color: {{ s.cd_panel_text }}; box-shadow: 0 14px 34px {{ s.cd_panel_bg | color_modify: 'alpha', 0.28 }};
+  }
+  #cro-{{ sid }} .cro-cdbox::before {
+    content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background: linear-gradient(110deg, transparent 35%, rgba(255, 255, 255, .16) 50%, transparent 65%);
+    background-size: 250% 100%; animation: cro-shine 3.8s ease-in-out infinite;
+  }
+  #cro-{{ sid }} .cro-cdbox__top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; }
+  #cro-{{ sid }} .cro-cdbox__label { margin: 0; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+  #cro-{{ sid }} .cro-cdbox__label .cro-icon, #cro-{{ sid }} .cro-cdbox__label .cro-icon-text { color: {{ s.cd_label }}; animation: cro-flicker 1.6s ease-in-out infinite; }
+  #cro-{{ sid }} .cro-cdbox__badge { padding: 5px 12px; border-radius: 999px; background: {{ s.cd_badge_bg }}; color: {{ s.cd_badge_text }}; font-size: 13px; font-weight: 800; letter-spacing: .04em; box-shadow: 0 4px 12px rgba(0, 0, 0, .18); }
+  #cro-{{ sid }} .cro-cdbox__sub { margin: 0; font-size: 13px; opacity: .9; }
+  #cro-{{ sid }} .cro-cdbox .cro-cd { font-size: 15px; }
+  #cro-{{ sid }} .cro-cdbox .cro-cd--boxes .cro-cd__unit, #cro-{{ sid }} .cro-cdbox .cro-cd--circular .cro-cd__unit { min-inline-size: 3.7em; padding: .55em .4em; box-shadow: inset 0 -3px 0 rgba(0, 0, 0, .12), 0 6px 14px rgba(0, 0, 0, .16); }
+  #cro-{{ sid }} .cro-cdbox .cro-cd--boxes .cro-cd__num, #cro-{{ sid }} .cro-cdbox .cro-cd--circular .cro-cd__num { font-size: 1.75em; letter-spacing: .02em; }
+  #cro-{{ sid }} .cro-cdbox .cro-cd__label { text-transform: uppercase; letter-spacing: .08em; font-size: .68em; font-weight: 700; }
+  #cro-{{ sid }} .cro-cdbox .cro-cd__sep { font-size: 1.4em; opacity: .85; }
+  @media (prefers-reduced-motion: reduce) { #cro-{{ sid }} .cro-cdbox::before, #cro-{{ sid }} .cro-cdbox__label .cro-icon { animation: none; } }
   #cro-{{ sid }} .cro-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
   #cro-{{ sid }} .cro-list li { display: flex; align-items: flex-start; gap: 10px; color: var(--cro-text); }
   #cro-{{ sid }} .cro-list .cro-icon, #cro-{{ sid }} .cro-list .cro-icon-text { color: var(--cro-icon); margin-block-start: 2px; }
@@ -97,6 +129,19 @@
   #cro-{{ sid }} .cro-scarcity__fill { block-size: 100%; border-radius: inherit; background: var(--cro-urgent); }
   #cro-{{ sid }} .cro-inline { display: flex; align-items: center; gap: 8px; margin: 0; color: var(--cro-text); font-size: 14px; }
   #cro-{{ sid }} .cro-inline .cro-icon { color: var(--cro-icon); }
+  #cro-{{ sid }} .cro-tbox { padding: 16px; border-radius: 18px; background: {{ s.tbox_bg }}; border: 1px solid {{ s.tbox_border }}; }
+  #cro-{{ sid }} .cro-tbox__head { display: flex; align-items: center; gap: 8px; margin: 0 0 12px; color: var(--cro-heading); font-size: 15px; font-weight: 800; letter-spacing: .02em; }
+  #cro-{{ sid }} .cro-tbox__head .cro-icon { color: {{ s.tbox_icon_color }}; }
+  #cro-{{ sid }} .cro-tbox__grid { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+  #cro-{{ sid }} .cro-tbox__item { position: relative; display: flex; align-items: center; gap: 12px; block-size: 100%; box-sizing: border-box; padding: 12px 14px; border: 1px solid {{ s.tbox_border }}; border-radius: 14px; background: {{ s.tbox_item_bg }}; color: var(--cro-text); text-decoration: none; transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
+  #cro-{{ sid }} .cro-tbox__item--link:hover { transform: translateY(-2px); border-color: var(--cro-accent); box-shadow: 0 8px 20px rgba(15, 47, 39, .10); }
+  #cro-{{ sid }} .cro-tbox__ico { display: inline-flex; flex: none; align-items: center; justify-content: center; inline-size: 44px; block-size: 44px; border-radius: 50%; background: {{ s.tbox_icon_bg }}; color: {{ s.tbox_icon_color }}; }
+  #cro-{{ sid }} .cro-tbox__body { display: grid; gap: 2px; min-inline-size: 0; flex: 1; }
+  #cro-{{ sid }} .cro-tbox__title { color: var(--cro-heading); font-size: 14px; line-height: 1.3; }
+  #cro-{{ sid }} .cro-tbox__text { font-size: 13px; line-height: 1.4; opacity: .85; }
+  #cro-{{ sid }} .cro-tbox__arrow { display: inline-flex; color: var(--cro-accent); }
+  @media (min-width: 480px) { #cro-{{ sid }} .cro-tbox--2 .cro-tbox__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (prefers-reduced-motion: reduce) { #cro-{{ sid }} .cro-tbox__item { transition: none; } }
   #cro-{{ sid }} .cro-box { padding: 14px 16px; border: 1px solid var(--cro-border); border-radius: 14px; background: var(--cro-card-bg); }
   #cro-{{ sid }} .cro-box__title { margin: 0 0 10px; color: var(--cro-heading); font-size: 15px; font-weight: 700; }
   #cro-{{ sid }} .cro-delivery { display: grid; gap: 8px; }
@@ -139,6 +184,26 @@
   #cro-{{ sid }} .cro-acc__body { padding-block-end: 16px; }
   #cro-{{ sid }} .cro-ask__actions { display: flex; flex-wrap: wrap; gap: 8px; margin-block-start: 10px; }
 
+  /* Frequently bought together */
+  #cro-{{ sid }} .cro-fbt { display: grid; gap: 12px; padding: 16px; border: 1px solid var(--cro-border); border-radius: 18px; background: {{ s.fbt_bg }}; }
+  #cro-{{ sid }} .cro-fbt[hidden] { display: none; }
+  #cro-{{ sid }} .cro-fbt__title { display: flex; align-items: center; gap: 8px; margin: 0; color: var(--cro-heading); font-size: 16px; font-weight: 800; }
+  #cro-{{ sid }} .cro-fbt__title .cro-icon { color: var(--cro-accent); }
+  #cro-{{ sid }} .cro-fbt__items { display: grid; gap: 8px; }
+  #cro-{{ sid }} .cro-set__item { display: grid; grid-template-columns: auto 52px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 8px 10px; border: 1px solid var(--cro-border); border-radius: 12px; background: #fff; cursor: pointer; }
+  #cro-{{ sid }} .cro-set__item:has(input:checked) { border-color: var(--cro-accent); box-shadow: 0 0 0 1px var(--cro-accent) inset; }
+  #cro-{{ sid }} .cro-set__item input { inline-size: 20px; block-size: 20px; accent-color: {{ s.atc_bg }}; }
+  #cro-{{ sid }} .cro-set__item img { inline-size: 52px; block-size: 52px; border-radius: 8px; object-fit: cover; }
+  #cro-{{ sid }} .cro-set__title { color: var(--cro-heading); font-size: 14px; font-weight: 700; text-decoration: none; }
+  #cro-{{ sid }} a.cro-set__title:hover { color: var(--cro-accent); }
+  #cro-{{ sid }} .cro-set__tag { display: block; font-size: 12px; font-weight: 700; color: var(--cro-accent); }
+  #cro-{{ sid }} .cro-set__price { color: var(--cro-heading); font-size: 14px; font-weight: 700; white-space: nowrap; }
+  #cro-{{ sid }} .cro-fbt__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+  #cro-{{ sid }} .cro-fbt__total { color: var(--cro-heading); font-size: 18px; }
+  #cro-{{ sid }} .cro-fbt__btn { min-block-size: 46px; padding: 0 20px; border: 0; border-radius: {{ s.button_radius }}px; background: {{ s.fbt_btn_bg }}; color: {{ s.fbt_btn_text }}; font: inherit; font-weight: 800; cursor: pointer; }
+  #cro-{{ sid }} .cro-fbt__btn:hover { filter: brightness(.92); }
+  #cro-{{ sid }} .cro-fbt__btn[disabled] { opacity: .5; cursor: not-allowed; }
+
   /* Sticky add to cart */
   #cro-{{ sid }} .cro-satc { position: fixed; inset-inline: 0; inset-block-end: 0; z-index: 45; padding: 10px var(--gutter, 16px) calc(10px + env(safe-area-inset-bottom, 0px)); background: {{ s.satc_bg }}; color: {{ s.satc_text }}; box-shadow: 0 -8px 24px rgba(15, 47, 39, .14); transform: translateY(110%); transition: transform .3s ease; }
   #cro-{{ sid }} .cro-satc.is-visible { transform: none; }
@@ -164,7 +229,11 @@
   }
   @media (min-width: 990px) {
     #cro-{{ sid }} .product { grid-template-columns: minmax(0, {{ s.media_width }}fr) minmax(0, {{ info_width }}fr); gap: {{ s.column_gap }}px; }
-    #cro-{{ sid }} .product__info { position: {% if s.sticky_info %}sticky{% else %}static{% endif %}; top: {{ s.sticky_offset }}px; max-inline-size: {{ s.info_max_width }}px; }
+    #cro-{{ sid }} .product { align-items: start; }
+    #cro-{{ sid }} .product__info { position: {% if s.sticky_mode == 'auto' or s.sticky_mode == 'info' %}sticky{% else %}static{% endif %}; top: {{ s.sticky_offset }}px; align-self: start; max-inline-size: {{ s.info_max_width }}px; }
+    {%- if s.sticky_mode == 'auto' or s.sticky_mode == 'gallery' %}
+    #cro-{{ sid }} .product > .cro-gallery, #cro-{{ sid }} .product > .product__media-grid { position: sticky; top: {{ s.sticky_offset }}px; align-self: start; }
+    {%- endif %}
     {%- if s.thumbs_position == 'start' %}
     #cro-{{ sid }} .cro-gallery { grid-template-columns: 76px minmax(0, 1fr); align-items: start; }
     #cro-{{ sid }} .cro-gallery__thumbs { order: -1; flex-direction: column; max-block-size: 640px; overflow-y: auto; overflow-x: hidden; }
@@ -258,7 +327,7 @@
             {%- case block.type -%}
               {%- when '@app' -%}{% render block %}
               {%- when 'vendor' -%}{%- if product.vendor != blank -%}<p class="eyebrow">{{ product.vendor }}</p>{%- endif -%}
-              {%- when 'title' -%}<h1 class="product__title">{{ product.title }}</h1>
+              {%- when 'title' -%}<h1 class="product__title cro-title-{{ block.id }}">{{ product.title }}</h1>
               {%- when 'price' -%}<div class="price" aria-live="polite"><span class="price__current" data-product-price>{{ current.price | money }}</span>{%- if current.compare_at_price > current.price -%}<s class="price__compare">{{ current.compare_at_price | money }}</s>{%- endif -%}</div>
               {%- when 'sku' -%}
                 {%- liquid
@@ -350,8 +419,14 @@
               {%- when 'cro_countdown' -%}
                 {%- unless b.only_on_sale and on_sale == false -%}
                   <div class="cro-cdbox"{% if b.expire_action == 'hide' %} data-cro-expire-scope="hide"{% endif %}>
-                    {%- if b.heading != blank -%}<p class="cro-cdbox__label">{% render 'cro-icon', icon: b.icon, image: b.icon_image, text: b.icon_text, size: 20 %}{{ b.heading | escape }}</p>{%- endif -%}
+                    {%- if b.heading != blank or b.badge != blank -%}
+                      <div class="cro-cdbox__top">
+                        {%- if b.heading != blank -%}<p class="cro-cdbox__label">{% render 'cro-icon', icon: b.icon, image: b.icon_image, text: b.icon_text, size: 20 %}{{ b.heading | escape }}</p>{%- endif -%}
+                        {%- if b.badge != blank -%}<span class="cro-cdbox__badge">{{ b.badge | escape }}</span>{%- endif -%}
+                      </div>
+                    {%- endif -%}
                     {% render 'cro-countdown', id: block.id, mode: b.mode, end: b.end, hours: b.evergreen_hours, prefix: b.prefix, suffix: b.suffix, suffix_later: b.suffix_later, expire_action: b.expire_action, expired_message: b.expired_message, style: b.style, show_days: b.show_days, pad: true, separator: b.separator, label_d: b.label_days, label_h: b.label_hours, label_m: b.label_minutes, label_s: b.label_seconds, urgent: b.urgent, fallback: b.fallback %}
+                    {%- if b.subtext != blank -%}<p class="cro-cdbox__sub">{{ b.subtext | escape }}</p>{%- endif -%}
                   </div>
                 {%- endunless -%}
 
@@ -437,14 +512,17 @@
                     {%- assign t_icon = 'row_' | append: n | append: '_icon' -%}
                     {%- assign t_link = 'row_' | append: n | append: '_link' -%}
                     {%- if b[t_title] != blank -%}
-                      <li>{% render 'cro-icon', icon: b[t_icon], size: 20 %}<span>{%- if b[t_link] != blank -%}<a class="cro-link" href="{{ b[t_link] }}"><strong>{{ b[t_title] | escape }}</strong></a>{%- else -%}<strong>{{ b[t_title] | escape }}</strong>{%- endif -%}{%- if b[t_text] != blank -%}<br>{{ b[t_text] | escape }}{%- endif -%}</span></li>
+                      <li class="cro-tbox__cell">
+                        {%- capture tb_inner -%}<span class="cro-tbox__ico">{% render 'cro-icon', icon: b[t_icon], size: 22 %}</span><span class="cro-tbox__body"><strong class="cro-tbox__title">{{ b[t_title] | escape }}</strong>{%- if b[t_text] != blank -%}<span class="cro-tbox__text">{{ b[t_text] | escape }}</span>{%- endif -%}</span>{%- endcapture -%}
+                        {%- if b[t_link] != blank -%}<a class="cro-tbox__item cro-tbox__item--link" href="{{ b[t_link] }}">{{ tb_inner }}<span class="cro-tbox__arrow" aria-hidden="true">{% render 'cro-icon', icon: 'chevron-right', size: 16 %}</span></a>{%- else -%}<div class="cro-tbox__item">{{ tb_inner }}</div>{%- endif -%}
+                      </li>
                     {%- endif -%}
                   {%- endfor -%}
                 {%- endcapture -%}
                 {%- if tb_rows != blank -%}
-                  <div class="cro-box">
-                    {%- if b.heading != blank -%}<p class="cro-box__title">{{ b.heading | escape }}</p>{%- endif -%}
-                    <ul class="cro-list" role="list">{{ tb_rows }}</ul>
+                  <div class="cro-tbox cro-tbox--{{ b.columns }}">
+                    {%- if b.heading != blank -%}<p class="cro-tbox__head">{% render 'cro-icon', icon: 'shield', size: 20 %}{{ b.heading | escape }}</p>{%- endif -%}
+                    <ul class="cro-tbox__grid" role="list">{{ tb_rows }}</ul>
                   </div>
                 {%- endif -%}
 
@@ -558,6 +636,53 @@
                     <a class="cro-buy__wa" href="https://wa.me/{{ wa_number }}?text={% echo wa_msg | replace: '{qty}', '1' | url_encode %}" target="_blank" rel="noopener" data-cro-wa-order data-number="{{ wa_number }}" data-message="{{ wa_msg | escape }}">{% render 'cro-icon', icon: 'whatsapp', size: 22 %}{{ b.whatsapp_label | escape }}</a>
                   {%- endif -%}
                 </div>
+
+              {%- when 'cro_fbt' -%}
+                {%- liquid
+                  assign fbt_manual = false
+                  if b.product_1 != blank or b.product_2 != blank or b.product_3 != blank
+                    assign fbt_manual = true
+                  endif
+                  assign fbt_rec = routes.product_recommendations_url | append: '?section_id=cro-pdp-complementary&product_id=' | append: product.id | append: '&limit=' | append: b.limit
+                -%}
+                {%- if current.available -%}
+                <div class="cro-fbt" data-cro-complementary data-money-format="{{ shop.money_format | escape }}"
+                  {%- if fbt_manual %} data-cro-fbt-static{% else %} data-url-complementary="{{ fbt_rec }}&intent=complementary" data-url-related="{% if b.fallback_related %}{{ fbt_rec }}&intent=related{% endif %}"{% unless request.design_mode %} hidden{% endunless %}{% endif %}>
+                  <p class="cro-fbt__title">{% render 'cro-icon', icon: 'sparkle', size: 18 %}{{ b.heading | escape }}</p>
+                  <div class="cro-fbt__items">
+                    <label class="cro-set__item">
+                      <input type="checkbox" value="{{ current.id }}" data-price="{{ current.price }}" data-cro-set-check data-cro-set-base checked>
+                      {%- if product.featured_media -%}{{ product.featured_media | image_url: width: 120, height: 120, crop: 'center' | image_tag: loading: 'lazy', alt: '', width: 52, height: 52 }}{%- else -%}<span></span>{%- endif -%}
+                      <span><span class="cro-set__title">{{ product.title | escape }}</span><span class="cro-set__tag">{{ b.this_item_label | escape }}</span></span>
+                      <span class="cro-set__price">{{ current.price | money }}</span>
+                    </label>
+                    <div class="cro-fbt__items" data-cro-comp-target>
+                      {%- if fbt_manual -%}
+                        {%- for n in (1..3) -%}
+                          {%- assign fk = 'product_' | append: n -%}
+                          {%- assign fp = b[fk] -%}
+                          {%- if fp != blank and fp.id != product.id and fp.available -%}
+                            {%- assign fv = fp.selected_or_first_available_variant -%}
+                            <label class="cro-set__item" data-cro-set-item>
+                              <input type="checkbox" value="{{ fv.id }}" data-price="{{ fv.price }}" data-cro-set-check{% if b.prechecked %} checked{% endif %}>
+                              {%- if fp.featured_media -%}{{ fp.featured_media | image_url: width: 120, height: 120, crop: 'center' | image_tag: loading: 'lazy', alt: '', width: 52, height: 52 }}{%- else -%}<span></span>{%- endif -%}
+                              <span><a class="cro-set__title" href="{{ fp.url }}">{{ fp.title | escape }}</a>{%- unless fp.has_only_default_variant -%}<span class="cro-set__tag">{{ fv.title | escape }}</span>{%- endunless -%}</span>
+                              <span class="cro-set__price">{{ fv.price | money }}</span>
+                            </label>
+                          {%- endif -%}
+                        {%- endfor -%}
+                      {%- elsif request.design_mode -%}
+                        <p class="cro-inline">{{ b.editor_note | escape }}</p>
+                      {%- endif -%}
+                    </div>
+                  </div>
+                  <div class="cro-fbt__foot">
+                    <span>{{ b.total_label | escape }} <strong class="cro-fbt__total" data-cro-set-total>{{ current.price | money }}</strong></span>
+                    <button class="cro-fbt__btn" type="button" data-cro-set-add data-source="frequently-bought-together" data-success="{{ b.success_label | escape }}" data-loading="{{ b.loading_label | escape }}"><span data-cro-btn-label>{{ b.button_label | escape }}</span></button>
+                    <p class="cro-vh" data-cro-error hidden></p>
+                  </div>
+                </div>
+                {%- endif -%}
 
               {%- when 'cro_guarantee' -%}
                 {%- if b.heading != blank or b.text != blank -%}
@@ -703,10 +828,29 @@
       "unit": "px"
     },
     {
-      "type": "checkbox",
-      "id": "sticky_info",
-      "label": "Keep product information visible while scrolling",
-      "default": true
+      "type": "select",
+      "id": "sticky_mode",
+      "label": "Sticky columns while scrolling",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Auto (the shorter column stays in view)"
+        },
+        {
+          "value": "info",
+          "label": "Product information"
+        },
+        {
+          "value": "gallery",
+          "label": "Gallery"
+        },
+        {
+          "value": "none",
+          "label": "Off"
+        }
+      ],
+      "default": "auto",
+      "info": "A column can only stay in view if it is shorter than the other one. Auto makes both sticky so whichever is shorter follows the page."
     },
     {
       "type": "range",
@@ -732,17 +876,18 @@
     {
       "type": "range",
       "id": "title_size_desktop",
-      "label": "Title size (desktop)",
+      "label": "Default title size (desktop)",
       "min": 20,
       "max": 60,
       "step": 2,
       "default": 38,
-      "unit": "px"
+      "unit": "px",
+      "info": "The Title block has its own size, weight and spacing settings."
     },
     {
       "type": "range",
       "id": "title_size_mobile",
-      "label": "Title size (mobile)",
+      "label": "Default title size (mobile)",
       "min": 18,
       "max": 44,
       "step": 2,
@@ -754,9 +899,9 @@
       "id": "padding_top_desktop",
       "label": "Padding top (desktop)",
       "min": 0,
-      "max": 120,
-      "step": 4,
-      "default": 16,
+      "max": 100,
+      "step": 1,
+      "default": 15,
       "unit": "px"
     },
     {
@@ -764,9 +909,9 @@
       "id": "padding_bottom_desktop",
       "label": "Padding bottom (desktop)",
       "min": 0,
-      "max": 120,
-      "step": 4,
-      "default": 48,
+      "max": 100,
+      "step": 1,
+      "default": 15,
       "unit": "px"
     },
     {
@@ -774,9 +919,9 @@
       "id": "padding_top_mobile",
       "label": "Padding top (mobile)",
       "min": 0,
-      "max": 120,
-      "step": 4,
-      "default": 8,
+      "max": 100,
+      "step": 1,
+      "default": 15,
       "unit": "px"
     },
     {
@@ -784,9 +929,9 @@
       "id": "padding_bottom_mobile",
       "label": "Padding bottom (mobile)",
       "min": 0,
-      "max": 120,
-      "step": 4,
-      "default": 32,
+      "max": 100,
+      "step": 1,
+      "default": 15,
       "unit": "px"
     },
     {
@@ -1155,32 +1300,98 @@
     {
       "type": "color",
       "id": "cd_panel_bg",
-      "label": "Countdown panel background",
-      "default": "#173F35"
+      "label": "Countdown gradient start",
+      "default": "#7A1F12"
+    },
+    {
+      "type": "color",
+      "id": "cd_panel_bg_2",
+      "label": "Countdown gradient end",
+      "default": "#C64F32"
     },
     {
       "type": "color",
       "id": "cd_panel_text",
-      "label": "Countdown panel text",
+      "label": "Countdown text",
       "default": "#FFFDF8"
     },
     {
       "type": "color",
       "id": "cd_box_bg",
       "label": "Countdown box background",
-      "default": "#0F2F27"
+      "default": "#FFFDF8"
     },
     {
       "type": "color",
       "id": "cd_digit",
       "label": "Countdown digits",
-      "default": "#FFFDF8"
+      "default": "#7A1F12"
     },
     {
       "type": "color",
       "id": "cd_label",
-      "label": "Countdown labels",
+      "label": "Countdown labels and icon",
       "default": "#E8B44A"
+    },
+    {
+      "type": "color",
+      "id": "cd_badge_bg",
+      "label": "Countdown badge background",
+      "default": "#E8B44A"
+    },
+    {
+      "type": "color",
+      "id": "cd_badge_text",
+      "label": "Countdown badge text",
+      "default": "#18231F"
+    },
+    {
+      "type": "color",
+      "id": "tbox_bg",
+      "label": "Trust box background",
+      "default": "#F7F1E7"
+    },
+    {
+      "type": "color",
+      "id": "tbox_item_bg",
+      "label": "Trust box card background",
+      "default": "#FFFDF8"
+    },
+    {
+      "type": "color",
+      "id": "tbox_border",
+      "label": "Trust box borders",
+      "default": "#E6DCCB"
+    },
+    {
+      "type": "color",
+      "id": "tbox_icon_bg",
+      "label": "Trust box icon circle",
+      "default": "#F6E7C1"
+    },
+    {
+      "type": "color",
+      "id": "tbox_icon_color",
+      "label": "Trust box icons",
+      "default": "#173F35"
+    },
+    {
+      "type": "color",
+      "id": "fbt_bg",
+      "label": "Frequently bought together background",
+      "default": "#F7F1E7"
+    },
+    {
+      "type": "color",
+      "id": "fbt_btn_bg",
+      "label": "Frequently bought together button",
+      "default": "#D4623D"
+    },
+    {
+      "type": "color",
+      "id": "fbt_btn_text",
+      "label": "Frequently bought together button text",
+      "default": "#FFFFFF"
     },
     {
       "type": "color",
@@ -1253,7 +1464,97 @@
     {
       "type": "title",
       "name": "Title",
-      "limit": 1
+      "limit": 1,
+      "settings": [
+        {
+          "type": "range",
+          "id": "size_desktop",
+          "label": "Font size (desktop)",
+          "min": 18,
+          "max": 72,
+          "step": 1,
+          "default": 34,
+          "unit": "px"
+        },
+        {
+          "type": "range",
+          "id": "size_mobile",
+          "label": "Font size (mobile)",
+          "min": 16,
+          "max": 48,
+          "step": 1,
+          "default": 26,
+          "unit": "px"
+        },
+        {
+          "type": "select",
+          "id": "weight",
+          "label": "Font weight",
+          "options": [
+            {
+              "value": "400",
+              "label": "Regular"
+            },
+            {
+              "value": "700",
+              "label": "Bold"
+            }
+          ],
+          "default": "700"
+        },
+        {
+          "type": "range",
+          "id": "line_height",
+          "label": "Line height",
+          "min": 100,
+          "max": 160,
+          "step": 5,
+          "default": 115,
+          "unit": "%"
+        },
+        {
+          "type": "range",
+          "id": "letter_spacing",
+          "label": "Letter spacing",
+          "min": -2,
+          "max": 4,
+          "step": 0.5,
+          "default": 0,
+          "unit": "px"
+        },
+        {
+          "type": "range",
+          "id": "margin_top",
+          "label": "Space above",
+          "min": 0,
+          "max": 40,
+          "step": 1,
+          "default": 0,
+          "unit": "px"
+        },
+        {
+          "type": "range",
+          "id": "margin_bottom",
+          "label": "Space below",
+          "min": 0,
+          "max": 40,
+          "step": 1,
+          "default": 6,
+          "unit": "px"
+        },
+        {
+          "type": "checkbox",
+          "id": "uppercase",
+          "label": "Uppercase",
+          "default": false
+        },
+        {
+          "type": "color",
+          "id": "color",
+          "label": "Colour",
+          "info": "Empty uses the section heading colour."
+        }
+      ]
     },
     {
       "type": "price",
@@ -1956,6 +2257,17 @@
           "id": "expired_message",
           "label": "Expired message",
           "default": "This offer has ended"
+        },
+        {
+          "type": "text",
+          "id": "badge",
+          "label": "Badge next to heading",
+          "info": "e.g. 'Up to 30% off'. Only state a discount you offer."
+        },
+        {
+          "type": "text",
+          "id": "subtext",
+          "label": "Small text under the timer"
         }
       ]
     },
@@ -2487,6 +2799,22 @@
         },
         {
           "type": "select",
+          "id": "columns",
+          "label": "Layout",
+          "options": [
+            {
+              "value": "2",
+              "label": "Two columns"
+            },
+            {
+              "value": "1",
+              "label": "One column"
+            }
+          ],
+          "default": "2"
+        },
+        {
+          "type": "select",
           "id": "row_1_icon",
           "label": "Row 1 icon",
           "options": [
@@ -2993,6 +3321,96 @@
           "type": "url",
           "id": "row_4_link",
           "label": "Row 4 link"
+        }
+      ]
+    },
+    {
+      "type": "cro_fbt",
+      "name": "Bought together",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Frequently bought together"
+        },
+        {
+          "type": "header",
+          "content": "Products",
+          "info": "Pick up to 3 products, or leave empty to use Shopify's complementary products (Search & Discovery app), falling back to related products."
+        },
+        {
+          "type": "product",
+          "id": "product_1",
+          "label": "Product 1"
+        },
+        {
+          "type": "product",
+          "id": "product_2",
+          "label": "Product 2"
+        },
+        {
+          "type": "product",
+          "id": "product_3",
+          "label": "Product 3"
+        },
+        {
+          "type": "range",
+          "id": "limit",
+          "label": "Automatic suggestions",
+          "min": 1,
+          "max": 4,
+          "step": 1,
+          "default": 2
+        },
+        {
+          "type": "checkbox",
+          "id": "fallback_related",
+          "label": "Use related products when no complementary products are set",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "prechecked",
+          "label": "Tick suggested products by default",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "this_item_label",
+          "label": "Current product label",
+          "default": "This item"
+        },
+        {
+          "type": "text",
+          "id": "total_label",
+          "label": "Total label",
+          "default": "Total:"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Button label",
+          "default": "Add selected to cart"
+        },
+        {
+          "type": "text",
+          "id": "loading_label",
+          "label": "Adding label",
+          "default": "Adding…"
+        },
+        {
+          "type": "text",
+          "id": "success_label",
+          "label": "Success label",
+          "default": "Added to cart"
+        },
+        {
+          "type": "text",
+          "id": "editor_note",
+          "label": "Theme editor note",
+          "default": "Suggestions load here on the live store, or pick products above."
         }
       ]
     },

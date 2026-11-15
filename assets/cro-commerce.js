@@ -120,6 +120,7 @@
       });
     };
     register('[data-cro-complementary]', async (el) => {
+      if (el.hasAttribute('data-cro-fbt-static')) { bindSet(el); return; }
       const target = el.querySelector('[data-cro-comp-target]');
       const load = async (url) => {
         const html = await fetch(url).then((r) => r.text());

@@ -130,3 +130,8 @@
 a.cro-trust__title { text-decoration: underline; text-underline-offset: 3px; }
 a.cro-trust__title:hover { color: var(--cro-link-hover, var(--color-accent, #D4623D)); }
 .cro-trust__text { color: var(--cro-text, var(--color-text, #3F4A45)); font-size: 13px; line-height: 1.4; }
+
+/* Eye-catching countdown helpers */
+@keyframes cro-shine { 0% { background-position: 150% 0; } 60%, 100% { background-position: -100% 0; } }
+@keyframes cro-flicker { 0%, 100% { transform: scale(1) rotate(0); opacity: 1; } 50% { transform: scale(1.15) rotate(-6deg); opacity: .85; } }
+@media (prefers-reduced-motion: reduce) { .cro-cdbox::before, .cro-cdbox__label .cro-icon { animation: none; } }

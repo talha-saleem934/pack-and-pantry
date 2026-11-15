@@ -79,6 +79,9 @@
   #cro-{{ sid }} .cro-fw__btn:focus-visible { outline: 3px solid {{ s.focus_color }}; outline-offset: 3px; }
   #cro-{{ sid }} .cro-fw__wa { min-inline-size: {{ s.wa_size }}px; block-size: {{ s.wa_size }}px; background: var(--cro-fw-wa-bg); color: var(--cro-fw-wa-icon); }
   #cro-{{ sid }} .cro-fw__wa:hover { background: var(--cro-fw-wa-hover-bg); transform: translateY(-2px); }
+  #cro-{{ sid }} .cro-fw__wa--img, #cro-{{ sid }} .cro-fw__wa--img:hover { padding: 0; background: transparent; box-shadow: none; }
+  #cro-{{ sid }} .cro-fw__wa--img:hover { transform: translateY(-2px) scale(1.04); }
+  #cro-{{ sid }} .cro-fw__wa-img { display: block; inline-size: {{ s.wa_size }}px; block-size: {{ s.wa_size }}px; object-fit: contain; filter: drop-shadow(0 6px 14px rgba(15, 47, 39, .25)); }
   #cro-{{ sid }} .cro-fw__wa--pulse { animation: cro-pulse 2.4s ease-out infinite; }
   #cro-{{ sid }} .cro-fw__label { display: none; padding-inline-start: 18px; color: var(--cro-fw-wa-icon); font-weight: 700; font-size: {{ s.label_size }}px; white-space: nowrap; }
   #cro-{{ sid }} .cro-fw__call { background: var(--cro-fw-call-bg); color: var(--cro-fw-call-icon); }
@@ -120,7 +123,7 @@
   {%- endif -%}
   {%- if show_wa -%}
     <a
-      class="cro-fw__btn cro-fw__wa{% if s.wa_pulse %} cro-fw__wa--pulse cro-motion{% endif %}{% if s.wa_label != blank and s.wa_show_label %} cro-fw__wa--labelled{% endif %}"
+      class="cro-fw__btn cro-fw__wa{% if s.wa_icon_image != blank %} cro-fw__wa--img{% endif %}{% if s.wa_pulse and s.wa_icon_image == blank %} cro-fw__wa--pulse cro-motion{% endif %}{% if s.wa_label != blank and s.wa_show_label %} cro-fw__wa--labelled{% endif %}"
       href="https://wa.me/{{ wa_number | escape }}?text={{ wa_msg | url_encode }}"
       target="_blank"
       rel="noopener"
@@ -128,7 +131,7 @@
       aria-label="{{ s.wa_aria_label | escape }}"
     >
       {%- if s.wa_label != blank and s.wa_show_label -%}<span class="cro-fw__label" aria-hidden="true">{{ s.wa_label | escape }}</span>{%- endif -%}
-      {% render 'cro-icon', icon: 'whatsapp', image: s.wa_icon_image, size: s.wa_icon_size %}
+      {%- if s.wa_icon_image != blank -%}{{ s.wa_icon_image | image_url: width: 200 | image_tag: class: 'cro-fw__wa-img', alt: '', width: s.wa_size, height: s.wa_size, loading: 'lazy' }}{%- else -%}{% render 'cro-icon', icon: 'whatsapp', size: s.wa_icon_size %}{%- endif -%}
     </a>
   {%- endif -%}
 </div>
@@ -150,7 +153,7 @@
     { "type": "text", "id": "wa_label", "label": "Visible label (desktop)", "default": "Chat with us" },
     { "type": "checkbox", "id": "wa_show_label", "label": "Show visible label on desktop", "default": false },
     { "type": "range", "id": "label_size", "label": "Label text size", "min": 12, "max": 20, "step": 1, "unit": "px", "default": 15 },
-    { "type": "image_picker", "id": "wa_icon_image", "label": "Custom icon image", "info": "Optional. Replaces the built-in WhatsApp icon." },
+    { "type": "image_picker", "id": "wa_icon_image", "label": "Custom icon image", "info": "Optional. Shown at full button size with no background circle, so use a complete WhatsApp logo (PNG/SVG with transparency)." },
     { "type": "range", "id": "wa_size", "label": "Button size", "min": 48, "max": 72, "step": 4, "unit": "px", "default": 56 },
     { "type": "range", "id": "wa_icon_size", "label": "Icon size", "min": 20, "max": 40, "step": 2, "unit": "px", "default": 28 },
     { "type": "checkbox", "id": "wa_pulse", "label": "Pulse animation", "default": false, "info": "Turned off automatically for visitors who prefer reduced motion." },

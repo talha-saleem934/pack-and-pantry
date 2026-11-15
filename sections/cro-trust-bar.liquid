@@ -15,6 +15,7 @@
   endcase
 -%}
 {{ 'cro-components.css' | asset_url | stylesheet_tag }}
+{%- if s.display_mode != 'grid' -%}<script src="{{ 'cro-core.js' | asset_url }}" defer="defer"></script>{%- endif -%}
 {% style %}
   #cro-{{ sid }} {
     --cro-tb-bg: {{ s.bg_color }};
@@ -73,6 +74,20 @@
     #cro-{{ sid }} .cro-tb__list { column-gap: {{ s.gap }}px; }
     {%- endif %}
   }
+  /* Marquee mode */
+  #cro-{{ sid }} .cro-tb__mq { min-block-size: 56px; display: flex; align-items: center; }
+  #cro-{{ sid }} .cro-tb__chip { display: inline-flex; align-items: center; gap: 10px; padding: 10px 18px; border: 1px solid var(--cro-tb-border); border-radius: 999px; background: var(--cro-tb-card-bg); color: var(--cro-tb-text); white-space: nowrap; text-decoration: none; }
+  #cro-{{ sid }} a.cro-tb__chip:hover { border-color: var(--cro-tb-link-hover); }
+  #cro-{{ sid }} .cro-tb__chip .cro-tb__icon { inline-size: auto; block-size: auto; background: none; }
+  #cro-{{ sid }} .cro-tb__chip strong { color: var(--cro-tb-title); font-size: {{ s.title_size_mobile }}px; }
+  #cro-{{ sid }} .cro-tb__chip-text { font-size: {{ s.text_size_mobile }}px; opacity: .85; }
+  {%- case s.display_mode -%}
+    {%- when 'marquee' %}
+  #cro-{{ sid }} .cro-tb__list { display: none; }
+    {%- when 'marquee_mobile' %}
+  @media (max-width: 749px) { #cro-{{ sid }} .cro-tb__list { display: none; } }
+  @media (min-width: 750px) { #cro-{{ sid }} .cro-tb__mq { display: none; } }
+  {%- endcase %}
 {% endstyle %}
 <section id="cro-{{ sid }}" class="cro-tb" aria-label="{{ s.heading | default: s.region_label | escape }}">
   <div class="cro-tb__inner">
@@ -103,6 +118,25 @@
         </li>
       {%- endfor -%}
     </ul>
+    {%- if s.display_mode != 'grid' -%}
+      {%- capture tb_chips -%}
+        {%- for block in section.blocks -%}
+          {%- assign b = block.settings -%}
+          {%- capture chip_inner -%}
+            {%- if b.icon != 'none' or b.icon_image != blank or b.icon_text != blank -%}<span class="cro-tb__icon">{% render 'cro-icon', icon: b.icon, image: b.icon_image, text: b.icon_text, size: s.icon_size %}</span>{%- endif -%}
+            <strong>{{ b.title | escape }}</strong>
+            {%- if s.marquee_show_text and b.text != blank -%}<span class="cro-tb__chip-text">{{ b.text | escape }}</span>{%- endif -%}
+          {%- endcapture -%}
+          {%- if b.link != blank -%}<a class="cro-tb__chip" href="{{ b.link }}">{{ chip_inner }}</a>{%- else -%}<span class="cro-tb__chip">{{ chip_inner }}</span>{%- endif -%}
+        {%- endfor -%}
+      {%- endcapture -%}
+      <div class="cro-tb__mq cro-mq{% if s.marquee_fade %} cro-mq--fade{% endif %}" data-cro-marquee data-speed="{{ s.marquee_speed }}" data-direction="{{ s.marquee_direction }}" data-pause="true" style="--cro-mq-gap:{{ s.gap }}px">
+        <div class="cro-mq__track" data-cro-mq-track>
+          <div class="cro-mq__group" data-cro-mq-group>{{ tb_chips }}</div>
+          <div class="cro-mq__group" data-cro-mq-clone aria-hidden="true" inert>{{ tb_chips }}</div>
+        </div>
+      </div>
+    {%- endif -%}
   </div>
 </section>
 
@@ -122,6 +156,11 @@
     { "type": "header", "content": "Layout" },
     { "type": "select", "id": "style", "label": "Item style", "default": "plain", "options": [ { "value": "plain", "label": "Plain" }, { "value": "cards", "label": "Cards" } ] },
     { "type": "select", "id": "icon_position", "label": "Icon position", "default": "start", "options": [ { "value": "start", "label": "Beside text" }, { "value": "top", "label": "Above text" } ] },
+    { "type": "select", "id": "display_mode", "label": "Display", "default": "grid", "options": [ { "value": "grid", "label": "Grid / cards" }, { "value": "marquee", "label": "Scrolling marquee" }, { "value": "marquee_mobile", "label": "Marquee on mobile, grid on desktop" } ], "info": "The marquee stops and wraps into a still row for visitors who prefer reduced motion." },
+    { "type": "range", "id": "marquee_speed", "label": "Marquee speed", "min": 10, "max": 200, "step": 5, "unit": "px", "default": 40 },
+    { "type": "select", "id": "marquee_direction", "label": "Marquee direction", "default": "left", "options": [ { "value": "left", "label": "Left" }, { "value": "right", "label": "Right" } ] },
+    { "type": "checkbox", "id": "marquee_show_text", "label": "Show item text in marquee", "default": false },
+    { "type": "checkbox", "id": "marquee_fade", "label": "Fade marquee edges", "default": true },
     { "type": "select", "id": "mobile_layout", "label": "Mobile layout", "default": "grid", "options": [ { "value": "stack", "label": "Stacked" }, { "value": "grid", "label": "2 × 2 grid" }, { "value": "scroll", "label": "Horizontal scroll" } ] },
     { "type": "checkbox", "id": "dividers", "label": "Dividers between items (desktop)", "default": false },
     { "type": "checkbox", "id": "full_width", "label": "Full width", "default": false },

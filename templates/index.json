@@ -46,7 +46,6 @@
           "type": "item",
           "settings": {
             "icon": "truck",
-            "icon_text": "",
             "title": "Free delivery over PKR 5,000",
             "text": "On eligible orders. Terms may apply.",
             "link": "shopify://pages/shipping-information"
@@ -56,7 +55,6 @@
           "type": "item",
           "settings": {
             "icon": "box",
-            "icon_text": "",
             "title": "Bulk orders welcome",
             "text": "Cafés, bakeries and retailers can request a quote.",
             "link": "shopify://pages/bulk-orders"
@@ -66,7 +64,6 @@
           "type": "item",
           "settings": {
             "icon": "refresh",
-            "icon_text": "",
             "title": "Returns & exchanges",
             "text": "Read our policy before you order.",
             "link": "shopify://pages/returns-exchanges"
@@ -76,7 +73,6 @@
           "type": "item",
           "settings": {
             "icon": "mail",
-            "icon_text": "",
             "title": "Help when you need it",
             "text": "Questions about sizes or stock? Our team will reply.",
             "link": "shopify://pages/contact"
@@ -90,53 +86,23 @@
         "help"
       ],
       "settings": {
-        "heading": "",
-        "subheading": "",
-        "region_label": "Why shop with us",
         "style": "cards",
-        "icon_position": "start",
         "mobile_layout": "scroll",
-        "dividers": false,
-        "full_width": false,
-        "container_width": 1300,
-        "align": "start",
-        "gap": 16,
-        "radius": 16,
-        "heading_size_desktop": 28,
-        "heading_size_mobile": 22,
-        "title_size_desktop": 16,
-        "title_size_mobile": 15,
-        "text_size_desktop": 14,
-        "text_size_mobile": 13,
-        "icon_size": 24,
+        "icon_position": "start",
+        "display_mode": "marquee_mobile",
         "icon_bg_show": true,
-        "padding_top_desktop": 32,
-        "padding_bottom_desktop": 32,
-        "padding_top_mobile": 24,
-        "padding_bottom_mobile": 24,
-        "bg_color": "#fffdf8",
-        "heading_color": "#18231f",
-        "title_color": "#173f35",
-        "text_color": "#3f4a45",
-        "icon_color": "#173f35",
-        "icon_bg": "#dce8d8",
-        "card_bg": "#f7f1e7",
-        "border_color": "#d7cec1",
-        "link_hover_color": "#d4623d"
+        "bg_color": "#FFFDF8",
+        "card_bg": "#F7F1E7",
+        "icon_bg": "#F6E7C1",
+        "icon_color": "#173F35",
+        "title_color": "#173F35",
+        "border_color": "#E6DCCB"
       }
     },
     "cro_blessed_friday": {
       "type": "cro-sale-banner",
       "settings": {
         "layout": "image_right",
-        "full_width": false,
-        "container_width": 1300,
-        "content_width": 560,
-        "align": "start",
-        "min_height_desktop": 440,
-        "min_height_mobile": 420,
-        "radius": 24,
-        "show_border": false,
         "eyebrow": "Blessed Friday Sale",
         "badge": "Up to 30% off",
         "heading": "Stock your pantry for less this Blessed Friday",
@@ -146,80 +112,18 @@
         "secondary_label": "Browse jars",
         "secondary_link": "shopify://collections/jars",
         "terms": "Discount varies by product; sale prices are shown on each product page.",
-        "coupon_code": "",
-        "coupon_label": "Use code",
-        "copy_label": "Copy",
-        "copied_label": "Copied!",
         "countdown_mode": "fixed",
         "countdown_end": "2026-12-02 23:59",
-        "evergreen_hours": 24,
         "countdown_prefix": "Sale ends in",
-        "countdown_suffix": "",
-        "countdown_suffix_later": "for dispatch on {day}",
         "countdown_fallback": "Sale ends 2 December at midnight",
-        "countdown_style": "boxes",
-        "countdown_show_days": true,
-        "countdown_pad": true,
-        "countdown_separator": ":",
-        "label_days": "Days",
-        "label_hours": "Hrs",
-        "label_minutes": "Min",
-        "label_seconds": "Sec",
-        "countdown_urgent": 60,
-        "countdown_size_desktop": 18,
-        "countdown_size_mobile": 15,
         "on_expire": "hide",
         "timer_expire": "hide",
-        "timer_expired_message": "This offer has ended",
-        "expired_heading": "This offer has ended",
-        "expired_text": "<p>Browse our full range of jars and storage.</p>",
-        "expired_button_label": "Shop all products",
-        "expired_button_link": "",
         "image": "shopify://shop_images/aJ0T2BMy_1jfHp-QXgf4cV.png",
         "image_alt": "Glass storage jars from Pack & Pantry",
-        "image_eager": false,
-        "overlay_color": "#0f2f27",
-        "overlay_opacity": 45,
         "product_collection": "jars",
         "product_limit": 0,
         "product_columns": 4,
-        "products_heading": "Sale favourites",
-        "heading_size_desktop": 44,
-        "heading_size_mobile": 30,
-        "text_size_desktop": 17,
-        "text_size_mobile": 15,
-        "badge_size": 14,
-        "button_radius": 10,
-        "padding_top_desktop": 64,
-        "padding_bottom_desktop": 64,
-        "padding_top_mobile": 40,
-        "padding_bottom_mobile": 40,
-        "inner_padding_desktop": 56,
-        "inner_padding_mobile": 24,
-        "bg_color": "#f7f1e7",
-        "panel_color": "#173f35",
-        "heading_color": "#fffdf8",
-        "text_color": "#f7f1e7",
-        "accent_color": "#e8b44a",
-        "badge_bg": "#c64f32",
-        "badge_text_color": "#ffffff",
-        "button_bg": "#e8b44a",
-        "button_text": "#173f35",
-        "button_hover_bg": "#d4623d",
-        "button_hover_text": "#fffdf8",
-        "link_color": "#fffdf8",
-        "link_hover_color": "#e8b44a",
-        "coupon_bg": "#0f2f27",
-        "coupon_border": "#e8b44a",
-        "coupon_text": "#fffdf8",
-        "copy_bg": "#e8b44a",
-        "copy_text": "#173f35",
-        "border_color": "#d7cec1",
-        "cd_box_bg": "#0f2f27",
-        "cd_digit": "#fffdf8",
-        "cd_label": "#e8b44a",
-        "cd_separator": "#e8b44a",
-        "cd_urgent": "#f2a38a"
+        "products_heading": "Sale favourites"
       }
     },
     "cro_deals": {
@@ -229,16 +133,15 @@
         "heading": "Up to 30% off, while the sale lasts",
         "subheading": "Real sale prices on jars, bottles and organisers. Grab them before 2 December.",
         "source": "all",
-        "collection": "",
         "only_discounted": true,
         "hide_sold_out": true,
         "limit": 8,
         "layout": "carousel",
+        "columns_desktop": 4,
+        "columns_tablet": 3,
+        "columns_mobile": "2",
         "view_all_label": "Shop the full sale",
         "view_all_link": "shopify://collections/all",
-        "editor_note": "No matching products yet. Add compare-at prices in Shopify to show deals here.",
-        "prev_label": "Previous products",
-        "next_label": "Next products",
         "countdown_mode": "fixed",
         "countdown_end": "2026-12-02 23:59",
         "strip_text_label": "Sale ends in",
@@ -250,47 +153,7 @@
         "label_seconds": "Sec",
         "on_expire": "hide",
         "add_label": "Add to cart",
-        "choose_label": "Choose options",
-        "sold_out_label": "Sold out",
-        "low_stock_label": "Only {count} left",
-        "show_rating": true,
-        "show_low_stock": true,
-        "full_width": false,
-        "container_width": 1300,
-        "align": "center",
-        "radius": 16,
-        "button_radius": 10,
-        "columns_desktop": 4,
-        "columns_tablet": 3,
-        "columns_mobile": "2",
-        "heading_size_desktop": 38,
-        "heading_size_mobile": 28,
-        "text_size_desktop": 17,
-        "text_size_mobile": 15,
-        "padding_top_desktop": 64,
-        "padding_bottom_desktop": 64,
-        "padding_top_mobile": 40,
-        "padding_bottom_mobile": 40,
-        "bg_color": "#fffdf8",
-        "heading_color": "#18231f",
-        "text_color": "#3f4a45",
-        "accent_color": "#d4623d",
-        "button_bg": "#173f35",
-        "button_text": "#fffdf8",
-        "button_hover_bg": "#0f2f27",
-        "button_hover_text": "#ffffff",
-        "link_hover_color": "#d4623d",
-        "border_color": "#d7cec1",
-        "card_bg": "#fffdf8",
-        "icon_color": "#173f35",
-        "badge_bg": "#c64f32",
-        "badge_text": "#ffffff",
-        "strip_bg": "#173f35",
-        "strip_text": "#fffdf8",
-        "cd_box_bg": "#0f2f27",
-        "cd_digit": "#fffdf8",
-        "cd_label": "#e8b44a",
-        "cd_urgent": "#f2a38a"
+        "choose_label": "Choose options"
       }
     },
     "categories": {
@@ -395,53 +258,13 @@
       "settings": {
         "eyebrow": "Shop the range",
         "heading": "Find the right container for every shelf",
-        "subheading": "",
-        "tabs_label": "Product categories",
         "view_all_label": "View all {collection}",
-        "editor_note": "Choose a collection for this tab.",
         "add_label": "Add to cart",
-        "choose_label": "Choose options",
-        "sold_out_label": "Sold out",
-        "low_stock_label": "Only {count} left",
-        "show_rating": true,
-        "show_low_stock": true,
-        "full_width": false,
-        "container_width": 1300,
-        "align": "center",
-        "radius": 16,
-        "button_radius": 10,
-        "columns_desktop": 4,
-        "columns_tablet": 3,
-        "columns_mobile": "2",
-        "tab_active_bg": "#173f35",
-        "tab_active_text": "#fffdf8",
-        "heading_size_desktop": 38,
-        "heading_size_mobile": 28,
-        "text_size_desktop": 17,
-        "text_size_mobile": 15,
-        "padding_top_desktop": 64,
-        "padding_bottom_desktop": 64,
-        "padding_top_mobile": 40,
-        "padding_bottom_mobile": 40,
-        "bg_color": "#fffdf8",
-        "heading_color": "#18231f",
-        "text_color": "#3f4a45",
-        "accent_color": "#d4623d",
-        "button_bg": "#173f35",
-        "button_text": "#fffdf8",
-        "button_hover_bg": "#0f2f27",
-        "button_hover_text": "#ffffff",
-        "link_hover_color": "#d4623d",
-        "border_color": "#d7cec1",
-        "card_bg": "#fffdf8",
-        "icon_color": "#173f35",
-        "badge_bg": "#c64f32",
-        "badge_text": "#ffffff"
+        "choose_label": "Choose options"
       }
     },
     "featured": {
       "type": "featured-collection",
-      "disabled": true,
       "settings": {
         "eyebrow": "Pantry favourites",
         "heading": "Useful pieces, ready to organise",
@@ -450,7 +273,8 @@
         "limit": 4,
         "columns": 3,
         "scheme": "white"
-      }
+      },
+      "disabled": true
     },
     "cro_marquee": {
       "type": "cro-marquee",
@@ -459,36 +283,28 @@
           "type": "text",
           "settings": {
             "text": "Glass jars",
-            "link": "shopify://collections/jars",
-            "icon": "none",
-            "icon_text": ""
+            "link": "shopify://collections/jars"
           }
         },
         "bottles": {
           "type": "text",
           "settings": {
             "text": "Bottles",
-            "link": "shopify://collections/bottles",
-            "icon": "none",
-            "icon_text": ""
+            "link": "shopify://collections/bottles"
           }
         },
         "organisers": {
           "type": "text",
           "settings": {
             "text": "Storage organisers",
-            "link": "shopify://collections/storage-organizers",
-            "icon": "none",
-            "icon_text": ""
+            "link": "shopify://collections/storage-organizers"
           }
         },
         "bulk": {
           "type": "text",
           "settings": {
             "text": "Bulk orders for cafés & bakeries",
-            "link": "shopify://pages/bulk-orders",
-            "icon": "none",
-            "icon_text": ""
+            "link": "shopify://pages/bulk-orders"
           }
         }
       },
@@ -499,40 +315,11 @@
         "bulk"
       ],
       "settings": {
-        "region_label": "Highlights",
-        "empty_editor_note": "Add text or image blocks to this marquee.",
-        "speed": 40,
-        "direction": "left",
-        "pause_on_hover": true,
-        "edge_fade": true,
-        "separator_type": "text",
-        "separator_text": "✦",
-        "separator_icon": "sparkle",
-        "full_width": true,
-        "container_width": 1300,
-        "align": "center",
-        "gap": 32,
-        "height_desktop": 56,
-        "height_mobile": 48,
-        "padding_top_desktop": 8,
-        "padding_bottom_desktop": 8,
-        "padding_top_mobile": 4,
-        "padding_bottom_mobile": 4,
-        "font_family": "body",
-        "font_size_desktop": 18,
-        "font_size_mobile": 15,
-        "font_weight": "700",
-        "letter_spacing": 0.5,
-        "uppercase": true,
-        "icon_size": 20,
-        "bg_color": "#173f35",
-        "text_color": "#f7f1e7",
-        "icon_color": "#e8b44a",
-        "separator_color": "#e8b44a",
-        "link_hover_color": "#e8b44a",
-        "border_top": false,
-        "border_bottom": false,
-        "border_color": "#d7cec1"
+        "bg_color": "#0F2F27",
+        "bg_color_2": "#173F35",
+        "gradient_angle": 90,
+        "icon_color": "#E8B44A",
+        "separator_color": "#E8B44A"
       }
     },
     "cro_how_it_works": {
@@ -542,7 +329,6 @@
           "type": "step",
           "settings": {
             "icon": "box",
-            "icon_text": "",
             "title": "Pick your containers",
             "text": "Browse jars, bottles and organisers with sizes and prices on every page."
           }
@@ -551,7 +337,6 @@
           "type": "step",
           "settings": {
             "icon": "lock",
-            "icon_text": "",
             "title": "Check out securely",
             "text": "Pay through Shopify's secure checkout."
           }
@@ -560,7 +345,6 @@
           "type": "step",
           "settings": {
             "icon": "package",
-            "icon_text": "",
             "title": "We pack and dispatch",
             "text": "Your order is prepared and sent on its way."
           }
@@ -569,7 +353,6 @@
           "type": "step",
           "settings": {
             "icon": "truck",
-            "icon_text": "",
             "title": "Delivered to your door",
             "text": "Free delivery on orders over PKR 5,000."
           }
@@ -584,39 +367,8 @@
       "settings": {
         "eyebrow": "Simple from start to shelf",
         "heading": "How ordering works",
-        "subheading": "",
-        "show_numbers": true,
         "button_label": "Start shopping",
-        "button_link": "shopify://collections/all",
-        "full_width": false,
-        "container_width": 1300,
-        "align": "center",
-        "radius": 16,
-        "button_radius": 10,
-        "heading_size_desktop": 38,
-        "heading_size_mobile": 28,
-        "text_size_desktop": 17,
-        "text_size_mobile": 15,
-        "padding_top_desktop": 64,
-        "padding_bottom_desktop": 64,
-        "padding_top_mobile": 40,
-        "padding_bottom_mobile": 40,
-        "bg_color": "#fffdf8",
-        "heading_color": "#18231f",
-        "text_color": "#3f4a45",
-        "accent_color": "#d4623d",
-        "button_bg": "#173f35",
-        "button_text": "#fffdf8",
-        "button_hover_bg": "#0f2f27",
-        "button_hover_text": "#ffffff",
-        "link_hover_color": "#d4623d",
-        "border_color": "#d7cec1",
-        "card_bg": "#fffdf8",
-        "icon_color": "#173f35",
-        "badge_bg": "#d4623d",
-        "badge_text": "#ffffff",
-        "step_bg": "#dce8d8",
-        "step_icon": "#173f35"
+        "button_link": "shopify://collections/all"
       }
     },
     "hero": {
@@ -828,10 +580,10 @@
         "details",
         "bulk"
       ],
-      "disabled": true,
       "settings": {
         "scheme": "cream"
-      }
+      },
+      "disabled": true
     },
     "178429943153181245": {
       "type": "_blocks",
@@ -894,11 +646,11 @@
         },
         "delivery": {
           "type": "question",
-          "disabled": true,
           "settings": {
             "question": "Where will delivery and returns information appear?",
             "answer": "<p>Add the verified delivery and returns policies before publishing this section.</p>"
-          }
+          },
+          "disabled": true
         },
         "bulk": {
           "type": "question",

@@ -312,6 +312,14 @@
     el.querySelectorAll('[data-cro-call]').forEach((a) => a.addEventListener('click', () => emit('cro:call-click', { source: 'floating' }, a)));
   }
 
+  register('[data-cro-hide-after]', (el) => {
+    const m = (el.dataset.croHideAfter || '').trim().match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:[ T](\d{1,2}):(\d{2}))?/);
+    if (!m) return;
+    const tz = safeTz(el.dataset.tz);
+    const end = zoned(+m[1], +m[2], +m[3], m[4] ? +m[4] : 23, m[5] ? +m[5] : 59, m[4] ? 0 : 59, tz);
+    const check = () => { if (Date.now() >= end) { el.hidden = true; return true; } return false; };
+    if (!check()) { const left = end - Date.now(); if (left < 864e5 * 20) setTimeout(check, left + 500); }
+  });
   register('[data-cro-countdown]', countdown);
   register('[data-cro-rotator]', rotator);
   register('[data-cro-marquee]', marquee);

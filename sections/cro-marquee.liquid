@@ -44,7 +44,20 @@
   {%- endfor -%}
 {%- endcapture -%}
 
-{%- if mq_items != blank -%}
+{%- liquid
+  assign mq_expired = false
+  if s.hide_after != blank
+    assign mq_end_ts = s.hide_after | date: '%s' | plus: 0
+    assign mq_now_ts = 'now' | date: '%s' | plus: 0
+    if mq_end_ts > 1000000000 and mq_end_ts < mq_now_ts
+      assign mq_expired = true
+    endif
+  endif
+  if request.design_mode
+    assign mq_expired = false
+  endif
+-%}
+{%- if mq_items != blank and mq_expired == false -%}
 {{ 'cro-components.css' | asset_url | stylesheet_tag }}
 <script src="{{ 'cro-core.js' | asset_url }}" defer="defer"></script>
 {% style %}
@@ -55,7 +68,7 @@
     --cro-mq-icon: {{ s.icon_color }};
     --cro-mq-sep: {{ s.separator_color }};
     --cro-mq-link-hover: {{ s.link_hover_color }};
-    background: {{ s.bg_color }};
+    background: {% if s.bg_color_2 != blank %}linear-gradient({{ s.gradient_angle }}deg, {{ s.bg_color }}, {{ s.bg_color_2 }}){% else %}{{ s.bg_color }}{% endif %};
     color: var(--cro-mq-text);
     padding-block: {{ s.padding_top_mobile }}px {{ s.padding_bottom_mobile }}px;
     {%- if s.border_top %} border-block-start: 1px solid {{ s.border_color }};{% endif %}
@@ -89,7 +102,7 @@
     #cro-{{ sid }} .cro-mq-item { font-size: {{ s.font_size_desktop }}px; }
   }
 {% endstyle %}
-<div id="cro-{{ sid }}" class="cro-mqs" role="region" aria-label="{{ s.region_label | escape }}">
+<div id="cro-{{ sid }}" class="cro-mqs" role="region" aria-label="{{ s.region_label | escape }}"{% if s.hide_after != blank and request.design_mode == false %} data-cro-hide-after="{{ s.hide_after | escape }}"{% endif %}>
   <div class="cro-mqs__inner">
     <div class="cro-mq{% if s.edge_fade %} cro-mq--fade{% endif %}" data-cro-marquee data-speed="{{ s.speed }}" data-direction="{{ s.direction }}" data-pause="{{ s.pause_on_hover }}">
       <div class="cro-mq__track" data-cro-mq-track>
@@ -112,6 +125,7 @@
   "settings": [
     { "type": "header", "content": "Content" },
     { "type": "text", "id": "region_label", "label": "Screen-reader label", "default": "Highlights" },
+    { "type": "text", "id": "hide_after", "label": "Hide after date and time", "placeholder": "2026-12-02 23:59", "info": "Optional. Format YYYY-MM-DD HH:MM in the shop timezone. Use it for sale messages so the strip disappears when the sale ends." },
     { "type": "text", "id": "empty_editor_note", "label": "Theme editor note when empty", "default": "Add text or image blocks to this marquee.", "info": "Only visible inside the theme editor." },
 
     { "type": "header", "content": "Behaviour" },
@@ -149,6 +163,8 @@
 
     { "type": "header", "content": "Colours", "info": "Keep text at a 4.5:1 contrast ratio or better against the background (WCAG AA)." },
     { "type": "color", "id": "bg_color", "label": "Background", "default": "#173F35" },
+    { "type": "color", "id": "bg_color_2", "label": "Background gradient end", "info": "Optional. Set it for a gradient background." },
+    { "type": "range", "id": "gradient_angle", "label": "Gradient angle", "min": 0, "max": 180, "step": 15, "unit": "deg", "default": 90 },
     { "type": "color", "id": "text_color", "label": "Text", "default": "#F7F1E7" },
     { "type": "color", "id": "icon_color", "label": "Icons", "default": "#E8B44A" },
     { "type": "color", "id": "separator_color", "label": "Separator", "default": "#E8B44A" },
