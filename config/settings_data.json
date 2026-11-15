@@ -1,1 +1,86 @@
-{"current":{"favicon":"shopify:\/\/shop_images\/WhatsApp_Image_2026-07-16_at_10.09.18-removebg-preview.png","logo_width":120,"logo_width_mobile":130,"color_primary":"#173F35","color_primary_hover":"#0F2F27","color_secondary":"#E8B44A","color_accent":"#D4623D","color_promotion":"#C64F32","color_background":"#F7F1E7","color_alternate":"#DCE8D8","color_surface":"#FFFDF8","color_heading":"#18231F","color_text":"#3F4A45","color_muted":"#637069","color_border":"#D7CEC1","color_success":"#2F6F4E","color_warning":"#A05A00","color_error":"#A72C2C","heading_font":"aleo_n7","body_font":"assistant_n4","page_width":1300,"card_radius":24,"section_spacing":90,"enable_reveal":true,"motion_level":"subtle","product_image_ratio":"square","show_second_image":true,"show_vendor_cards":true,"content_for_index":[],"blocks":{"10830403595879607806":{"type":"shopify:\/\/apps\/reviews-io\/blocks\/reviewsio-core\/92a082e5-b297-4e88-b428-ac96cbc505f9","disabled":false,"settings":{"url_key":"REVIEWS.io","lang":"auto","enable_syndication":false}},"15316669992541710076":{"type":"shopify:\/\/apps\/reviews-io\/blocks\/reviewsio-rating-snippet\/92a082e5-b297-4e88-b428-ac96cbc505f9","disabled":false,"settings":{"star":"#000","text_color":"#333","snippet_mode":"default","text":"Reviews","line_break":false,"listen_for_changes":false,"rating_without_brackets":false,"format_review_count":false,"show_popup":true,"anchor_to_reviews_widget":false,"show_empty_stars":false}},"14060646107696862457":{"type":"shopify:\/\/apps\/judge-me-reviews\/blocks\/judgeme_core\/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8","disabled":false,"settings":{}}}},"presets":{"Pack & Pantry":{}},"platform_customizations":{"custom_css":["div[id$=\"__header\"] {position: sticky !important; top: 0 !important; z-index: 999 !important;}",".site-header,.site-header.is-sticky {position: relative !important; background: #073f36 !important;}",".header,.site-header.is-scrolled .header {min-height: 72px !important; height: 72px !important; transition: none !important;}",".site-header.is-scrolled {transform: none !important; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);}"]}}
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "current": {
+    "favicon": "shopify://shop_images/WhatsApp_Image_2026-07-16_at_10.09.18-removebg-preview.png",
+    "logo_width": 120,
+    "logo_width_mobile": 130,
+    "color_primary": "#173F35",
+    "color_primary_hover": "#0F2F27",
+    "color_secondary": "#E8B44A",
+    "color_accent": "#D4623D",
+    "color_promotion": "#C64F32",
+    "color_background": "#F7F1E7",
+    "color_alternate": "#DCE8D8",
+    "color_surface": "#FFFDF8",
+    "color_heading": "#18231F",
+    "color_text": "#3F4A45",
+    "color_muted": "#637069",
+    "color_border": "#D7CEC1",
+    "color_success": "#2F6F4E",
+    "color_warning": "#A05A00",
+    "color_error": "#A72C2C",
+    "heading_font": "montserrat_n6",
+    "body_font": "poppins_n4",
+    "page_width": 1300,
+    "card_radius": 24,
+    "section_spacing": 90,
+    "enable_reveal": true,
+    "motion_level": "subtle",
+    "product_image_ratio": "square",
+    "show_second_image": true,
+    "show_vendor_cards": true,
+    "content_for_index": [],
+    "blocks": {
+      "10830403595879607806": {
+        "type": "shopify://apps/reviews-io/blocks/reviewsio-core/92a082e5-b297-4e88-b428-ac96cbc505f9",
+        "disabled": false,
+        "settings": {
+          "url_key": "REVIEWS.io",
+          "lang": "auto",
+          "enable_syndication": false
+        }
+      },
+      "15316669992541710076": {
+        "type": "shopify://apps/reviews-io/blocks/reviewsio-rating-snippet/92a082e5-b297-4e88-b428-ac96cbc505f9",
+        "disabled": false,
+        "settings": {
+          "star": "#000",
+          "text_color": "#333",
+          "snippet_mode": "default",
+          "text": "Reviews",
+          "line_break": false,
+          "listen_for_changes": false,
+          "rating_without_brackets": false,
+          "format_review_count": false,
+          "show_popup": true,
+          "anchor_to_reviews_widget": false,
+          "show_empty_stars": false
+        }
+      },
+      "14060646107696862457": {
+        "type": "shopify://apps/judge-me-reviews/blocks/judgeme_core/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
+        "disabled": false,
+        "settings": {}
+      }
+    }
+  },
+  "presets": {
+    "Pack & Pantry": {}
+  },
+  "platform_customizations": {
+    "custom_css": [
+      "div[id$=\"__header\"] {position: sticky !important; top: 0 !important; z-index: 999 !important;}",
+      ".site-header,.site-header.is-sticky {position: relative !important; background: #073f36 !important;}",
+      ".header,.site-header.is-scrolled .header {min-height: 72px !important; height: 72px !important; transition: none !important;}",
+      ".site-header.is-scrolled {transform: none !important; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);}"
+    ]
+  }
+}
