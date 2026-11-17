@@ -722,6 +722,50 @@
                 </div>
                 {%- endif -%}
 
+              {%- when 'cro_offer' -%}
+                {%- liquid
+                  assign offer_show = true
+                  assign offer_list = b.products | strip
+                  if offer_list != blank
+                    assign offer_show = false
+                    assign offer_title = product.title | replace: '&amp;', '&' | strip | downcase
+                    assign offer_items = offer_list | replace: '&amp;', '&' | split: ','
+                    for offer_item in offer_items
+                      assign offer_key = offer_item | strip | downcase
+                      if offer_key contains '/products/'
+                        assign offer_key = offer_key | split: '/products/' | last | split: '?' | first | split: '#' | first | split: '/' | first
+                      endif
+                      if offer_key == product.handle or offer_key == offer_title
+                        assign offer_show = true
+                        break
+                      endif
+                    endfor
+                  endif
+                  if b.badge == blank and b.heading == blank and b.subheading == blank and b.text == blank
+                    assign offer_show = false
+                  endif
+                -%}
+                {%- if offer_show -%}
+                  <style>
+                    #cro-{{ sid }} .cro-offer-{{ block.id }} { background: {{ b.bg_color }}; border: {% if b.border_width > 0 %}{{ b.border_width }}px solid {{ b.border_color }}{% else %}0{% endif %}; border-radius: {{ b.radius }}px; padding: {{ b.padding }}px; text-align: {{ b.align }}; margin: {{ b.margin_top }}px 0 {{ b.margin_bottom }}px; }
+                    #cro-{{ sid }} .cro-offer-{{ block.id }} .cro-offer__badge { display: inline-block; background: {{ b.badge_bg }}; color: {{ b.badge_color }}; font-size: {{ b.badge_size }}px; font-weight: 600; line-height: 1.2; letter-spacing: .02em; text-transform: uppercase; padding: .45em 1em; border-radius: 999px; margin: 0 0 10px; }
+                    #cro-{{ sid }} .cro-offer-{{ block.id }} .cro-offer__heading { color: {{ b.heading_color }}; font-size: {{ b.heading_size_desktop }}px; font-weight: 800; line-height: 1.05; margin: 0 0 8px;{% if b.uppercase %} text-transform: uppercase;{% endif %} }
+                    #cro-{{ sid }} .cro-offer-{{ block.id }} .cro-offer__sub { color: {{ b.subheading_color }}; font-size: {{ b.subheading_size_desktop }}px; font-weight: 800; line-height: 1.15; margin: 0 0 8px;{% if b.uppercase %} text-transform: uppercase;{% endif %} }
+                    #cro-{{ sid }} .cro-offer-{{ block.id }} .cro-offer__text { color: {{ b.text_color }}; font-size: {{ b.text_size }}px; line-height: 1.45; margin: 0; }
+                    #cro-{{ sid }} .cro-offer-{{ block.id }} .cro-offer__text p { margin: 0; }
+                    @media (max-width: 749px) {
+                      #cro-{{ sid }} .cro-offer-{{ block.id }} .cro-offer__heading { font-size: {{ b.heading_size_mobile }}px; }
+                      #cro-{{ sid }} .cro-offer-{{ block.id }} .cro-offer__sub { font-size: {{ b.subheading_size_mobile }}px; }
+                    }
+                  </style>
+                  <div class="cro-offer cro-offer-{{ block.id }}">
+                    {%- if b.badge != blank -%}<span class="cro-offer__badge">{{ b.badge | escape }}</span>{%- endif -%}
+                    {%- if b.heading != blank -%}<p class="cro-offer__heading">{{ b.heading | escape }}</p>{%- endif -%}
+                    {%- if b.subheading != blank -%}<p class="cro-offer__sub">{{ b.subheading | escape }}</p>{%- endif -%}
+                    {%- if b.text != blank -%}<div class="cro-offer__text">{{ b.text }}</div>{%- endif -%}
+                  </div>
+                {%- endif -%}
+
               {%- when 'cro_guarantee' -%}
                 {%- if b.heading != blank or b.text != blank -%}
                   <div class="cro-box">
@@ -4042,6 +4086,236 @@
           "type": "text",
           "id": "extra_label",
           "label": "Extra tab label"
+        }
+      ]
+    },
+    {
+      "type": "cro_offer",
+      "name": "Special offer box",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "A highlighted offer, e.g. a multi-buy deal. Only advertise offers that are really set up as discounts in Shopify."
+        },
+        {
+          "type": "header",
+          "content": "Show on"
+        },
+        {
+          "type": "textarea",
+          "id": "products",
+          "label": "Products",
+          "info": "Comma separated product handles, titles or product links, e.g. 500ml-glass-jar, Airtight Spice Jar Set. Leave empty to show on every product."
+        },
+        {
+          "type": "header",
+          "content": "Text"
+        },
+        {
+          "type": "text",
+          "id": "badge",
+          "label": "Badge",
+          "default": "Special offer"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Buy 2, save more!"
+        },
+        {
+          "type": "text",
+          "id": "subheading",
+          "label": "Subheading",
+          "default": "Get an extra 10% off"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text",
+          "default": "<p>Double the deals. Double the savings. Shop now!</p>"
+        },
+        {
+          "type": "checkbox",
+          "id": "uppercase",
+          "label": "Uppercase heading and subheading",
+          "default": true
+        },
+        {
+          "type": "header",
+          "content": "Colours"
+        },
+        {
+          "type": "color",
+          "id": "badge_color",
+          "label": "Badge text",
+          "default": "#1a7f45"
+        },
+        {
+          "type": "color",
+          "id": "badge_bg",
+          "label": "Badge background",
+          "default": "#dff3e6"
+        },
+        {
+          "type": "color",
+          "id": "heading_color",
+          "label": "Heading",
+          "default": "#0f6b30"
+        },
+        {
+          "type": "color",
+          "id": "subheading_color",
+          "label": "Subheading",
+          "default": "#111111"
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Text",
+          "default": "#6b6b6b"
+        },
+        {
+          "type": "color",
+          "id": "bg_color",
+          "label": "Box background",
+          "default": "#ffffff"
+        },
+        {
+          "type": "color",
+          "id": "border_color",
+          "label": "Box border",
+          "default": "#e6e6e6"
+        },
+        {
+          "type": "header",
+          "content": "Size and spacing"
+        },
+        {
+          "type": "range",
+          "id": "badge_size",
+          "label": "Badge text size",
+          "min": 10,
+          "max": 20,
+          "step": 1,
+          "unit": "px",
+          "default": 13
+        },
+        {
+          "type": "range",
+          "id": "heading_size_desktop",
+          "label": "Heading size (desktop)",
+          "min": 18,
+          "max": 64,
+          "step": 1,
+          "unit": "px",
+          "default": 40
+        },
+        {
+          "type": "range",
+          "id": "heading_size_mobile",
+          "label": "Heading size (mobile)",
+          "min": 16,
+          "max": 48,
+          "step": 1,
+          "unit": "px",
+          "default": 30
+        },
+        {
+          "type": "range",
+          "id": "subheading_size_desktop",
+          "label": "Subheading size (desktop)",
+          "min": 14,
+          "max": 48,
+          "step": 1,
+          "unit": "px",
+          "default": 26
+        },
+        {
+          "type": "range",
+          "id": "subheading_size_mobile",
+          "label": "Subheading size (mobile)",
+          "min": 12,
+          "max": 40,
+          "step": 1,
+          "unit": "px",
+          "default": 20
+        },
+        {
+          "type": "range",
+          "id": "text_size",
+          "label": "Text size",
+          "min": 12,
+          "max": 24,
+          "step": 1,
+          "unit": "px",
+          "default": 16
+        },
+        {
+          "type": "select",
+          "id": "align",
+          "label": "Alignment",
+          "default": "left",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            }
+          ]
+        },
+        {
+          "type": "range",
+          "id": "padding",
+          "label": "Inner padding",
+          "min": 0,
+          "max": 40,
+          "step": 2,
+          "unit": "px",
+          "default": 20
+        },
+        {
+          "type": "range",
+          "id": "radius",
+          "label": "Corner radius",
+          "min": 0,
+          "max": 30,
+          "step": 2,
+          "unit": "px",
+          "default": 12
+        },
+        {
+          "type": "range",
+          "id": "border_width",
+          "label": "Border width",
+          "min": 0,
+          "max": 4,
+          "step": 1,
+          "unit": "px",
+          "default": 1
+        },
+        {
+          "type": "range",
+          "id": "margin_top",
+          "label": "Space above",
+          "min": 0,
+          "max": 40,
+          "step": 2,
+          "unit": "px",
+          "default": 8
+        },
+        {
+          "type": "range",
+          "id": "margin_bottom",
+          "label": "Space below",
+          "min": 0,
+          "max": 40,
+          "step": 2,
+          "unit": "px",
+          "default": 8
         }
       ]
     }

@@ -39,7 +39,7 @@
         "free_delivery": {
           "type": "message",
           "settings": {
-            "text": "Free delivery on orders over PKR 2500",
+            "text": "Free delivery on deals",
             "link": "shopify://collections/all",
             "link_label": "",
             "icon": "truck",
@@ -195,7 +195,7 @@
         "delivery": {
           "type": "text",
           "settings": {
-            "text": "Free delivery on orders over PKR 2500",
+            "text": "Free delivery on deals",
             "link": "",
             "whatsapp_number": "",
             "whatsapp_use_theme": false,
