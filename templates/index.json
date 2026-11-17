@@ -80,7 +80,7 @@
         "eyebrow": "Blessed Friday Sale",
         "badge": "Up to 30% off",
         "heading": "Stock your pantry for less this Blessed Friday",
-        "text": "<p>Glass jars, bottles and storage organisers at up to 30% off, with the discount applied automatically. No code needed. Pair it with free delivery on orders over PKR 2500 and organise every shelf for less.</p>",
+        "text": "<p>Glass jars, bottles and storage organisers at up to 30% off, with the discount applied automatically. No code needed. Pair it with free delivery on deals and organise every shelf for less.</p>",
         "button_label": "Shop the sale",
         "button_link": "shopify://collections/all",
         "secondary_label": "Browse jars",
@@ -170,7 +170,7 @@
           "settings": {
             "icon": "truck",
             "icon_text": "",
-            "title": "Free delivery over PKR 2500",
+            "title": "Free delivery on deals",
             "text": "On eligible orders. Terms may apply.",
             "link": "shopify://pages/shipping-information",
             "whatsapp_number": "",
@@ -904,7 +904,7 @@
           "settings": {
             "eyebrow": "A little extra, neatly delivered",
             "heading": "Fill your shelves, not your delivery bill.",
-            "text": "Enjoy free delivery on eligible orders over PKR 2500. Terms may apply.",
+            "text": "Enjoy free delivery on deals. Terms may apply.",
             "button_text": "Shop storage",
             "button_link": "shopify://collections/all",
             "container_width": 900,

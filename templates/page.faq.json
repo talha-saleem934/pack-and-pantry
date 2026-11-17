@@ -75,7 +75,7 @@
           "settings": {
             "category": "Orders & delivery",
             "question": "Do you offer free delivery?",
-            "answer": "<p>Eligible orders over PKR 2,500 get free delivery. Terms may apply.</p>"
+            "answer": "<p>Deals come with free delivery. Terms may apply.</p>"
           }
         },
         "confirm": {

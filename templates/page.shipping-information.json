@@ -28,8 +28,8 @@
           "type": "item",
           "settings": {
             "icon": "truck",
-            "title": "Free delivery over PKR 2,500",
-            "text": "<p>Eligible orders over PKR 2,500 get free delivery. Terms may apply.</p>"
+            "title": "Free delivery on deals",
+            "text": "<p>Deals come with free delivery. Terms may apply.</p>"
           }
         },
         "damage": {
